@@ -7,90 +7,39 @@ export interface CzechWord {
   exampleTranslation: string;
   category: string;
   lessonId: string;
-  audioFile?: string; // optional: public/audio/words/<id>.mp3
+  audioFile?: string;
   difficulty: 'easy' | 'medium' | 'hard';
 }
 
+/**
+ * A0.1 — Анхны харилцаа.
+ * Аудио файл байхгүй үед интерфэйс нь төхөөрөмжийн Чех TTS (яриа синтез)-д шилжинэ.
+ * Native speaker (төрөлх хэлтэй хүн)-ийн аудио орох үед audioFile талбарыг л бөглөнө.
+ */
 export const czechWords: CzechWord[] = [
-  // === Мэндчилгээ ===
-  { id: 'w001', czech: 'Dobrý den', ipa: '[do-briː den]', mongolian: 'Сайн уу (албан)', example: 'Dobrý den, jak se jmenujete?', exampleTranslation: 'Сайн уу, таны нэр хэн бэ?', category: 'greeting', lessonId: 'l001', difficulty: 'easy' },
-  { id: 'w002', czech: 'Ahoj', ipa: '[a-hoj]', mongolian: 'Сайн уу (дотно)', example: 'Ahoj, jak se máš?', exampleTranslation: 'Сайн уу, чи яаж байна?', category: 'greeting', lessonId: 'l001', difficulty: 'easy' },
-  { id: 'w003', czech: 'Děkuji', ipa: '[dɛ-ku-ji]', mongolian: 'Баярлалаа', example: 'Děkuji moc za pomoc.', exampleTranslation: 'Тусалсанд их баярлалаа.', category: 'greeting', lessonId: 'l001', difficulty: 'easy' },
-  { id: 'w004', czech: 'Prosím', ipa: '[pro-siːm]', mongolian: 'Гуйя / Зайлгүй', example: 'Prosím, kde je záchod?', exampleTranslation: 'Гуйя, жорлон хаана байна вэ?', category: 'greeting', lessonId: 'l001', difficulty: 'easy' },
-  { id: 'w005', czech: 'Na shledanou', ipa: '[na-sxle-da-nou]', mongolian: 'Баяртай (албан)', example: 'Na shledanou, brzy se uvidíme.', exampleTranslation: 'Баяртай, удахгүй уулзана.', category: 'greeting', lessonId: 'l001', difficulty: 'medium' },
-  { id: 'w006', czech: 'Promiňte', ipa: '[pro-miɲ-te]', mongolian: 'Уучлаарай', example: 'Promiňte, nerozumím.', exampleTranslation: 'Уучлаарай, би ойлгохгүй байна.', category: 'greeting', lessonId: 'l001', difficulty: 'easy' },
-  { id: 'w007', czech: 'Jak se máš?', ipa: '[jak se maːʃ]', mongolian: 'Чи яаж байна?', example: 'Ahoj! Jak se máš dnes?', exampleTranslation: 'Сайн уу! Чи өнөөдөр яаж байна?', category: 'greeting', lessonId: 'l001', difficulty: 'easy' },
-  { id: 'w008', czech: 'Dobře', ipa: '[do-bɾe]', mongolian: 'Сайн / Зүгээр', example: 'Jsem dobře, díky.', exampleTranslation: 'Би сайн байна, баярлалаа.', category: 'greeting', lessonId: 'l001', difficulty: 'easy' },
-
-  // === Тоо ===
-  { id: 'w009', czech: 'Jedna', ipa: '[jed-na]', mongolian: 'Нэг', example: 'Chci jeden kávu.', exampleTranslation: 'Би нэг кофе хүсэж байна.', category: 'numbers', lessonId: 'l002', difficulty: 'easy' },
-  { id: 'w010', czech: 'Dva', ipa: '[dva]', mongolian: 'Хоёр', example: 'Máme dva děti.', exampleTranslation: 'Бид хоёр хүүхэдтэй.', category: 'numbers', lessonId: 'l002', difficulty: 'easy' },
-  { id: 'w011', czech: 'Tři', ipa: '[tɾʒiː]', mongolian: 'Гурав', example: 'Potřebuji tři minuty.', exampleTranslation: 'Надад гурван минут хэрэгтэй.', category: 'numbers', lessonId: 'l002', difficulty: 'easy' },
-  { id: 'w012', czech: 'Čtyři', ipa: '[tʃtiː-ɾʒiː]', mongolian: 'Дөрөв', example: 'Jsem ve čtvrtém patře.', exampleTranslation: 'Би дөрөвдүгээр давхарт байна.', category: 'numbers', lessonId: 'l002', difficulty: 'medium' },
-  { id: 'w013', czech: 'Pět', ipa: '[pjɛt]', mongolian: 'Тав', example: 'Přijdu za pět minut.', exampleTranslation: 'Таван минутын дараа ирнэ.', category: 'numbers', lessonId: 'l002', difficulty: 'easy' },
-  { id: 'w014', czech: 'Deset', ipa: '[de-set]', mongolian: 'Арав', example: 'To stojí deset korun.', exampleTranslation: 'Энэ арван крон.', category: 'numbers', lessonId: 'l002', difficulty: 'easy' },
-
-  // === Хоол ===
-  { id: 'w015', czech: 'Chléb', ipa: '[xleːb]', mongolian: 'Талх', example: 'Chtěl bych chléb, prosím.', exampleTranslation: 'Талх авах гэж байна, гуйя.', category: 'food', lessonId: 'l003', difficulty: 'easy' },
-  { id: 'w016', czech: 'Voda', ipa: '[vo-da]', mongolian: 'Ус', example: 'Sklenici vody, prosím.', exampleTranslation: 'Нэг стакан ус, гуйя.', category: 'food', lessonId: 'l003', difficulty: 'easy' },
-  { id: 'w017', czech: 'Pivo', ipa: '[pi-vo]', mongolian: 'Шар айраг', example: 'Dáte si pivo?', exampleTranslation: 'Шар айраг уух уу?', category: 'food', lessonId: 'l003', difficulty: 'easy' },
-  { id: 'w018', czech: 'Káva', ipa: '[kaː-va]', mongolian: 'Кофе', example: 'Ráno piju kávu.', exampleTranslation: 'Өглөө кофе уудаг.', category: 'food', lessonId: 'l003', difficulty: 'easy' },
-  { id: 'w019', czech: 'Maso', ipa: '[ma-so]', mongolian: 'Мах', example: 'Nejedu maso.', exampleTranslation: 'Би мах идэхгүй.', category: 'food', lessonId: 'l003', difficulty: 'easy' },
-  { id: 'w020', czech: 'Polévka', ipa: '[po-leːv-ka]', mongolian: 'Шөл', example: 'Dnes mám polévku.', exampleTranslation: 'Өнөөдөр шөлтэй.', category: 'food', lessonId: 'l003', difficulty: 'medium' },
-
-  // === Өнгө ===
-  { id: 'w021', czech: 'Červená', ipa: '[tʃer-ve-naː]', mongolian: 'Улаан', example: 'Červená barva mi líbí.', exampleTranslation: 'Надад улаан өнгө таалагддаг.', category: 'colors', lessonId: 'l004', difficulty: 'medium' },
-  { id: 'w022', czech: 'Modrá', ipa: '[mod-raː]', mongolian: 'Хөх', example: 'Nebe je modré.', exampleTranslation: 'Тэнгэр хөх байна.', category: 'colors', lessonId: 'l004', difficulty: 'easy' },
-  { id: 'w023', czech: 'Zelená', ipa: '[ze-le-naː]', mongolian: 'Ногоон', example: 'Trávník je zelený.', exampleTranslation: 'Өвс ногоон байна.', category: 'colors', lessonId: 'l004', difficulty: 'medium' },
-  { id: 'w024', czech: 'Žlutá', ipa: '[ʒlu-taː]', mongolian: 'Шар', example: 'Slunce je žluté.', exampleTranslation: 'Нар шар байна.', category: 'colors', lessonId: 'l004', difficulty: 'medium' },
-  { id: 'w025', czech: 'Bílá', ipa: '[biː-laː]', mongolian: 'Цагаан', example: 'Sníh je bílý.', exampleTranslation: 'Цас цагаан байна.', category: 'colors', lessonId: 'l004', difficulty: 'easy' },
-  { id: 'w026', czech: 'Černá', ipa: '[tʃer-naː]', mongolian: 'Хар', example: 'Mám černé auto.', exampleTranslation: 'Надад хар машин байна.', category: 'colors', lessonId: 'l004', difficulty: 'easy' },
-
-  // === Гэр бүл ===
-  { id: 'w027', czech: 'Matka', ipa: '[mat-ka]', mongolian: 'Ээж', example: 'Moje matka vaří skvěle.', exampleTranslation: 'Миний ээж маш сайн хоол хийдэг.', category: 'family', lessonId: 'l005', difficulty: 'easy' },
-  { id: 'w028', czech: 'Otec', ipa: '[o-tets]', mongolian: 'Аав', example: 'Otec pracuje v bance.', exampleTranslation: 'Аав банкинд ажилладаг.', category: 'family', lessonId: 'l005', difficulty: 'easy' },
-  { id: 'w029', czech: 'Sestra', ipa: '[ses-tra]', mongolian: 'Эгч/дүү (эмэгтэй)', example: 'Mám starší sestru.', exampleTranslation: 'Надад том эгч байдаг.', category: 'family', lessonId: 'l005', difficulty: 'easy' },
-  { id: 'w030', czech: 'Bratr', ipa: '[bra-tr]', mongolian: 'Ах/дүү (эрэгтэй)', example: 'Bratr je student.', exampleTranslation: 'Ах оюутан байна.', category: 'family', lessonId: 'l005', difficulty: 'easy' },
-  { id: 'w031', czech: 'Děti', ipa: '[dɛ-ti]', mongolian: 'Хүүхдүүд', example: 'Děti hrají v parku.', exampleTranslation: 'Хүүхдүүд цэцэрлэгт тоглож байна.', category: 'family', lessonId: 'l005', difficulty: 'medium' },
-
-  // === Цаг ===
-  { id: 'w032', czech: 'Dnes', ipa: '[dnes]', mongolian: 'Өнөөдөр', example: 'Dnes je hezky.', exampleTranslation: 'Өнөөдөр сайхан байна.', category: 'time', lessonId: 'l006', difficulty: 'easy' },
-  { id: 'w033', czech: 'Zítra', ipa: '[ziːt-ra]', mongolian: 'Маргааш', example: 'Zítra jdu do školy.', exampleTranslation: 'Маргааш сургуульд явна.', category: 'time', lessonId: 'l006', difficulty: 'easy' },
-  { id: 'w034', czech: 'Včera', ipa: '[ftʃe-ra]', mongolian: 'Өчигдөр', example: 'Včera jsem byl nemocný.', exampleTranslation: 'Өчигдөр өвчтэй байлаа.', category: 'time', lessonId: 'l006', difficulty: 'easy' },
-  { id: 'w035', czech: 'Ráno', ipa: '[raː-no]', mongolian: 'Өглөө', example: 'Ráno cvičím.', exampleTranslation: 'Өглөө дасгал хийдэг.', category: 'time', lessonId: 'l006', difficulty: 'easy' },
-  { id: 'w036', czech: 'Večer', ipa: '[ve-tʃer]', mongolian: 'Орой', example: 'Večer čtu knihu.', exampleTranslation: 'Орой ном уншдаг.', category: 'time', lessonId: 'l006', difficulty: 'easy' },
-
-  // === Байршил ===
-  { id: 'w037', czech: 'Škola', ipa: '[ʃko-la]', mongolian: 'Сургууль', example: 'Chodím do školy pěšky.', exampleTranslation: 'Сургуульдаа явган явдаг.', category: 'places', lessonId: 'l007', difficulty: 'easy' },
-  { id: 'w038', czech: 'Nemocnice', ipa: '[ne-mots-ni-tse]', mongolian: 'Эмнэлэг', example: 'Nemocnice je blízko.', exampleTranslation: 'Эмнэлэг ойрхон байна.', category: 'places', lessonId: 'l007', difficulty: 'medium' },
-  { id: 'w039', czech: 'Obchod', ipa: '[ob-xod]', mongolian: 'Дэлгүүр', example: 'Jdu do obchodu.', exampleTranslation: 'Дэлгүүр рүү явж байна.', category: 'places', lessonId: 'l007', difficulty: 'medium' },
-  { id: 'w040', czech: 'Park', ipa: '[park]', mongolian: 'Цэцэрлэг', example: 'Chodíme do parku.', exampleTranslation: 'Бид цэцэрлэгт явдаг.', category: 'places', lessonId: 'l007', difficulty: 'easy' },
-
-  // === Үйл үг ===
-  { id: 'w041', czech: 'Mluvit', ipa: '[mlu-vit]', mongolian: 'Ярих', example: 'Mluvíte česky?', exampleTranslation: 'Та чех хэлээр ярьдаг уу?', category: 'verbs', lessonId: 'l008', difficulty: 'medium' },
-  { id: 'w042', czech: 'Číst', ipa: '[tʃiːst]', mongolian: 'Унших', example: 'Rád čtu knihy.', exampleTranslation: 'Би ном унших дуртай.', category: 'verbs', lessonId: 'l008', difficulty: 'medium' },
-  { id: 'w043', czech: 'Psát', ipa: '[psaːt]', mongolian: 'Бичих', example: 'Píšu dopis příteli.', exampleTranslation: 'Найздаа захиа бичиж байна.', category: 'verbs', lessonId: 'l008', difficulty: 'medium' },
-  { id: 'w044', czech: 'Jíst', ipa: '[jiːst]', mongolian: 'Идэх', example: 'Co jíš k obědu?', exampleTranslation: 'Та өдрийн хоолонд юу идэх вэ?', category: 'verbs', lessonId: 'l008', difficulty: 'easy' },
-  { id: 'w045', czech: 'Spát', ipa: '[spaːt]', mongolian: 'Унтах', example: 'Spím osm hodin denně.', exampleTranslation: 'Өдөрт найман цаг унтдаг.', category: 'verbs', lessonId: 'l008', difficulty: 'easy' },
-  { id: 'w046', czech: 'Pracovat', ipa: '[pra-tso-vat]', mongolian: 'Ажиллах', example: 'Pracuji v kanceláři.', exampleTranslation: 'Оффисд ажилладаг.', category: 'verbs', lessonId: 'l008', difficulty: 'medium' },
-  { id: 'w047', czech: 'Cestovat', ipa: '[tses-to-vat]', mongolian: 'Аялах', example: 'Rád cestuji do zahraničí.', exampleTranslation: 'Гадаадад аялах дуртай.', category: 'verbs', lessonId: 'l008', difficulty: 'hard' },
-
-  // === Нэр ===
-  { id: 'w048', czech: 'Město', ipa: '[mjɛs-to]', mongolian: 'Хот', example: 'Praha je krásné město.', exampleTranslation: 'Прага үзэсгэлэнт хот.', category: 'nouns', lessonId: 'l009', difficulty: 'easy' },
-  { id: 'w049', czech: 'Dům', ipa: '[duːm]', mongolian: 'Байшин', example: 'Náš dům je velký.', exampleTranslation: 'Манай байшин том.', category: 'nouns', lessonId: 'l009', difficulty: 'easy' },
-  { id: 'w050', czech: 'Kniha', ipa: '[kni-xa]', mongolian: 'Ном', example: 'Tato kniha je zajímavá.', exampleTranslation: 'Энэ ном сонирхолтой байна.', category: 'nouns', lessonId: 'l009', difficulty: 'easy' },
-  { id: 'w051', czech: 'Auto', ipa: '[au-to]', mongolian: 'Машин', example: 'Mám nové auto.', exampleTranslation: 'Надад шинэ машин байна.', category: 'nouns', lessonId: 'l009', difficulty: 'easy' },
-  { id: 'w052', czech: 'Telefon', ipa: '[te-le-fon]', mongolian: 'Утас', example: 'Kde je můj telefon?', exampleTranslation: 'Миний утас хаана байна?', category: 'nouns', lessonId: 'l009', difficulty: 'easy' },
-];
-
-export const categories = [
-  { id: 'greeting', name: 'Мэндчилгээ', icon: '👋' },
-  { id: 'numbers', name: 'Тоо', icon: '🔢' },
-  { id: 'food', name: 'Хоол', icon: '🍽️' },
-  { id: 'colors', name: 'Өнгө', icon: '🎨' },
-  { id: 'family', name: 'Гэр бүл', icon: '👨‍👩‍👧‍👦' },
-  { id: 'time', name: 'Цаг', icon: '⏰' },
-  { id: 'places', name: 'Байршил', icon: '📍' },
-  { id: 'verbs', name: 'Үйл үг', icon: '⚡' },
-  { id: 'nouns', name: 'Нэр үг', icon: '📚' },
+  { id:'a0c0001', czech:'Dobrý den', ipa:'', mongolian:'Сайн байна уу', example:'Dobrý den.', exampleTranslation:'Сайн байна уу.', category:'greeting', lessonId:'l001', difficulty:'easy' },
+  { id:'a0c0002', czech:'Ahoj', ipa:'', mongolian:'Сайн уу', example:'Ahoj!', exampleTranslation:'Сайн уу!', category:'greeting', lessonId:'l001', difficulty:'easy' },
+  { id:'a0c0003', czech:'Na shledanou', ipa:'', mongolian:'Баяртай', example:'Na shledanou.', exampleTranslation:'Баяртай.', category:'greeting', lessonId:'l001', difficulty:'easy' },
+  { id:'a0c0004', czech:'Prosím', ipa:'', mongolian:'Гуйя; зүгээр; энд байна', example:'Prosím, mluvte pomalu.', exampleTranslation:'Гуйя, удаан ярьж өгнө үү.', category:'politeness', lessonId:'l001', difficulty:'easy' },
+  { id:'a0c0005', czech:'Děkuji', ipa:'', mongolian:'Баярлалаа', example:'Děkuji.', exampleTranslation:'Баярлалаа.', category:'politeness', lessonId:'l001', difficulty:'easy' },
+  { id:'a0c0006', czech:'Ano', ipa:'', mongolian:'Тийм', example:'Ano, děkuji.', exampleTranslation:'Тийм, баярлалаа.', category:'response', lessonId:'l001', difficulty:'easy' },
+  { id:'a0c0007', czech:'Ne', ipa:'', mongolian:'Үгүй', example:'Ne, děkuji.', exampleTranslation:'Үгүй, баярлалаа.', category:'response', lessonId:'l001', difficulty:'easy' },
+  { id:'a0c0008', czech:'být', ipa:'', mongolian:'байх', example:'Jsem z Mongolska.', exampleTranslation:'Би Монголоос ирсэн.', category:'verb', lessonId:'l001', difficulty:'medium' },
+  { id:'a0c0009', czech:'já', ipa:'', mongolian:'би', example:'Já jsem Eba.', exampleTranslation:'Би Эба байна.', category:'pronoun', lessonId:'l001', difficulty:'easy' },
+  { id:'a0c0010', czech:'vy', ipa:'', mongolian:'та; та нар', example:'Vy jste ...?', exampleTranslation:'Та ... уу?', category:'pronoun', lessonId:'l001', difficulty:'medium' },
+  { id:'a0c0011', czech:'jmenovat se', ipa:'', mongolian:'нэртэй байх', example:'Jmenuji se Eba.', exampleTranslation:'Миний нэр Эба.', category:'verb', lessonId:'l001', difficulty:'medium' },
+  { id:'a0c0012', czech:'Jak se jmenujete?', ipa:'', mongolian:'Таны нэр хэн бэ?', example:'Dobrý den, jak se jmenujete?', exampleTranslation:'Сайн байна уу, таны нэр хэн бэ?', category:'pattern', lessonId:'l001', difficulty:'medium' },
+  { id:'a0c0013', czech:'Jmenuji se …', ipa:'', mongolian:'Миний нэр …', example:'Jmenuji se Eba.', exampleTranslation:'Миний нэр Эба.', category:'pattern', lessonId:'l001', difficulty:'medium' },
+  { id:'a0c0014', czech:'kdo', ipa:'', mongolian:'хэн', example:'Kdo jste?', exampleTranslation:'Та хэн бэ?', category:'question', lessonId:'l001', difficulty:'medium' },
+  { id:'a0c0015', czech:'Kdo jste?', ipa:'', mongolian:'Та хэн бэ?', example:'Promiňte, kdo jste?', exampleTranslation:'Уучлаарай, та хэн бэ?', category:'pattern', lessonId:'l001', difficulty:'medium' },
+  { id:'a0c0016', czech:'Jak se máte?', ipa:'', mongolian:'Та сайн уу?', example:'Dobrý den, jak se máte?', exampleTranslation:'Сайн байна уу, та сайн уу?', category:'pattern', lessonId:'l001', difficulty:'medium' },
+  { id:'a0c0017', czech:'dobře', ipa:'', mongolian:'сайн', example:'Dobře, děkuji.', exampleTranslation:'Сайн, баярлалаа.', category:'response', lessonId:'l001', difficulty:'easy' },
+  { id:'a0c0018', czech:'špatně', ipa:'', mongolian:'муу', example:'Špatně.', exampleTranslation:'Муу байна.', category:'response', lessonId:'l001', difficulty:'medium' },
+  { id:'a0c0019', czech:'odkud', ipa:'', mongolian:'хаанаас', example:'Odkud jste?', exampleTranslation:'Та хаанаас ирсэн бэ?', category:'question', lessonId:'l001', difficulty:'medium' },
+  { id:'a0c0020', czech:'z', ipa:'', mongolian:'-аас, -ээс', example:'Jsem z Mongolska.', exampleTranslation:'Би Монголоос ирсэн.', category:'preposition', lessonId:'l001', difficulty:'medium' },
+  { id:'a0c0021', czech:'Jsem z Mongolska.', ipa:'', mongolian:'Би Монголоос ирсэн.', example:'Jsem z Mongolska.', exampleTranslation:'Би Монголоос ирсэн.', category:'pattern', lessonId:'l001', difficulty:'medium' },
+  { id:'a0c0022', czech:'mluvit', ipa:'', mongolian:'ярих', example:'Mluvte prosím pomalu.', exampleTranslation:'Удаан ярьж өгнө үү.', category:'verb', lessonId:'l001', difficulty:'medium' },
+  { id:'a0c0141', czech:'pomalu', ipa:'', mongolian:'удаанаар', example:'Mluvte pomalu.', exampleTranslation:'Удаан ярьж өгнө үү.', category:'adverb', lessonId:'l001', difficulty:'easy' },
+  { id:'a0c0326', czech:'Nerozumím.', ipa:'', mongolian:'Би ойлгохгүй байна.', example:'Promiňte, nerozumím.', exampleTranslation:'Уучлаарай, би ойлгохгүй байна.', category:'survival', lessonId:'l001', difficulty:'medium' },
+  { id:'a0c0327', czech:'Mluvte prosím pomalu.', ipa:'', mongolian:'Удаан ярьж өгнө үү.', example:'Mluvte prosím pomalu.', exampleTranslation:'Удаан ярьж өгнө үү.', category:'survival', lessonId:'l001', difficulty:'medium' },
 ];
