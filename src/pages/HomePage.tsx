@@ -2,18 +2,19 @@ import React, { useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { ChevronRight } from 'lucide-react';
 import { useAppStore } from '../stores/useAppStore';
+import { lessons as courseLessons } from '../data/lessons';
 import { CircularProgress, ProgressBar } from '../components/UI/SharedComponents';
 import { AreaChart, Area, XAxis, Tooltip, ResponsiveContainer } from 'recharts';
 
 const DAYS = ['Да','Мя','Лх','Пү','Ба','Бя','Ня'];
 
 const HomePage: React.FC = () => {
-  const { userName, progress, lessons, updateStreak, setPage, setCurrentLesson, getLessonProgress } = useAppStore();
+  const { userName, progress, updateStreak, setPage, setCurrentLesson, getLessonProgress } = useAppStore();
   useEffect(() => { updateStreak(); }, [updateStreak]);
 
   const weekData = DAYS.map((d, i) => ({ d, xp:progress.weeklyXP[i] || 0 }));
   const goalPct = Math.min(100, Math.round((progress.todayMinutes / Math.max(progress.dailyGoalMinutes, 1)) * 100));
-  const active = lessons.filter((lesson) => !lesson.isLocked && lesson.status === 'ready');
+  const active = courseLessons.filter((lesson) => !lesson.isLocked && lesson.status === 'ready');
   const openLesson = (lessonId: string) => {
     setCurrentLesson(lessonId);
     setPage(lessonId === 'l001' ? 'a0FirstContact' : 'flashcard');
