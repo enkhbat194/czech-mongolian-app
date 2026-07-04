@@ -2,11 +2,12 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { ChevronLeft, ChevronRight, CheckCircle } from 'lucide-react';
 import { useAppStore } from '../stores/useAppStore';
+import { lessons as courseLessons } from '../data/lessons';
 import { ProgressBar } from '../components/UI/SharedComponents';
 
 const LearningPathPage: React.FC = () => {
-  const { lessons, setCurrentLesson, setPage, getLessonProgress, progress } = useAppStore();
-  const total = lessons.filter((lesson) => lesson.status === 'ready').reduce((sum, lesson) => sum + lesson.wordCount, 0);
+  const { setCurrentLesson, setPage, getLessonProgress, progress } = useAppStore();
+  const total = courseLessons.filter((lesson) => lesson.status === 'ready').reduce((sum, lesson) => sum + lesson.wordCount, 0);
 
   const openLesson = (lessonId: string) => {
     setCurrentLesson(lessonId);
@@ -27,7 +28,7 @@ const LearningPathPage: React.FC = () => {
       </div>
 
       <div style={{ padding:'12px 16px 16px', display:'flex', flexDirection:'column', gap:10 }}>
-        {lessons.map((lesson, index) => {
+        {courseLessons.map((lesson, index) => {
           const progressPercent = getLessonProgress(lesson.id);
           const done = progress.completedLessons.includes(lesson.id);
           const ready = lesson.status === 'ready';
