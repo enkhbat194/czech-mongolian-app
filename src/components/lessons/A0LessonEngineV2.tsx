@@ -1,0 +1,250 @@
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { Check, ChevronLeft, Mic, RotateCcw } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { useAppStore } from '../../stores/useAppStore';
+import { AudioButton, ProgressBar } from '../UI/SharedComponents';
+import type { CzechWord } from '../../data/czechWords';
+import type { A0Exercise } from '../../data/a0FirstContact';
+import { getA0MatchExercise, type A0MatchExercise } from '../../data/a0MatchExercises';
+import type { DialogueScenario } from '../../data/a0Dialogues';
+
+type Stage = 'cards' | 'exercises' | 'microDialogue' | 'finalDialogue' | 'complete';
+type Feedback = 'correct' | 'wrong' | null;
+type SpeakingState = 'idle' | 'listening' | 'heard' | 'unavailable';
+type EngineExercise = A0Exercise | A0MatchExercise;
+
+type MicroLessonLike = {
+  id: string;
+  titleMn: string;
+  canDoMn: string;
+  cardIds: string[];
+  instructions: Record<string, string>;
+  exercises: A0Exercise[];
+};
+
+type SpeechRecognitionLike = {
+  lang: string;
+  continuous: boolean;
+  interimResults: boolean;
+  maxAlternatives: number;
+  start: () => void;
+  abort: () => void;
+  onstart: (() => void) | null;
+  onend: (() => void) | null;
+  onresult: ((event: { results: { 0: { 0: { transcript: string } } } }) => void) | null;
+  onerror: ((event: { error: string }) => void) | null;
+};
+type SpeechRecognitionConstructor = new () => SpeechRecognitionLike;
+
+declare global {
+  interface Window {
+    SpeechRecognition?: SpeechRecognitionConstructor;
+    webkitSpeechRecognition?: SpeechRecognitionConstructor;
+  }
+}
+
+export interface A0LessonEngineConfig {
+  lessonId: string;
+  titleMn: string;
+  durationMinutes: number;
+  cards: CzechWord[];
+  microLessons: MicroLessonLike[];
+  getCard: (id: string) => CzechWord;
+  microDialogues: Record<string, DialogueScenario>;
+  finalDialogue: DialogueScenario;
+  xpReward: number;
+  completionIcon: string;
+  completionSummaryMn: string;
+  completionPhrases: string[];
+}
+
+const shell: React.CSSProperties = { background: '#0C0C0E', minHeight: '100dvh', color: '#FFF', fontFamily: 'Inter,sans-serif' };
+const panel: React.CSSProperties = { background: '#1C1C1F', border: '1px solid #2A2A2F', borderRadius: 22, padding: 18 };
+
+function shuffle<T>(items: T[], seedText: string): T[] {
+  let seed = 2166136261;
+  for (let i = 0; i < seedText.length; i += 1) seed = Math.imul(seed ^ seedText.charCodeAt(i), 16777619);
+  const result = [...items];
+  for (let i = result.length - 1; i > 0; i -= 1) {
+    seed = Math.imul(seed ^ (seed >>> 13), 2246822507) >>> 0;
+    const j = seed % (i + 1);
+    [result[i], result[j]] = [result[j], result[i]];
+  }
+  return result;
+}
+
+function speakCzech(text: string) {
+  if (!('speechSynthesis' in window)) return;
+  window.speechSynthesis.cancel();
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.lang = 'cs-CZ';
+  utterance.rate = 0.84;
+  window.speechSynthesis.speak(utterance);
+}
+
+function normalize(text: string) {
+  return text.toLocaleLowerCase('cs-CZ').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^\p{L}\p{N}\s]/gu, '').replace(/\s+/g, ' ').trim();
+}
+
+const DialogueRun: React.FC<{ scenario: DialogueScenario; onComplete: () => void; onProgress: (value: number) => void }> = ({ scenario, onComplete, onProgress }) => {
+  const [index, setIndex] = useState(0);
+  const [feedback, setFeedback] = useState<Feedback>(null);
+  const [picked, setPicked] = useState<string | null>(null);
+  const [history, setHistory] = useState<Array<{ side: 'staff' | 'user'; czech: string; mongolian: string; id: string }>>([]);
+  const [autoAudio, setAutoAudio] = useState(true);
+  const timer = useRef<number | null>(null);
+  const log = useRef<HTMLDivElement | null>(null);
+  const step = scenario.steps[index];
+  const choices = useMemo(() => shuffle(step.choices, step.id), [step]);
+
+  useEffect(() => {
+    onProgress(index);
+    const frame = window.requestAnimationFrame(() => log.current?.scrollTo({ top: log.current.scrollHeight, behavior: 'smooth' }));
+    return () => window.cancelAnimationFrame(frame);
+  }, [feedback, history.length, index, onProgress]);
+
+  useEffect(() => {
+    if (!autoAudio) return;
+    const id = window.setTimeout(() => speakCzech(step.staffCzech), 260);
+    return () => window.clearTimeout(id);
+  }, [autoAudio, step.id, step.staffCzech]);
+
+  useEffect(() => () => { if (timer.current) window.clearTimeout(timer.current); }, []);
+
+  function choose(id: string) {
+    if (feedback === 'correct') return;
+    const correct = id === step.correctId;
+    setPicked(id);
+    setFeedback(correct ? 'correct' : 'wrong');
+    if (!correct) return;
+    const reply = step.choices.find((item) => item.id === id);
+    if (!reply) return;
+    setHistory((items) => [...items, { id: `${step.id}-s`, side: 'staff', czech: step.staffCzech, mongolian: step.staffMn }, { id: `${step.id}-u`, side: 'user', czech: reply.text, mongolian: reply.mongolian }]);
+    if (autoAudio) speakCzech(reply.text);
+    timer.current = window.setTimeout(() => {
+      if (index === scenario.steps.length - 1) onComplete();
+      else { setIndex((value) => value + 1); setFeedback(null); setPicked(null); }
+    }, Math.max(1450, Math.min(3000, 700 + reply.text.split(/\s+/).length * 290)));
+  }
+
+  function bubble(item: { side: 'staff' | 'user'; czech: string; mongolian: string; id: string }, current = false) {
+    const staff = item.side === 'staff';
+    return <div key={item.id} style={{ display: 'flex', flexDirection: staff ? 'row' : 'row-reverse', gap: 6, alignItems: 'flex-end' }}>
+      <div style={{ width: 28, height: 28, borderRadius: 14, display: 'grid', placeItems: 'center', background: staff ? '#44526B' : '#7B5B22', fontSize: 15 }}>{staff ? '👩‍💼' : '🙂'}</div>
+      <div style={{ maxWidth: '80%', padding: '8px 10px', borderRadius: 14, background: staff ? '#242428' : 'rgba(200,149,42,.16)', border: staff ? '1px solid #34343A' : '1px solid rgba(200,149,42,.40)' }}>
+        <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}><span style={{ flex: 1, color: staff ? '#A0A0A8' : '#F5C842', fontSize: 9, fontWeight: 800 }}>{staff ? step.speaker : 'Та'}</span><button onClick={() => speakCzech(item.czech)} style={{ width: 24, height: 24, padding: 0, borderRadius: 12, border: '1px solid rgba(200,149,42,.4)', background: 'rgba(200,149,42,.12)', color: '#F5C842', cursor: 'pointer' }}>🔊</button></div>
+        <p style={{ margin: '3px 0 0', fontSize: 14, fontWeight: 800 }}>{item.czech}</p><p style={{ margin: '3px 0 0', color: '#A0A0A8', fontSize: 11 }}>{item.mongolian}</p>
+      </div>
+    </div>;
+  }
+
+  return <><div style={{ ...panel, padding: 12, marginBottom: 10, display: 'flex', alignItems: 'center', gap: 9 }}><div style={{ width: 38, height: 38, borderRadius: 19, display: 'grid', placeItems: 'center', background: '#44526B' }}>👩‍💼</div><div style={{ flex: 1 }}><p style={{ margin: 0, fontSize: 13, fontWeight: 800 }}>{scenario.titleMn}</p><p style={{ margin: '2px 0 0', color: '#A0A0A8', fontSize: 11 }}>{scenario.contextMn}</p></div><button onClick={() => setAutoAudio((value) => !value)} style={{ padding: '7px 8px', borderRadius: 10, border: '1px solid rgba(200,149,42,.4)', background: autoAudio ? 'rgba(200,149,42,.16)' : 'transparent', color: autoAudio ? '#F5C842' : '#A0A0A8', cursor: 'pointer', fontSize: 10 }}>{autoAudio ? '🔊 Авто' : '🔇 Дуугүй'}</button></div><div style={panel}><div ref={log} style={{ maxHeight: 'min(31dvh, 235px)', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 8, paddingRight: 4, marginBottom: 14 }}>{history.map((item) => bubble(item))}{feedback !== 'correct' && bubble({ id: `${step.id}-now`, side: 'staff', czech: step.staffCzech, mongolian: step.staffMn }, true)}</div><div style={{ borderTop: '1px solid #2A2A2F', paddingTop: 12 }}><p style={{ margin: '0 0 8px', color: '#C8952A', fontSize: 11, fontWeight: 800 }}>Таны хариу</p><h2 style={{ margin: '0 0 12px', fontSize: 16 }}>{step.promptMn}</h2><div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>{choices.map((item) => { const right = feedback === 'correct' && item.id === step.correctId; const wrong = feedback === 'wrong' && item.id === picked; return <button key={item.id} onClick={() => choose(item.id)} disabled={feedback === 'correct'} style={{ textAlign: 'left', padding: '12px 13px', borderRadius: 13, color: '#FFF', background: right ? 'rgba(34,197,94,.16)' : wrong ? 'rgba(239,68,68,.16)' : '#242428', border: right ? '1px solid rgba(34,197,94,.6)' : wrong ? '1px solid rgba(239,68,68,.6)' : '1px solid #34343A', cursor: feedback === 'correct' ? 'default' : 'pointer' }}>{item.text}</button>; })}</div>{feedback && <p style={{ margin: '10px 0 0', color: feedback === 'correct' ? '#4ADE80' : '#F87171', fontSize: 12, fontWeight: 800 }}>{feedback === 'correct' ? 'Зөв. Яриа үргэлжилж байна…' : 'Буруу. Дахин оролдоорой.'}</p>}</div></div></>;
+};
+
+const A0LessonEngineV2: React.FC<{ config: A0LessonEngineConfig }> = ({ config }) => {
+  const store = useAppStore();
+  const [stage, setStage] = useState<Stage>('cards');
+  const [microIndex, setMicroIndex] = useState(0);
+  const [cardIndex, setCardIndex] = useState(0);
+  const [exerciseIndex, setExerciseIndex] = useState(0);
+  const [showMeaning, setShowMeaning] = useState(false);
+  const [feedback, setFeedback] = useState<Feedback>(null);
+  const [choice, setChoice] = useState<string | null>(null);
+  const [tokens, setTokens] = useState<string[]>([]);
+  const [typed, setTyped] = useState('');
+  const [selectedCzech, setSelectedCzech] = useState<string | null>(null);
+  const [selectedMongolian, setSelectedMongolian] = useState<string | null>(null);
+  const [matched, setMatched] = useState<string[]>([]);
+  const [wrongMatch, setWrongMatch] = useState<string[]>([]);
+  const [dialogueProgress, setDialogueProgress] = useState(0);
+  const [speaking, setSpeaking] = useState<SpeakingState>('idle');
+  const [heard, setHeard] = useState('');
+  const speakTimer = useRef<number | null>(null);
+  const wrongTimer = useRef<number | null>(null);
+  const recognition = useRef<SpeechRecognitionLike | null>(null);
+
+  const micro = config.microLessons[microIndex];
+  const card = micro ? config.getCard(micro.cardIds[cardIndex]) : null;
+  const baseExercise = micro?.exercises[exerciseIndex] ?? null;
+  const exercise: EngineExercise | null = baseExercise ? getA0MatchExercise(baseExercise.id) ?? baseExercise : null;
+  const microDialogue = micro ? config.microDialogues[micro.id] : null;
+
+  const total = useMemo(() => config.microLessons.reduce((sum, item) => sum + item.cardIds.length + item.exercises.length + (config.microDialogues[item.id]?.steps.length || 0), 0) + config.finalDialogue.steps.length, [config]);
+  const completed = useMemo(() => {
+    const before = config.microLessons.slice(0, microIndex).reduce((sum, item) => sum + item.cardIds.length + item.exercises.length + (config.microDialogues[item.id]?.steps.length || 0), 0);
+    if (stage === 'cards') return before + cardIndex;
+    if (stage === 'exercises' && micro) return before + micro.cardIds.length + exerciseIndex;
+    if (stage === 'microDialogue' && micro) return before + micro.cardIds.length + micro.exercises.length + dialogueProgress;
+    if (stage === 'finalDialogue') return total - config.finalDialogue.steps.length + dialogueProgress;
+    return total;
+  }, [cardIndex, config, dialogueProgress, exerciseIndex, micro, microIndex, stage, total]);
+
+  const choices = useMemo(() => exercise && (exercise.type === 'choice' || exercise.type === 'fillBlank') ? shuffle(exercise.choices, exercise.id) : [], [exercise]);
+  const czechPairs = useMemo(() => exercise?.type === 'match' ? shuffle(exercise.pairs, `${exercise.id}-czech`) : [], [exercise]);
+  const mongolianPairs = useMemo(() => exercise?.type === 'match' ? shuffle(exercise.pairs, `${exercise.id}-mongolian`) : [], [exercise]);
+
+  useEffect(() => () => { recognition.current?.abort(); if (speakTimer.current) window.clearTimeout(speakTimer.current); if (wrongTimer.current) window.clearTimeout(wrongTimer.current); }, []);
+  useEffect(() => {
+    if (speaking !== 'heard') return;
+    speakTimer.current = window.setTimeout(() => nextCard(), 1250);
+    return () => { if (speakTimer.current) window.clearTimeout(speakTimer.current); };
+  }, [speaking, cardIndex, microIndex]);
+
+  function resetExercise() { setFeedback(null); setChoice(null); setTokens([]); setTyped(''); setSelectedCzech(null); setSelectedMongolian(null); setMatched([]); setWrongMatch([]); }
+  function resetSpeaking() { recognition.current?.abort(); recognition.current = null; setSpeaking('idle'); setHeard(''); }
+  function nextCard() {
+    if (!micro) return;
+    resetSpeaking();
+    if (cardIndex < micro.cardIds.length - 1) { setCardIndex((value) => value + 1); setShowMeaning(false); return; }
+    setStage('exercises'); setExerciseIndex(0); resetExercise();
+  }
+  function nextExercise() {
+    if (!micro) return;
+    if (exerciseIndex < micro.exercises.length - 1) { setExerciseIndex((value) => value + 1); resetExercise(); return; }
+    if (microDialogue) { setDialogueProgress(0); setStage('microDialogue'); return; }
+    afterMicroDialogue();
+  }
+  function afterMicroDialogue() {
+    if (microIndex < config.microLessons.length - 1) { setMicroIndex((value) => value + 1); setCardIndex(0); setShowMeaning(false); resetExercise(); setStage('cards'); return; }
+    setDialogueProgress(0); setStage('finalDialogue');
+  }
+  function finish() {
+    config.cards.forEach((item) => { store.markWordLearned(item.id); store.updateSRSCard(item.id, 4); });
+    store.addXP(config.xpReward); store.addMinutes(config.durationMinutes); store.updateStreak(); store.completeLesson(config.lessonId); store.unlockNextLesson(config.lessonId); setStage('complete');
+  }
+  function startSpeaking() {
+    if (!card || speaking === 'listening') return;
+    const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!Recognition) { setSpeaking('unavailable'); setHeard('Энэ browser Чех яриа танихыг дэмжихгүй байна. Chrome ашиглаарай.'); return; }
+    const instance = new Recognition(); recognition.current = instance; instance.lang = 'cs-CZ'; instance.continuous = false; instance.interimResults = false; instance.maxAlternatives = 1;
+    instance.onstart = () => { setHeard(''); setSpeaking('listening'); };
+    instance.onresult = (event) => { setHeard(event.results[0][0].transcript); setSpeaking('heard'); };
+    instance.onerror = (event) => { setSpeaking('unavailable'); setHeard(event.error === 'not-allowed' ? 'Микрофоны зөвшөөрөл олгогдоогүй.' : 'Яриа танигдсангүй. Дахин хэлээд үзээрэй.'); };
+    instance.onend = () => { recognition.current = null; };
+    try { instance.start(); } catch { setSpeaking('unavailable'); setHeard('Микрофон эхэлсэнгүй.'); }
+  }
+  function choose(id: string, correctId: string) { setChoice(id); setFeedback(id === correctId ? 'correct' : 'wrong'); }
+  function addToken(token: string) { if (!exercise || exercise.type !== 'order' || feedback === 'correct') return; const next = [...tokens, token]; setTokens(next); if (next.length === exercise.tokens.length) setFeedback(next.join(' ') === exercise.expectedText ? 'correct' : 'wrong'); }
+  function submitTyping() { if (!exercise || exercise.type !== 'typing') return; setFeedback(normalize(typed) === normalize(exercise.targetText) ? 'correct' : 'wrong'); }
+  function tryMatch(czechId: string, mongolianId: string) {
+    if (!exercise || exercise.type !== 'match') return;
+    if (czechId === mongolianId) { const next = [...matched, czechId]; setMatched(next); setSelectedCzech(null); setSelectedMongolian(null); if (next.length === exercise.pairs.length) setFeedback('correct'); return; }
+    setWrongMatch([czechId, mongolianId]); if (wrongTimer.current) window.clearTimeout(wrongTimer.current); wrongTimer.current = window.setTimeout(() => { setWrongMatch([]); setSelectedCzech(null); setSelectedMongolian(null); }, 650);
+  }
+  function chooseCzech(id: string) { if (!exercise || exercise.type !== 'match' || matched.includes(id)) return; const pair = exercise.pairs.find((item) => item.id === id); if (pair) speakCzech(pair.czech); if (selectedMongolian) tryMatch(id, selectedMongolian); else setSelectedCzech(id); }
+  function chooseMongolian(id: string) { if (!exercise || exercise.type !== 'match' || matched.includes(id)) return; if (selectedCzech) tryMatch(selectedCzech, id); else setSelectedMongolian(id); }
+
+  function feedbackBox(message: string, success = 'Зөв.') { if (!feedback) return null; return <div style={{ marginTop: 11, padding: 11, borderRadius: 12, background: feedback === 'correct' ? 'rgba(34,197,94,.12)' : 'rgba(239,68,68,.12)', border: feedback === 'correct' ? '1px solid rgba(34,197,94,.35)' : '1px solid rgba(239,68,68,.35)' }}><p style={{ margin: 0, color: feedback === 'correct' ? '#4ADE80' : '#F87171', fontSize: 13, fontWeight: 800 }}>{feedback === 'correct' ? success : 'Буруу. Дахин оролдоорой.'}</p>{feedback === 'correct' && <p style={{ margin: '4px 0 0', color: '#D1D1D6', fontSize: 12 }}>{message}</p>}</div>; }
+  function optionStyle(right: boolean, wrong: boolean): React.CSSProperties { return { textAlign: 'left', padding: '12px 13px', borderRadius: 13, color: '#FFF', background: right ? 'rgba(34,197,94,.16)' : wrong ? 'rgba(239,68,68,.16)' : '#242428', border: right ? '1px solid rgba(34,197,94,.6)' : wrong ? '1px solid rgba(239,68,68,.6)' : '1px solid #34343A', cursor: feedback === 'correct' ? 'default' : 'pointer' }; }
+
+  if (stage === 'complete') return <div style={{ ...shell, display: 'flex', alignItems: 'center', padding: '24px 20px' }}><div style={{ ...panel, width: '100%', textAlign: 'center' }}><div style={{ fontSize: 56 }}>{config.completionIcon}</div><h1>{config.titleMn} дууслаа</h1><p style={{ color: '#A0A0A8', lineHeight: 1.5 }}>{config.completionSummaryMn}</p><div style={{ ...panel, textAlign: 'left', padding: 14, margin: '16px 0' }}>{config.completionPhrases.map((item) => <p key={item} style={{ margin: '6px 0' }}>✓ {item}</p>)}</div><button onClick={() => store.setPage('path')} className="btn-gold" style={{ width: '100%', padding: 14 }}>Хичээлийн зам руу буцах</button><button onClick={() => window.location.reload()} style={{ background: 'transparent', border: 0, color: '#A0A0A8', marginTop: 12, cursor: 'pointer' }}><RotateCcw size={14} /> Дахин хийх</button></div></div>;
+
+  return <div style={shell}><header style={{ padding: 'max(16px, env(safe-area-inset-top)) 20px 13px', background: '#141416', borderBottom: '1px solid #2A2A2F' }}><div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 11 }}><button onClick={() => store.setPage('path')} style={{ width: 34, height: 34, borderRadius: 10, border: 0, background: '#242428', color: '#A0A0A8', cursor: 'pointer' }}><ChevronLeft size={20} /></button><div style={{ flex: 1 }}><p style={{ margin: 0, color: '#A0A0A8', fontSize: 12 }}>{config.titleMn.split(' — ')[0]} · {config.durationMinutes} минут</p><h1 style={{ margin: '2px 0 0', fontSize: 17 }}>{config.titleMn.split(' — ')[1] || config.titleMn}</h1></div><span style={{ color: '#C8952A', fontSize: 12, fontWeight: 800 }}>{Math.min(completed + 1, total)}/{total}</span></div><ProgressBar value={completed} max={total} height={5} /></header><main style={{ maxWidth: 430, margin: '0 auto', padding: '18px 16px 30px' }}>
+    {stage === 'cards' && card && micro && <><p style={{ margin: '0 0 5px', color: '#C8952A', fontSize: 12, fontWeight: 800 }}>{micro.titleMn}</p><p style={{ margin: '0 0 14px', color: '#A0A0A8', fontSize: 13 }}>{micro.canDoMn}</p><motion.div key={card.id} initial={{ opacity: 0, x: 18 }} animate={{ opacity: 1, x: 0 }} style={panel}><p style={{ margin: '0 0 10px', color: '#606068', fontSize: 12 }}>Шинэ карт {cardIndex + 1}/{micro.cardIds.length}</p><h2 style={{ textAlign: 'center', fontSize: 'clamp(28px,9vw,36px)', margin: '0 0 14px' }}>{card.czech}</h2><div style={{ display: 'flex', justifyContent: 'center', marginBottom: 16 }}><AudioButton word={card.czech} audioFile={card.audioFile} size="lg" /></div>{!showMeaning ? <button onClick={() => setShowMeaning(true)} className="btn-outline" style={{ width: '100%', padding: 13 }}>Монгол утгыг харах</button> : <div style={{ padding: 14, borderRadius: 14, background: 'rgba(200,149,42,.10)', border: '1px solid rgba(200,149,42,.28)' }}><p style={{ margin: '0 0 7px', fontSize: 18, fontWeight: 800 }}>{card.mongolian}</p><p style={{ margin: 0, color: '#D1D1D6', fontSize: 13 }}>{micro.instructions[card.id]}</p></div>}</motion.div>{showMeaning && speaking === 'idle' && <div style={{ marginTop: 15 }}><button onClick={startSpeaking} className="btn-gold" style={{ width: '100%', padding: 14 }}><Mic size={18} /> Хэлж үзэх</button><button onClick={nextCard} style={{ width: '100%', marginTop: 8, background: 'transparent', border: 0, color: '#A0A0A8', cursor: 'pointer' }}>Одоохондоо алгасах</button></div>}{showMeaning && speaking === 'listening' && <div style={{ ...panel, marginTop: 15, textAlign: 'center', borderColor: 'rgba(239,68,68,.45)' }}><Mic size={28} color="#F87171" /><p style={{ color: '#F87171', fontWeight: 800 }}>Сонсож байна…</p><p style={{ color: '#A0A0A8', fontSize: 12 }}>“{card.czech}” гэж хэлээрэй</p></div>}{showMeaning && speaking === 'heard' && <div style={{ ...panel, marginTop: 15, textAlign: 'center', borderColor: 'rgba(34,197,94,.45)' }}><Check color="#4ADE80" /><p style={{ color: '#4ADE80', fontWeight: 800 }}>Таны яриа танигдлаа</p><p>“{heard}”</p><p style={{ color: '#A0A0A8', fontSize: 12 }}>Дараагийн карт руу шилжиж байна…</p></div>}{showMeaning && speaking === 'unavailable' && <div style={{ ...panel, marginTop: 15, textAlign: 'center' }}><p style={{ color: '#F87171', fontWeight: 800 }}>Хэлж үзэх горим ажилласангүй</p><p style={{ fontSize: 12, color: '#D1D1D6' }}>{heard}</p><button onClick={startSpeaking} className="btn-outline" style={{ width: '100%', padding: 11 }}>Дахин оролдох</button><button onClick={nextCard} style={{ width: '100%', marginTop: 8, background: 'transparent', border: 0, color: '#A0A0A8', cursor: 'pointer' }}>Алгасаад үргэлжлүүлэх</button></div>}</>}
+    {stage === 'exercises' && exercise && micro && <><p style={{ color: '#C8952A', fontSize: 12, fontWeight: 800 }}>{micro.titleMn} · Бататгал</p><div style={panel}><p style={{ color: '#A0A0A8', fontSize: 12 }}>{exercise.titleMn}</p><h2 style={{ fontSize: 19, marginTop: 0 }}>{exercise.promptMn}</h2>{(exercise.type === 'choice' || exercise.type === 'typing') && exercise.audioText && <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}><AudioButton word={exercise.audioText} size="md" /><span style={{ color: '#A0A0A8', fontSize: 12 }}>Дараад сонсоорой</span></div>}{(exercise.type === 'choice' || exercise.type === 'fillBlank') && exercise.promptCzech && <div style={{ padding: 13, borderRadius: 13, background: '#242428', textAlign: 'center', fontSize: 21, fontWeight: 800, marginBottom: 12 }}>{exercise.promptCzech}</div>}{(exercise.type === 'choice' || exercise.type === 'fillBlank') && <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>{choices.map((item) => <button key={item.id} onClick={() => choose(item.id, exercise.correctId)} disabled={feedback === 'correct'} style={optionStyle(feedback === 'correct' && item.id === exercise.correctId, feedback === 'wrong' && choice === item.id)}>{item.text}</button>)}{feedbackBox(exercise.feedbackMn)}</div>}{exercise.type === 'order' && <div><div style={{ minHeight: 55, display: 'flex', flexWrap: 'wrap', gap: 7, padding: 9, border: '1px dashed #42424A', borderRadius: 12, marginBottom: 10 }}>{tokens.map((item, i) => <button key={`${item}-${i}`} onClick={() => { if (feedback !== 'correct') { setTokens((list) => list.filter((_, index) => index !== i)); setFeedback(null); } }} style={{ border: '1px solid rgba(200,149,42,.4)', background: 'rgba(200,149,42,.16)', color: '#F5C842', borderRadius: 9, padding: '7px 9px' }}>{item}</button>)}</div><div style={{ display: 'flex', flexWrap: 'wrap', gap: 7 }}>{exercise.tokens.map((item, i) => { const used = tokens.filter((token) => token === item).length > exercise.tokens.slice(0, i).filter((token) => token === item).length; return <button key={`${item}-${i}`} onClick={() => addToken(item)} disabled={used || feedback === 'correct'} style={{ opacity: used ? .4 : 1, padding: '9px 10px', borderRadius: 9, border: '1px solid #34343A', background: '#242428', color: '#FFF' }}>{item}</button>; })}</div>{feedback === 'wrong' && <button onClick={resetExercise} style={{ marginTop: 10, color: '#F5C842', border: 0, background: 'transparent' }}>Дахин оролдох</button>}{feedbackBox(exercise.feedbackMn)}</div>}{exercise.type === 'typing' && <div><input value={typed} onChange={(event) => { setTyped(event.target.value); setFeedback(null); }} placeholder={exercise.inputHint || 'Чехээр бич…'} style={{ width: '100%', boxSizing: 'border-box', padding: 12, borderRadius: 12, background: '#141416', border: '1px solid #42424A', color: '#FFF' }} /><button onClick={submitTyping} className="btn-outline" style={{ width: '100%', marginTop: 9, padding: 11 }}>Шалгах</button>{feedbackBox(exercise.feedbackMn)}</div>}{exercise.type === 'match' && <div><p style={{ color: '#A0A0A8', fontSize: 12, marginTop: 0 }}>Зүүн талын Чех хэллэгийг дармагц аудио сонсогдоно. Дараа нь баруун талын Монгол утгыг дар.</p><div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 9 }}><div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>{czechPairs.filter((item) => !matched.includes(item.id)).map((item) => <button key={item.id} onClick={() => chooseCzech(item.id)} style={optionStyle(selectedCzech === item.id, wrongMatch.includes(item.id))}>{item.czech}<span style={{ display: 'block', marginTop: 4, color: '#F5C842', fontSize: 10 }}>🔊 сонсох</span></button>)}</div><div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>{mongolianPairs.filter((item) => !matched.includes(item.id)).map((item) => <button key={item.id} onClick={() => chooseMongolian(item.id)} style={optionStyle(selectedMongolian === item.id, wrongMatch.includes(item.id))}>{item.mongolian}</button>)}</div></div>{matched.length > 0 && feedback !== 'correct' && <p style={{ color: '#4ADE80', fontSize: 12, fontWeight: 800 }}>{matched.length}/{exercise.pairs.length} хос зөв таарлаа</p>}{feedbackBox(exercise.feedbackMn, 'Бүх хос зөв таарлаа.')}</div>}</div>{feedback === 'correct' && <button onClick={nextExercise} className="btn-gold" style={{ width: '100%', marginTop: 15, padding: 14 }}>Үргэлжлүүлэх</button>}</>}
+    {stage === 'microDialogue' && microDialogue && <DialogueRun scenario={microDialogue} onProgress={setDialogueProgress} onComplete={afterMicroDialogue} />}
+    {stage === 'finalDialogue' && <DialogueRun scenario={config.finalDialogue} onProgress={setDialogueProgress} onComplete={finish} />}
+  </main></div>;
+};
+
+export default A0LessonEngineV2;
