@@ -1,5 +1,5 @@
 import React from 'react';
-import A0LessonEngine from '../components/lessons/A0LessonEngineV5';
+import A0LessonEngine from '../components/lessons/A0LessonEngine';
 import { a0FirstContactCards, a0FirstContactMicroLessons, getA0FirstContactCard } from '../data/a0FirstContact';
 import { a0FirstContactCoveredFinalDialogue, a0FirstContactCoveredMicroDialogues } from '../data/a0CoverageDialogues';
 
@@ -17,7 +17,7 @@ const A0FirstContactPage: React.FC = () => (
       xpReward: 150,
       completionIcon: '🏆',
       completionSummaryMn: 'Та албан ёсоор мэндэлж, нэрээ болон хаанаас ирснээ хэлж, ойлгохгүй үед яриаг удаашруулах хүсэлт тавьж чадна.',
-      completionPhrases: ['Dobrý den.','Jmenuji se …','Jsem z Mongolska.','Nerozumím. Mluvte prosím pomalu.','Na shledanou.'],
+      completionPhrases: ['Dobrý den.', 'Jmenuji se …', 'Jsem z Mongolska.', 'Nerozumím. Mluvte prosím pomalu.', 'Na shledanou.'],
     }}
   />
 );
