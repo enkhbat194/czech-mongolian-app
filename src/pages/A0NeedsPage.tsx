@@ -3,12 +3,7 @@ import { Check, ChevronLeft, Mic, RotateCcw } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useAppStore } from '../stores/useAppStore';
 import { AudioButton, ProgressBar } from '../components/UI/SharedComponents';
-import {
-  a0NeedsCards,
-  a0NeedsMicroLessons,
-  a0NeedsMission,
-  getA0NeedsCard,
-} from '../data/a0Needs';
+import { a0NeedsCards, a0NeedsMicroLessons, a0NeedsMission, getA0NeedsCard } from '../data/a0Needs';
 
 type Stage = 'cards' | 'exercises' | 'mission' | 'complete';
 type Feedback = 'correct' | 'wrong' | null;
@@ -60,16 +55,25 @@ const panel: React.CSSProperties = {
   padding: 22,
 };
 
+const replyTranslations: Record<string, string> = {
+  'Potřebuji pomoc, prosím.': 'Надад туслаач, гуйя.',
+  'Ano, prosím.': 'Тийм, гуйя.',
+  'Ano, chci něco k jídlu.': 'Тийм, би идэх юм хүсэж байна.',
+  'Nemám kartu.': 'Надад карт байхгүй.',
+  'Děkuji.': 'Баярлалаа.',
+};
+
 function stableShuffle<T>(items: T[], seedText: string): T[] {
   let seed = 2166136261;
   for (let index = 0; index < seedText.length; index += 1) {
     seed = Math.imul(seed ^ seedText.charCodeAt(index), 16777619);
   }
+
   const result = [...items];
   for (let index = result.length - 1; index > 0; index -= 1) {
     seed = Math.imul(seed ^ (seed >>> 13), 2246822507) >>> 0;
-    const otherIndex = seed % (index + 1);
-    [result[index], result[otherIndex]] = [result[otherIndex], result[index]];
+    const swapIndex = seed % (index + 1);
+    [result[index], result[swapIndex]] = [result[swapIndex], result[index]];
   }
   return result;
 }
@@ -87,6 +91,28 @@ function responseDelay(text: string) {
   const words = text.trim().split(/\s+/).filter(Boolean).length;
   return Math.min(3600, Math.max(1600, 650 + words * 300));
 }
+
+const TinyPlay: React.FC<{ text: string }> = ({ text }) => (
+  <button
+    onClick={() => speakCzech(text)}
+    aria-label="Дахин сонсох"
+    style={{
+      width: 25,
+      height: 25,
+      borderRadius: 13,
+      border: '1px solid rgba(200,149,42,.42)',
+      background: 'rgba(200,149,42,.12)',
+      color: '#F5C842',
+      cursor: 'pointer',
+      fontSize: 12,
+      lineHeight: 1,
+      padding: 0,
+      flexShrink: 0,
+    }}
+  >
+    🔊
+  </button>
+);
 
 const A0NeedsPage: React.FC = () => {
   const {
@@ -120,6 +146,7 @@ const A0NeedsPage: React.FC = () => {
   const cardAdvanceTimerRef = useRef<number | null>(null);
   const dialogueTimerRef = useRef<number | null>(null);
   const spokenMissionRef = useRef<string | null>(null);
+  const chatLogRef = useRef<HTMLDivElement | null>(null);
 
   const currentMicro = a0NeedsMicroLessons[microIndex];
   const currentCard = currentMicro ? getA0NeedsCard(currentMicro.cardIds[cardIndex]) : null;
@@ -135,6 +162,7 @@ const A0NeedsPage: React.FC = () => {
     const earlier = a0NeedsMicroLessons
       .slice(0, microIndex)
       .reduce((sum, item) => sum + item.cardIds.length + item.exercises.length, 0);
+
     if (stage === 'cards') return earlier + cardIndex;
     if (stage === 'exercises' && currentMicro) return earlier + currentMicro.cardIds.length + exerciseIndex;
     if (stage === 'mission') return totalSteps - a0NeedsMission.length + missionIndex;
@@ -171,6 +199,14 @@ const A0NeedsPage: React.FC = () => {
     const timer = window.setTimeout(() => speakCzech(currentMission.staffCzech), 280);
     return () => window.clearTimeout(timer);
   }, [autoDialogueAudio, currentMission, stage]);
+
+  useEffect(() => {
+    if (stage !== 'mission') return;
+    const frame = window.requestAnimationFrame(() => {
+      chatLogRef.current?.scrollTo({ top: chatLogRef.current.scrollHeight, behavior: 'smooth' });
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, [stage, missionIndex, dialogueHistory.length, feedback]);
 
   useEffect(() => {
     if (pronunciationState !== 'heard' || !currentMicro) return;
@@ -214,11 +250,13 @@ const A0NeedsPage: React.FC = () => {
   const nextCard = () => {
     if (!currentMicro) return;
     resetPronunciation();
+
     if (cardIndex < currentMicro.cardIds.length - 1) {
       setCardIndex((value) => value + 1);
       setShowMeaning(false);
       return;
     }
+
     setStage('exercises');
     setExerciseIndex(0);
     resetAnswer();
@@ -226,11 +264,13 @@ const A0NeedsPage: React.FC = () => {
 
   const nextExercise = () => {
     if (!currentMicro) return;
+
     if (exerciseIndex < currentMicro.exercises.length - 1) {
       setExerciseIndex((value) => value + 1);
       resetAnswer();
       return;
     }
+
     if (microIndex < a0NeedsMicroLessons.length - 1) {
       setMicroIndex((value) => value + 1);
       setCardIndex(0);
@@ -240,6 +280,7 @@ const A0NeedsPage: React.FC = () => {
       resetPronunciation();
       return;
     }
+
     setStage('mission');
     resetAnswer();
     spokenMissionRef.current = null;
@@ -248,6 +289,7 @@ const A0NeedsPage: React.FC = () => {
   const startPronunciation = () => {
     if (!currentCard || pronunciationState === 'listening') return;
     const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
     if (!Recognition) {
       setPronunciationState('unavailable');
       setHeardText('Энэ browser Чех яриа танихыг дэмжихгүй байна. Chrome ашиглаарай.');
@@ -261,15 +303,18 @@ const A0NeedsPage: React.FC = () => {
     recognition.continuous = false;
     recognition.interimResults = false;
     recognition.maxAlternatives = 1;
+
     recognition.onstart = () => {
       setHeardText('');
       setPronunciationState('listening');
     };
+
     recognition.onresult = (event) => {
       recognitionFinishedRef.current = true;
       setHeardText(event.results[0][0].transcript);
       setPronunciationState('heard');
     };
+
     recognition.onerror = (event) => {
       recognitionFinishedRef.current = true;
       const permission = event.error === 'not-allowed' || event.error === 'service-not-allowed';
@@ -278,6 +323,7 @@ const A0NeedsPage: React.FC = () => {
         ? 'Микрофоны зөвшөөрөл олгогдоогүй. Address bar дээрх микрофоны дүрсээр Allow болго.'
         : 'Яриа танигдсангүй. Дахин хэлээд үзээрэй.');
     };
+
     recognition.onend = () => {
       recognitionRef.current = null;
       if (!recognitionFinishedRef.current) {
@@ -285,6 +331,7 @@ const A0NeedsPage: React.FC = () => {
         setHeardText('Яриа танигдсангүй. Дахин хэлээд үзээрэй.');
       }
     };
+
     try {
       recognition.start();
     } catch {
@@ -301,6 +348,7 @@ const A0NeedsPage: React.FC = () => {
   const addToken = (token: string) => {
     if (!currentExercise || currentExercise.type !== 'order' || feedback === 'correct') return;
     if (orderedTokens.length >= currentExercise.tokens.length) return;
+
     const next = [...orderedTokens, token];
     setOrderedTokens(next);
     if (next.length === currentExercise.tokens.length) {
@@ -340,17 +388,31 @@ const A0NeedsPage: React.FC = () => {
 
   const chooseMission = (pickedId: string) => {
     if (!currentMission || feedback === 'correct') return;
-    const correct = pickedId === currentMission.correctId;
+
+    const isCorrect = pickedId === currentMission.correctId;
     setChoice(pickedId);
-    setFeedback(correct ? 'correct' : 'wrong');
-    if (!correct) return;
+    setFeedback(isCorrect ? 'correct' : 'wrong');
+    if (!isCorrect) return;
 
     const selected = currentMission.choices.find((item) => item.id === pickedId);
     if (!selected) return;
+
     setDialogueHistory((history) => [
       ...history,
-      { id: `${currentMission.id}-staff`, side: 'staff', speaker: currentMission.speaker, czech: currentMission.staffCzech, mongolian: currentMission.staffMn },
-      { id: `${currentMission.id}-user`, side: 'user', speaker: 'Та', czech: selected.text, mongolian: 'Таны сонгосон хариулт' },
+      {
+        id: `${currentMission.id}-staff`,
+        side: 'staff',
+        speaker: currentMission.speaker,
+        czech: currentMission.staffCzech,
+        mongolian: currentMission.staffMn,
+      },
+      {
+        id: `${currentMission.id}-user`,
+        side: 'user',
+        speaker: 'Та',
+        czech: selected.text,
+        mongolian: replyTranslations[selected.text] || 'Таны сонгосон хариулт',
+      },
     ]);
 
     if (autoDialogueAudio) speakCzech(selected.text);
@@ -362,36 +424,37 @@ const A0NeedsPage: React.FC = () => {
     if (!feedback) return null;
     const correct = feedback === 'correct';
     return (
-      <div style={{ marginTop: 14, borderRadius: 14, padding: 13, background: correct ? 'rgba(34,197,94,.12)' : 'rgba(239,68,68,.12)', border: correct ? '1px solid rgba(34,197,94,.35)' : '1px solid rgba(239,68,68,.35)' }}>
-        <p style={{ margin: 0, color: correct ? '#4ADE80' : '#F87171', fontWeight: 800 }}>{correct ? 'Зөв.' : 'Буруу. Дахин оролдоорой.'}</p>
-        {correct && <p style={{ margin: '5px 0 0', color: '#D1D1D6', fontSize: 13, lineHeight: 1.45 }}>{text}</p>}
+      <div style={{ marginTop: 12, borderRadius: 12, padding: 11, background: correct ? 'rgba(34,197,94,.12)' : 'rgba(239,68,68,.12)', border: correct ? '1px solid rgba(34,197,94,.35)' : '1px solid rgba(239,68,68,.35)' }}>
+        <p style={{ margin: 0, color: correct ? '#4ADE80' : '#F87171', fontWeight: 800, fontSize: 13 }}>{correct ? 'Зөв.' : 'Буруу. Дахин оролдоорой.'}</p>
+        {correct && <p style={{ margin: '4px 0 0', color: '#D1D1D6', fontSize: 12, lineHeight: 1.4 }}>{text}</p>}
       </div>
     );
   };
 
   const answerStyle = (correct: boolean, wrong: boolean): React.CSSProperties => ({
     textAlign: 'left',
-    padding: '13px 14px',
-    borderRadius: 14,
+    padding: '12px 13px',
+    borderRadius: 13,
     color: '#FFF',
-    fontSize: 15,
+    fontSize: 14,
+    lineHeight: 1.35,
     cursor: feedback === 'correct' ? 'default' : 'pointer',
     background: correct ? 'rgba(34,197,94,.16)' : wrong ? 'rgba(239,68,68,.16)' : '#242428',
     border: correct ? '1px solid rgba(34,197,94,.6)' : wrong ? '1px solid rgba(239,68,68,.6)' : '1px solid #34343A',
   });
 
   const bubble = (entry: DialogueEntry) => (
-    <div key={entry.id} style={{ display: 'flex', flexDirection: entry.side === 'staff' ? 'row' : 'row-reverse', alignItems: 'flex-end', gap: 8 }}>
-      <div style={{ width: 34, height: 34, borderRadius: 17, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: 18, background: entry.side === 'staff' ? '#44526B' : '#7B5B22', border: entry.side === 'staff' ? '1px solid #70809C' : '1px solid rgba(245,200,66,.55)' }}>
+    <div key={entry.id} style={{ display: 'flex', flexDirection: entry.side === 'staff' ? 'row' : 'row-reverse', alignItems: 'flex-end', gap: 6 }}>
+      <div style={{ width: 28, height: 28, borderRadius: 14, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: 15, background: entry.side === 'staff' ? '#44526B' : '#7B5B22', border: entry.side === 'staff' ? '1px solid #70809C' : '1px solid rgba(245,200,66,.55)' }}>
         {entry.side === 'staff' ? '👩‍💼' : '🙂'}
       </div>
-      <div style={{ maxWidth: '76%', background: entry.side === 'staff' ? '#242428' : 'rgba(200,149,42,.16)', border: entry.side === 'staff' ? '1px solid #34343A' : '1px solid rgba(200,149,42,.40)', borderRadius: 16, padding: '11px 12px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: 4 }}>
-          <p style={{ margin: 0, flex: 1, color: entry.side === 'staff' ? '#A0A0A8' : '#F5C842', fontSize: 11, fontWeight: 800 }}>{entry.speaker}</p>
-          <AudioButton word={entry.czech} size="sm" />
+      <div style={{ maxWidth: '80%', background: entry.side === 'staff' ? '#242428' : 'rgba(200,149,42,.16)', border: entry.side === 'staff' ? '1px solid #34343A' : '1px solid rgba(200,149,42,.40)', borderRadius: 14, padding: '8px 10px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 3 }}>
+          <p style={{ margin: 0, flex: 1, color: entry.side === 'staff' ? '#A0A0A8' : '#F5C842', fontSize: 9, fontWeight: 800 }}>{entry.speaker}</p>
+          <TinyPlay text={entry.czech} />
         </div>
-        <p style={{ margin: 0, color: '#FFF', fontWeight: 800, lineHeight: 1.35 }}>{entry.czech}</p>
-        <p style={{ margin: '4px 0 0', color: '#A0A0A8', fontSize: 12, lineHeight: 1.35 }}>{entry.mongolian}</p>
+        <p style={{ margin: 0, color: '#FFF', fontSize: 14, fontWeight: 800, lineHeight: 1.25 }}>{entry.czech}</p>
+        <p style={{ margin: '3px 0 0', color: '#A0A0A8', fontSize: 11, lineHeight: 1.3 }}>{entry.mongolian}</p>
       </div>
     </div>
   );
@@ -434,12 +497,7 @@ const A0NeedsPage: React.FC = () => {
               <p style={{ margin: '0 0 10px', fontSize: 12, color: '#606068' }}>Шинэ карт {cardIndex + 1}/{currentMicro.cardIds.length}</p>
               <h2 style={{ margin: '0 0 14px', textAlign: 'center', fontSize: 'clamp(28px, 9vw, 36px)', lineHeight: 1.16, overflowWrap: 'anywhere' }}>{currentCard.czech}</h2>
               <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 18 }}><AudioButton word={currentCard.czech} audioFile={currentCard.audioFile} size="lg" /></div>
-              {!showMeaning ? <button onClick={() => setShowMeaning(true)} className="btn-outline" style={{ width: '100%', padding: 13, fontSize: 14 }}>Монгол утгыг харах</button> : (
-                <div style={{ background: 'rgba(200,149,42,.10)', border: '1px solid rgba(200,149,42,.28)', borderRadius: 16, padding: 15 }}>
-                  <p style={{ margin: '0 0 8px', color: '#FFF', fontSize: 19, fontWeight: 800 }}>{currentCard.mongolian}</p>
-                  <p style={{ margin: 0, color: '#D1D1D6', fontSize: 13, lineHeight: 1.5 }}>{currentMicro.instructions[currentCard.id]}</p>
-                </div>
-              )}
+              {!showMeaning ? <button onClick={() => setShowMeaning(true)} className="btn-outline" style={{ width: '100%', padding: 13, fontSize: 14 }}>Монгол утгыг харах</button> : <div style={{ background: 'rgba(200,149,42,.10)', border: '1px solid rgba(200,149,42,.28)', borderRadius: 16, padding: 15 }}><p style={{ margin: '0 0 8px', color: '#FFF', fontSize: 19, fontWeight: 800 }}>{currentCard.mongolian}</p><p style={{ margin: 0, color: '#D1D1D6', fontSize: 13, lineHeight: 1.5 }}>{currentMicro.instructions[currentCard.id]}</p></div>}
             </motion.div>
 
             {showMeaning && pronunciationState === 'idle' && <div style={{ marginTop: 16 }}><button onClick={startPronunciation} className="btn-gold" style={{ width: '100%', padding: 15, fontSize: 15, display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 9 }}><Mic size={19} /> Хэлж үзэх</button><button onClick={nextCard} style={{ width: '100%', marginTop: 9, padding: 10, border: 0, background: 'transparent', color: '#A0A0A8', cursor: 'pointer', fontSize: 13, textDecoration: 'underline' }}>Одоохондоо алгасах</button></div>}
@@ -466,11 +524,19 @@ const A0NeedsPage: React.FC = () => {
 
         {stage === 'mission' && currentMission && (
           <>
-            <div style={{ ...panel, padding: 14, marginBottom: 12, display: 'flex', alignItems: 'center', gap: 10, background: 'linear-gradient(135deg,#1C1C1F,#252A34)' }}><div style={{ width: 46, height: 46, borderRadius: 23, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 25, background: '#44526B', border: '1px solid #70809C' }}>👩‍💼</div><div style={{ flex: 1 }}><p style={{ margin: 0, color: '#FFF', fontSize: 14, fontWeight: 800 }}>Ресепшн дээрх бодит яриа</p><p style={{ margin: '3px 0 0', color: '#A0A0A8', fontSize: 12 }}>Ажилтан асууна → та хариулна → яриа өөрөө үргэлжилнэ</p></div><button onClick={() => setAutoDialogueAudio((value) => !value)} style={{ border: '1px solid rgba(200,149,42,.42)', borderRadius: 10, background: autoDialogueAudio ? 'rgba(200,149,42,.16)' : 'transparent', color: autoDialogueAudio ? '#F5C842' : '#A0A0A8', padding: '8px 9px', cursor: 'pointer', fontSize: 11, fontWeight: 800 }}>{autoDialogueAudio ? '🔊 Авто дуу' : '🔇 Дуугүй'}</button></div>
-            <p style={{ color: '#C8952A', fontSize: 12, fontWeight: 800, margin: '0 0 6px' }}>Харилцан ярианы даалгавар</p>
-            <p style={{ color: '#A0A0A8', fontSize: 13, margin: '0 0 16px', lineHeight: 1.45 }}>Зөв хариулт сонгох бүрд таны үг ярианд орж, дараагийн асуулт автоматаар гарна.</p>
-            <div style={panel}><div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 18 }}>{dialogueHistory.map(bubble)}{feedback !== 'correct' && bubble({ id: `${currentMission.id}-current`, side: 'staff', speaker: currentMission.speaker, czech: currentMission.staffCzech, mongolian: currentMission.staffMn })}</div><h2 style={{ margin: '0 0 14px', fontSize: 19, lineHeight: 1.35 }}>{currentMission.promptMn}</h2><div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>{missionChoices.map((item) => { const picked = choice === item.id; const right = feedback === 'correct' && item.id === currentMission.correctId; const wrong = feedback === 'wrong' && picked; return <button key={item.id} onClick={() => chooseMission(item.id)} disabled={feedback === 'correct'} style={answerStyle(Boolean(right), wrong)}>{item.text}</button>; })}{feedbackBox(currentMission.feedbackMn)}</div></div>
-            {feedback === 'correct' && <p style={{ textAlign: 'center', color: '#A0A0A8', fontSize: 13, margin: '14px 0 0' }}>Дараагийн асуулт руу шилжиж байна…</p>}
+            <div style={{ ...panel, padding: 12, marginBottom: 10, display: 'flex', alignItems: 'center', gap: 9, background: 'linear-gradient(135deg,#1C1C1F,#252A34)' }}><div style={{ width: 40, height: 40, borderRadius: 20, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 21, background: '#44526B', border: '1px solid #70809C' }}>👩‍💼</div><div style={{ flex: 1 }}><p style={{ margin: 0, color: '#FFF', fontSize: 13, fontWeight: 800 }}>Ресепшн дээрх бодит яриа</p><p style={{ margin: '2px 0 0', color: '#A0A0A8', fontSize: 11 }}>Ажилтан асууна → та хариулна → яриа үргэлжилнэ</p></div><button onClick={() => setAutoDialogueAudio((value) => !value)} style={{ border: '1px solid rgba(200,149,42,.42)', borderRadius: 10, background: autoDialogueAudio ? 'rgba(200,149,42,.16)' : 'transparent', color: autoDialogueAudio ? '#F5C842' : '#A0A0A8', padding: '7px 8px', cursor: 'pointer', fontSize: 10, fontWeight: 800 }}>{autoDialogueAudio ? '🔊 Авто' : '🔇 Дуугүй'}</button></div>
+            <div style={panel}>
+              <div ref={chatLogRef} style={{ maxHeight: 'min(34dvh, 260px)', overflowY: 'auto', overscrollBehavior: 'contain', paddingRight: 4, display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 14 }}>
+                {dialogueHistory.map(bubble)}
+                {feedback !== 'correct' && bubble({ id: `${currentMission.id}-current`, side: 'staff', speaker: currentMission.speaker, czech: currentMission.staffCzech, mongolian: currentMission.staffMn })}
+              </div>
+              <div style={{ borderTop: '1px solid #2A2A2F', paddingTop: 12 }}>
+                <p style={{ margin: '0 0 9px', color: '#C8952A', fontSize: 11, fontWeight: 800 }}>Таны хариу</p>
+                <h2 style={{ margin: '0 0 12px', fontSize: 16, lineHeight: 1.35 }}>{currentMission.promptMn}</h2>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>{missionChoices.map((item) => { const picked = choice === item.id; const right = feedback === 'correct' && item.id === currentMission.correctId; const wrong = feedback === 'wrong' && picked; return <button key={item.id} onClick={() => chooseMission(item.id)} disabled={feedback === 'correct'} style={answerStyle(Boolean(right), wrong)}>{item.text}</button>; })}{feedbackBox(currentMission.feedbackMn)}</div>
+              </div>
+            </div>
+            {feedback === 'correct' && <p style={{ textAlign: 'center', color: '#A0A0A8', fontSize: 12, margin: '12px 0 0' }}>Дараагийн асуулт руу шилжиж байна…</p>}
           </>
         )}
       </main>
