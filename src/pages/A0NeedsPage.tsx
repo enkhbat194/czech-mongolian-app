@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { Check, ChevronLeft, RotateCcw } from 'lucide-react';
+import { Check, ChevronLeft, RotateCcw, X } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useAppStore } from '../stores/useAppStore';
 import { AudioButton, ProgressBar } from '../components/UI/SharedComponents';
@@ -12,25 +12,53 @@ import {
 
 type Stage = 'cards' | 'exercises' | 'mission' | 'complete';
 type Feedback = 'correct' | 'wrong' | null;
+type DialogueEntry = {
+  id: string;
+  side: 'staff' | 'user';
+  speaker: string;
+  czech: string;
+  mongolian: string;
+};
 
 const shell: React.CSSProperties = {
-  background:'#0C0C0E',
-  minHeight:'100dvh',
-  fontFamily:'Inter,sans-serif',
-  color:'#FFF',
+  background: '#0C0C0E',
+  minHeight: '100dvh',
+  fontFamily: 'Inter,sans-serif',
+  color: '#FFF',
 };
 
 const panel: React.CSSProperties = {
-  background:'#1C1C1F',
-  border:'1px solid #2A2A2F',
-  borderRadius:24,
-  padding:22,
+  background: '#1C1C1F',
+  border: '1px solid #2A2A2F',
+  borderRadius: 24,
+  padding: 22,
 };
+
+function stableShuffle<T>(items: T[], seedText: string): T[] {
+  let seed = 2166136261;
+  for (let index = 0; index < seedText.length; index += 1) {
+    seed = Math.imul(seed ^ seedText.charCodeAt(index), 16777619);
+  }
+
+  const shuffled = [...items];
+  for (let index = shuffled.length - 1; index > 0; index -= 1) {
+    seed = Math.imul(seed ^ (seed >>> 13), 2246822507) >>> 0;
+    const swapIndex = seed % (index + 1);
+    [shuffled[index], shuffled[swapIndex]] = [shuffled[swapIndex], shuffled[index]];
+  }
+  return shuffled;
+}
 
 const A0NeedsPage: React.FC = () => {
   const {
-    setPage, markWordLearned, updateSRSCard, completeLesson, unlockNextLesson,
-    addXP, addMinutes, updateStreak,
+    setPage,
+    markWordLearned,
+    updateSRSCard,
+    completeLesson,
+    unlockNextLesson,
+    addXP,
+    addMinutes,
+    updateStreak,
   } = useAppStore();
 
   const [stage, setStage] = useState<Stage>('cards');
@@ -43,6 +71,7 @@ const A0NeedsPage: React.FC = () => {
   const [orderedTokens, setOrderedTokens] = useState<string[]>([]);
   const [missionIndex, setMissionIndex] = useState(0);
   const [completed, setCompleted] = useState(false);
+  const [dialogueHistory, setDialogueHistory] = useState<DialogueEntry[]>([]);
 
   const currentMicro = a0NeedsMicroLessons[microIndex];
   const currentCard = currentMicro ? getA0NeedsCard(currentMicro.cardIds[cardIndex]) : null;
@@ -55,13 +84,25 @@ const A0NeedsPage: React.FC = () => {
   );
 
   const completedSteps = useMemo(() => {
-    const finishedMicros = a0NeedsMicroLessons.slice(0, microIndex)
+    const finishedMicros = a0NeedsMicroLessons
+      .slice(0, microIndex)
       .reduce((sum, item) => sum + item.cardIds.length + item.exercises.length, 0);
+
     if (stage === 'cards') return finishedMicros + cardIndex;
     if (stage === 'exercises' && currentMicro) return finishedMicros + currentMicro.cardIds.length + exerciseIndex;
     if (stage === 'mission') return totalSteps - a0NeedsMission.length + missionIndex;
     return totalSteps;
   }, [cardIndex, currentMicro, exerciseIndex, microIndex, missionIndex, stage, totalSteps]);
+
+  const exerciseChoices = useMemo(() => {
+    if (!currentExercise || currentExercise.type !== 'choice') return [];
+    return stableShuffle(currentExercise.choices, currentExercise.id);
+  }, [currentExercise]);
+
+  const missionChoices = useMemo(() => {
+    if (!currentMission) return [];
+    return stableShuffle(currentMission.choices, currentMission.id);
+  }, [currentMission]);
 
   const resetAnswer = () => {
     setChoice(null);
@@ -71,11 +112,13 @@ const A0NeedsPage: React.FC = () => {
 
   const nextCard = () => {
     if (!currentMicro) return;
+
     if (cardIndex < currentMicro.cardIds.length - 1) {
       setCardIndex((value) => value + 1);
       setShowMeaning(false);
       return;
     }
+
     setStage('exercises');
     setExerciseIndex(0);
     resetAnswer();
@@ -83,11 +126,13 @@ const A0NeedsPage: React.FC = () => {
 
   const nextExercise = () => {
     if (!currentMicro) return;
+
     if (exerciseIndex < currentMicro.exercises.length - 1) {
       setExerciseIndex((value) => value + 1);
       resetAnswer();
       return;
     }
+
     if (microIndex < a0NeedsMicroLessons.length - 1) {
       setMicroIndex((value) => value + 1);
       setCardIndex(0);
@@ -96,18 +141,51 @@ const A0NeedsPage: React.FC = () => {
       resetAnswer();
       return;
     }
+
     setStage('mission');
     resetAnswer();
   };
 
-  const answerChoice = (correctId: string, pickedId: string) => {
+  const answerExercise = (correctId: string, pickedId: string) => {
     setChoice(pickedId);
     setFeedback(pickedId === correctId ? 'correct' : 'wrong');
+  };
+
+  const answerMission = (pickedId: string) => {
+    if (!currentMission || feedback === 'correct') return;
+
+    const isCorrect = pickedId === currentMission.correctId;
+    setChoice(pickedId);
+    setFeedback(isCorrect ? 'correct' : 'wrong');
+
+    if (isCorrect) {
+      const selected = currentMission.choices.find((item) => item.id === pickedId);
+      if (!selected) return;
+
+      setDialogueHistory((history) => [
+        ...history,
+        {
+          id: `${currentMission.id}-staff`,
+          side: 'staff',
+          speaker: currentMission.speaker,
+          czech: currentMission.staffCzech,
+          mongolian: currentMission.staffMn,
+        },
+        {
+          id: `${currentMission.id}-user`,
+          side: 'user',
+          speaker: 'Та',
+          czech: selected.text,
+          mongolian: 'Таны сонгосон хариулт',
+        },
+      ]);
+    }
   };
 
   const addToken = (token: string) => {
     if (!currentExercise || currentExercise.type !== 'order' || feedback === 'correct') return;
     if (orderedTokens.length >= currentExercise.tokens.length) return;
+
     const next = [...orderedTokens, token];
     setOrderedTokens(next);
     if (next.length === currentExercise.tokens.length) {
@@ -127,13 +205,14 @@ const A0NeedsPage: React.FC = () => {
       resetAnswer();
       return;
     }
+
     if (completed) return;
     a0NeedsCards.forEach((card) => {
       markWordLearned(card.id);
       updateSRSCard(card.id, 4);
     });
-    addXP(110);
-    addMinutes(25);
+    addXP(140);
+    addMinutes(30);
     updateStreak();
     completeLesson('l002');
     unlockNextLesson('l002');
@@ -141,35 +220,59 @@ const A0NeedsPage: React.FC = () => {
     setStage('complete');
   };
 
-  const feedbackBox = (text: string) => feedback && (
-    <div style={{ marginTop:14, borderRadius:14, padding:13, background:feedback === 'correct' ? 'rgba(34,197,94,.12)' : 'rgba(239,68,68,.12)', border:`1px solid ${feedback === 'correct' ? 'rgba(34,197,94,.35)' : 'rgba(239,68,68,.35)}` }}>
-      <p style={{ margin:0, color:feedback === 'correct' ? '#4ADE80' : '#F87171', fontWeight:800 }}>
-        {feedback === 'correct' ? 'Зөв.' : 'Буруу. Дахин оролдоорой.'}
-      </p>
-      {feedback === 'correct' && <p style={{ margin:'5px 0 0', color:'#D1D1D6', fontSize:13, lineHeight:1.45 }}>{text}</p>}
-    </div>
-  );
+  const feedbackBox = (text: string) => {
+    if (!feedback) return null;
+
+    const correct = feedback === 'correct';
+    return (
+      <div
+        style={{
+          marginTop: 14,
+          borderRadius: 14,
+          padding: 13,
+          background: correct ? 'rgba(34,197,94,.12)' : 'rgba(239,68,68,.12)',
+          border: correct ? '1px solid rgba(34,197,94,.35)' : '1px solid rgba(239,68,68,.35)',
+        }}
+      >
+        <p style={{ margin: 0, color: correct ? '#4ADE80' : '#F87171', fontWeight: 800 }}>
+          {correct ? 'Зөв.' : 'Буруу. Дахин оролдоорой.'}
+        </p>
+        {correct && <p style={{ margin: '5px 0 0', color: '#D1D1D6', fontSize: 13, lineHeight: 1.45 }}>{text}</p>}
+      </div>
+    );
+  };
+
+  const choiceStyle = (isCorrect: boolean, isWrong: boolean): React.CSSProperties => ({
+    textAlign: 'left',
+    padding: '13px 14px',
+    borderRadius: 14,
+    color: '#FFF',
+    background: isCorrect ? 'rgba(34,197,94,.16)' : isWrong ? 'rgba(239,68,68,.16)' : '#242428',
+    border: isCorrect ? '1px solid rgba(34,197,94,.6)' : isWrong ? '1px solid rgba(239,68,68,.6)' : '1px solid #34343A',
+    fontSize: 15,
+    cursor: feedback === 'correct' ? 'default' : 'pointer',
+  });
 
   if (stage === 'complete') {
     return (
-      <div style={{ ...shell, display:'flex', alignItems:'center', padding:'24px 20px' }}>
-        <div style={{ ...panel, width:'100%', textAlign:'center' }}>
-          <div style={{ fontSize:58, marginBottom:12 }}>🧾</div>
-          <h1 style={{ margin:'0 0 8px', fontSize:24 }}>A0.2 дууслаа</h1>
-          <p style={{ color:'#A0A0A8', lineHeight:1.55, margin:'0 0 18px' }}>
+      <div style={{ ...shell, display: 'flex', alignItems: 'center', padding: '24px 20px' }}>
+        <div style={{ ...panel, width: '100%', textAlign: 'center' }}>
+          <div style={{ fontSize: 58, marginBottom: 12 }}>🧾</div>
+          <h1 style={{ margin: '0 0 8px', fontSize: 24 }}>A0.2 дууслаа</h1>
+          <p style={{ color: '#A0A0A8', lineHeight: 1.55, margin: '0 0 18px' }}>
             Та одоо тусламж, ус, утас хэрэгтэйгээ хэлж, хүсэлтээ илэрхийлж, мөнгө эсвэл карт байхгүйгээ тайлбарлаж чадна.
           </p>
-          <div style={{ ...panel, padding:16, textAlign:'left', marginBottom:16 }}>
-            <p style={{ margin:'0 0 7px', color:'#C8952A', fontWeight:800 }}>Одоо таны ашиглаж чадах хэллэгүүд</p>
+          <div style={{ ...panel, padding: 16, textAlign: 'left', marginBottom: 16 }}>
+            <p style={{ margin: '0 0 7px', color: '#C8952A', fontWeight: 800 }}>Одоо таны ашиглаж чадах хэллэгүүд</p>
             {['Potřebuji pomoc.','Potřebuji vodu.','Chci něco k jídlu.','Nemám kartu.','Potřebuji pomoc, prosím.'].map((text) => (
-              <p key={text} style={{ margin:'6px 0', color:'#FFF' }}>✓ {text}</p>
+              <p key={text} style={{ margin: '6px 0', color: '#FFF' }}>✓ {text}</p>
             ))}
           </div>
-          <button onClick={() => setPage('path')} className="btn-gold" style={{ width:'100%', padding:15, fontSize:15 }}>
+          <button onClick={() => setPage('path')} className="btn-gold" style={{ width: '100%', padding: 15, fontSize: 15 }}>
             Хичээлийн зам руу буцах
           </button>
-          <button onClick={() => window.location.reload()} style={{ width:'100%', marginTop:10, padding:12, border:0, background:'transparent', color:'#A0A0A8', cursor:'pointer' }}>
-            <RotateCcw size={14} style={{ verticalAlign:'middle', marginRight:6 }} /> A0.2-ыг дахин хийх
+          <button onClick={() => window.location.reload()} style={{ width: '100%', marginTop: 10, padding: 12, border: 0, background: 'transparent', color: '#A0A0A8', cursor: 'pointer' }}>
+            <RotateCcw size={14} style={{ verticalAlign: 'middle', marginRight: 6 }} /> A0.2-ыг дахин хийх
           </button>
         </div>
       </div>
@@ -178,44 +281,44 @@ const A0NeedsPage: React.FC = () => {
 
   return (
     <div style={shell}>
-      <header style={{ background:'#141416', borderBottom:'1px solid #2A2A2F', padding:'max(16px, env(safe-area-inset-top)) 20px 13px' }}>
-        <div style={{ display:'flex', alignItems:'center', gap:12, marginBottom:12 }}>
-          <button onClick={() => setPage('path')} aria-label="Буцах" style={{ width:34, height:34, borderRadius:10, background:'#242428', border:0, cursor:'pointer', color:'#A0A0A8' }}>
+      <header style={{ background: '#141416', borderBottom: '1px solid #2A2A2F', padding: 'max(16px, env(safe-area-inset-top)) 20px 13px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12 }}>
+          <button onClick={() => setPage('path')} aria-label="Буцах" style={{ width: 34, height: 34, borderRadius: 10, background: '#242428', border: 0, cursor: 'pointer', color: '#A0A0A8' }}>
             <ChevronLeft size={20} />
           </button>
-          <div style={{ flex:1, minWidth:0 }}>
-            <p style={{ margin:0, fontSize:12, color:'#A0A0A8' }}>A0.2 · ойролцоогоор 25 минут</p>
-            <h1 style={{ margin:'2px 0 0', fontSize:17 }}>Надад хэрэгтэй</h1>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <p style={{ margin: 0, fontSize: 12, color: '#A0A0A8' }}>A0.2 · ойролцоогоор 30 минут</p>
+            <h1 style={{ margin: '2px 0 0', fontSize: 17 }}>Надад хэрэгтэй</h1>
           </div>
-          <span style={{ fontSize:12, color:'#C8952A', fontWeight:800 }}>{Math.min(completedSteps + 1, totalSteps)}/{totalSteps}</span>
+          <span style={{ fontSize: 12, color: '#C8952A', fontWeight: 800 }}>{Math.min(completedSteps + 1, totalSteps)}/{totalSteps}</span>
         </div>
         <ProgressBar value={completedSteps} max={totalSteps} height={5} />
       </header>
 
-      <main style={{ maxWidth:430, margin:'0 auto', padding:'18px 16px max(28px, env(safe-area-inset-bottom))' }}>
+      <main style={{ maxWidth: 430, margin: '0 auto', padding: '18px 16px max(28px, env(safe-area-inset-bottom))' }}>
         {stage === 'cards' && currentCard && currentMicro && (
           <>
-            <p style={{ color:'#C8952A', fontSize:12, fontWeight:800, margin:'0 0 6px' }}>{currentMicro.titleMn}</p>
-            <p style={{ color:'#A0A0A8', fontSize:13, margin:'0 0 16px', lineHeight:1.45 }}>{currentMicro.canDoMn}</p>
-            <motion.div key={currentCard.id} initial={{ opacity:0, x:20 }} animate={{ opacity:1, x:0 }} style={panel}>
-              <p style={{ margin:'0 0 10px', fontSize:12, color:'#606068' }}>Шинэ карт {cardIndex + 1}/{currentMicro.cardIds.length}</p>
-              <h2 style={{ margin:'0 0 14px', textAlign:'center', fontSize:'clamp(28px, 9vw, 36px)', lineHeight:1.16, overflowWrap:'anywhere' }}>{currentCard.czech}</h2>
-              <div style={{ display:'flex', justifyContent:'center', marginBottom:18 }}>
+            <p style={{ color: '#C8952A', fontSize: 12, fontWeight: 800, margin: '0 0 6px' }}>{currentMicro.titleMn}</p>
+            <p style={{ color: '#A0A0A8', fontSize: 13, margin: '0 0 16px', lineHeight: 1.45 }}>{currentMicro.canDoMn}</p>
+            <motion.div key={currentCard.id} initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} style={panel}>
+              <p style={{ margin: '0 0 10px', fontSize: 12, color: '#606068' }}>Шинэ карт {cardIndex + 1}/{currentMicro.cardIds.length}</p>
+              <h2 style={{ margin: '0 0 14px', textAlign: 'center', fontSize: 'clamp(28px, 9vw, 36px)', lineHeight: 1.16, overflowWrap: 'anywhere' }}>{currentCard.czech}</h2>
+              <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 18 }}>
                 <AudioButton word={currentCard.czech} audioFile={currentCard.audioFile} size="lg" />
               </div>
               {!showMeaning ? (
-                <button onClick={() => setShowMeaning(true)} className="btn-outline" style={{ width:'100%', padding:13, fontSize:14 }}>
+                <button onClick={() => setShowMeaning(true)} className="btn-outline" style={{ width: '100%', padding: 13, fontSize: 14 }}>
                   Монгол утгыг харах
                 </button>
               ) : (
-                <div style={{ background:'rgba(200,149,42,.10)', border:'1px solid rgba(200,149,42,.28)', borderRadius:16, padding:15 }}>
-                  <p style={{ margin:'0 0 8px', color:'#FFF', fontSize:19, fontWeight:800 }}>{currentCard.mongolian}</p>
-                  <p style={{ margin:0, color:'#D1D1D6', fontSize:13, lineHeight:1.5 }}>{currentMicro.instructions[currentCard.id]}</p>
+                <div style={{ background: 'rgba(200,149,42,.10)', border: '1px solid rgba(200,149,42,.28)', borderRadius: 16, padding: 15 }}>
+                  <p style={{ margin: '0 0 8px', color: '#FFF', fontSize: 19, fontWeight: 800 }}>{currentCard.mongolian}</p>
+                  <p style={{ margin: 0, color: '#D1D1D6', fontSize: 13, lineHeight: 1.5 }}>{currentMicro.instructions[currentCard.id]}</p>
                 </div>
               )}
             </motion.div>
             {showMeaning && (
-              <button onClick={nextCard} className="btn-gold" style={{ width:'100%', marginTop:16, padding:15, fontSize:15 }}>
+              <button onClick={nextCard} className="btn-gold" style={{ width: '100%', marginTop: 16, padding: 15, fontSize: 15 }}>
                 Сонсож, хэлж давтаад үргэлжлүүлэх
               </button>
             )}
@@ -224,29 +327,28 @@ const A0NeedsPage: React.FC = () => {
 
         {stage === 'exercises' && currentExercise && currentMicro && (
           <>
-            <p style={{ color:'#C8952A', fontSize:12, fontWeight:800, margin:'0 0 6px' }}>{currentMicro.titleMn} · Бататгал</p>
+            <p style={{ color: '#C8952A', fontSize: 12, fontWeight: 800, margin: '0 0 6px' }}>{currentMicro.titleMn} · Бататгал</p>
             <div style={panel}>
-              <p style={{ margin:'0 0 8px', color:'#A0A0A8', fontSize:12 }}>{currentExercise.titleMn}</p>
-              <h2 style={{ margin:'0 0 14px', fontSize:21, lineHeight:1.35 }}>{currentExercise.promptMn}</h2>
+              <p style={{ margin: '0 0 8px', color: '#A0A0A8', fontSize: 12 }}>{currentExercise.titleMn}</p>
+              <h2 style={{ margin: '0 0 14px', fontSize: 21, lineHeight: 1.35 }}>{currentExercise.promptMn}</h2>
               {'audioText' in currentExercise && currentExercise.audioText && (
-                <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:16 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
                   <AudioButton word={currentExercise.audioText} size="md" />
-                  <span style={{ color:'#A0A0A8', fontSize:13 }}>Дараад сонсоорой</span>
+                  <span style={{ color: '#A0A0A8', fontSize: 13 }}>Дараад сонсоорой</span>
                 </div>
               )}
               {'promptCzech' in currentExercise && currentExercise.promptCzech && (
-                <div style={{ background:'#242428', borderRadius:14, padding:14, marginBottom:16, fontSize:22, fontWeight:800, textAlign:'center' }}>{currentExercise.promptCzech}</div>
+                <div style={{ background: '#242428', borderRadius: 14, padding: 14, marginBottom: 16, fontSize: 22, fontWeight: 800, textAlign: 'center' }}>{currentExercise.promptCzech}</div>
               )}
 
               {currentExercise.type === 'choice' && (
-                <div style={{ display:'flex', flexDirection:'column', gap:10 }}>
-                  {currentExercise.choices.map((item) => {
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                  {exerciseChoices.map((item) => {
                     const picked = choice === item.id;
-                    const isCorrect = feedback && item.id === currentExercise.correctId;
+                    const isCorrect = feedback === 'correct' && item.id === currentExercise.correctId;
                     const isWrong = feedback === 'wrong' && picked;
                     return (
-                      <button key={item.id} onClick={() => answerChoice(currentExercise.correctId, item.id)} disabled={feedback === 'correct'}
-                        style={{ textAlign:'left', cursor:feedback === 'correct' ? 'default' : 'pointer', padding:'13px 14px', borderRadius:14, color:'#FFF', background:isCorrect ? 'rgba(34,197,94,.16)' : isWrong ? 'rgba(239,68,68,.16)' : '#242428', border:`1px solid ${isCorrect ? 'rgba(34,197,94,.6)' : isWrong ? 'rgba(239,68,68,.6)' : '#34343A'}`, fontSize:15 }}>
+                      <button key={item.id} onClick={() => answerExercise(currentExercise.correctId, item.id)} disabled={feedback === 'correct'} style={choiceStyle(Boolean(isCorrect), isWrong)}>
                         {item.text}
                       </button>
                     );
@@ -257,41 +359,57 @@ const A0NeedsPage: React.FC = () => {
 
               {currentExercise.type === 'order' && (
                 <div>
-                  <div style={{ minHeight:58, display:'flex', flexWrap:'wrap', gap:8, padding:10, borderRadius:14, background:'#141416', border:'1px dashed #42424A', marginBottom:12 }}>
-                    {orderedTokens.length === 0 && <span style={{ color:'#606068', fontSize:13 }}>Доорх үгсийг дарааллаар нь дарна уу</span>}
+                  <div style={{ minHeight: 58, display: 'flex', flexWrap: 'wrap', gap: 8, padding: 10, borderRadius: 14, background: '#141416', border: '1px dashed #42424A', marginBottom: 12 }}>
+                    {orderedTokens.length === 0 && <span style={{ color: '#606068', fontSize: 13 }}>Доорх үгсийг дарааллаар нь дарна уу</span>}
                     {orderedTokens.map((token, index) => (
-                      <button key={`${token}-${index}`} onClick={() => removeToken(index)} style={{ padding:'8px 10px', background:'rgba(200,149,42,.16)', color:'#F5C842', border:'1px solid rgba(200,149,42,.4)', borderRadius:10, cursor:'pointer' }}>{token}</button>
+                      <button key={`${token}-${index}`} onClick={() => removeToken(index)} style={{ padding: '8px 10px', background: 'rgba(200,149,42,.16)', color: '#F5C842', border: '1px solid rgba(200,149,42,.4)', borderRadius: 10, cursor: 'pointer' }}>{token}</button>
                     ))}
                   </div>
-                  <div style={{ display:'flex', flexWrap:'wrap', gap:8 }}>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
                     {currentExercise.tokens.map((token, index) => {
                       const used = orderedTokens.filter((item) => item === token).length > currentExercise.tokens.slice(0, index).filter((item) => item === token).length;
-                      return <button key={`${token}-${index}`} onClick={() => addToken(token)} disabled={used || feedback === 'correct'} style={{ padding:'10px 12px', borderRadius:10, color:used ? '#606068' : '#FFF', background:'#242428', border:'1px solid #34343A', cursor:used ? 'default' : 'pointer', opacity:used ? .45 : 1 }}>{token}</button>;
+                      return <button key={`${token}-${index}`} onClick={() => addToken(token)} disabled={used || feedback === 'correct'} style={{ padding: '10px 12px', borderRadius: 10, color: used ? '#606068' : '#FFF', background: '#242428', border: '1px solid #34343A', cursor: used ? 'default' : 'pointer', opacity: used ? 0.45 : 1 }}>{token}</button>;
                     })}
                   </div>
-                  {feedback === 'wrong' && <button onClick={resetAnswer} style={{ marginTop:12, background:'transparent', border:0, color:'#F5C842', cursor:'pointer', padding:0 }}>Дахин оролдох</button>}
+                  {feedback === 'wrong' && <button onClick={resetAnswer} style={{ marginTop: 12, background: 'transparent', border: 0, color: '#F5C842', cursor: 'pointer', padding: 0 }}>Дахин оролдох</button>}
                   {feedbackBox(currentExercise.feedbackMn)}
                 </div>
               )}
             </div>
-            {feedback === 'correct' && <button onClick={nextExercise} className="btn-gold" style={{ width:'100%', marginTop:16, padding:15, fontSize:15 }}>Үргэлжлүүлэх</button>}
+            {feedback === 'correct' && <button onClick={nextExercise} className="btn-gold" style={{ width: '100%', marginTop: 16, padding: 15, fontSize: 15 }}>Үргэлжлүүлэх</button>}
           </>
         )}
 
         {stage === 'mission' && currentMission && (
           <>
-            <p style={{ color:'#C8952A', fontSize:12, fontWeight:800, margin:'0 0 6px' }}>Төгсгөлийн бодит даалгавар</p>
-            <p style={{ color:'#A0A0A8', fontSize:13, margin:'0 0 16px', lineHeight:1.45 }}>Нөхцөл: Та ресепшн эсвэл үйлчилгээний газарт хэрэгцээгээ ойлгомжтой хэлэх хэрэгтэй боллоо.</p>
+            <p style={{ color: '#C8952A', fontSize: 12, fontWeight: 800, margin: '0 0 6px' }}>Харилцан ярианы даалгавар</p>
+            <p style={{ color: '#A0A0A8', fontSize: 13, margin: '0 0 16px', lineHeight: 1.45 }}>Та ресепшнд байна. Зөв хариулт сонгох бүрд яриа урагшилна.</p>
             <div style={panel}>
-              <p style={{ margin:'0 0 8px', color:'#A0A0A8', fontSize:12 }}>Алхам {missionIndex + 1}/{a0NeedsMission.length}</p>
-              <h2 style={{ margin:'0 0 16px', fontSize:21, lineHeight:1.35 }}>{currentMission.promptMn}</h2>
-              <div style={{ display:'flex', flexDirection:'column', gap:10 }}>
-                {currentMission.choices.map((item) => {
-                  const isCorrect = feedback && item.id === currentMission.correctId;
-                  const isWrong = feedback === 'wrong' && choice === item.id;
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 18 }}>
+                {dialogueHistory.map((entry) => (
+                  <div key={entry.id} style={{ alignSelf: entry.side === 'staff' ? 'flex-start' : 'flex-end', maxWidth: '90%', background: entry.side === 'staff' ? '#242428' : 'rgba(200,149,42,.15)', border: entry.side === 'staff' ? '1px solid #34343A' : '1px solid rgba(200,149,42,.35)', borderRadius: 16, padding: '11px 12px' }}>
+                    <p style={{ margin: '0 0 4px', color: entry.side === 'staff' ? '#A0A0A8' : '#C8952A', fontSize: 11, fontWeight: 800 }}>{entry.speaker}</p>
+                    <p style={{ margin: 0, color: '#FFF', fontWeight: 800, lineHeight: 1.35 }}>{entry.czech}</p>
+                    <p style={{ margin: '4px 0 0', color: '#A0A0A8', fontSize: 12, lineHeight: 1.35 }}>{entry.mongolian}</p>
+                  </div>
+                ))}
+                {feedback !== 'correct' && (
+                  <div style={{ alignSelf: 'flex-start', maxWidth: '90%', background: '#242428', border: '1px solid #34343A', borderRadius: 16, padding: '11px 12px' }}>
+                    <p style={{ margin: '0 0 4px', color: '#A0A0A8', fontSize: 11, fontWeight: 800 }}>{currentMission.speaker}</p>
+                    <p style={{ margin: 0, color: '#FFF', fontWeight: 800, lineHeight: 1.35 }}>{currentMission.staffCzech}</p>
+                    <p style={{ margin: '4px 0 0', color: '#A0A0A8', fontSize: 12, lineHeight: 1.35 }}>{currentMission.staffMn}</p>
+                  </div>
+                )}
+              </div>
+
+              <h2 style={{ margin: '0 0 14px', fontSize: 19, lineHeight: 1.35 }}>{currentMission.promptMn}</h2>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                {missionChoices.map((item) => {
+                  const picked = choice === item.id;
+                  const isCorrect = feedback === 'correct' && item.id === currentMission.correctId;
+                  const isWrong = feedback === 'wrong' && picked;
                   return (
-                    <button key={item.id} onClick={() => answerChoice(currentMission.correctId, item.id)} disabled={feedback === 'correct'}
-                      style={{ textAlign:'left', padding:'13px 14px', borderRadius:14, cursor:feedback === 'correct' ? 'default' : 'pointer', color:'#FFF', background:isCorrect ? 'rgba(34,197,94,.16)' : isWrong ? 'rgba(239,68,68,.16)' : '#242428', border:`1px solid ${isCorrect ? 'rgba(34,197,94,.6)' : isWrong ? 'rgba(239,68,68,.6)' : '#34343A'}`, fontSize:15 }}>
+                    <button key={item.id} onClick={() => answerMission(item.id)} disabled={feedback === 'correct'} style={choiceStyle(Boolean(isCorrect), isWrong)}>
                       {item.text}
                     </button>
                   );
@@ -299,7 +417,7 @@ const A0NeedsPage: React.FC = () => {
                 {feedbackBox(currentMission.feedbackMn)}
               </div>
             </div>
-            {feedback === 'correct' && <button onClick={nextMission} className="btn-gold" style={{ width:'100%', marginTop:16, padding:15, fontSize:15 }}>{missionIndex === a0NeedsMission.length - 1 ? 'Хичээлийг дуусгах' : 'Үргэлжлүүлэх'}</button>}
+            {feedback === 'correct' && <button onClick={nextMission} className="btn-gold" style={{ width: '100%', marginTop: 16, padding: 15, fontSize: 15 }}>{missionIndex === a0NeedsMission.length - 1 ? 'Хичээлийг дуусгах' : 'Яриаг үргэлжлүүлэх'}</button>}
           </>
         )}
       </main>
