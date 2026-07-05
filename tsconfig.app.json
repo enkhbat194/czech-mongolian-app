@@ -17,6 +17,5 @@
     "erasableSyntaxOnly": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["src"],
-  "exclude": ["src/components/lessons/A0LessonEngine.tsx"]
+  "include": ["src"]
 }
