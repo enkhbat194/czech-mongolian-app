@@ -261,7 +261,7 @@ export const useAppStore = create<AppState>()(
       },
 
       resetProgress: () => {
-        set({ progress: initialProgress, lessons: lessons, currentWordIndex: 0, currentLessonId: null });
+        set({ progress: initialProgress, lessons: lessons, currentWordIndex: 0, currentLessonId: null, srsCards: [] });
       },
 
       unlockNextLesson: (currentLessonId) => {
@@ -276,11 +276,12 @@ export const useAppStore = create<AppState>()(
       },
     }),
     {
-      name: 'czech-mn-app-storage',
+      // A0 curriculum нь өмнөх demo data-тай нийцэхгүй тул шинэ storage ашиглана.
+      // Ингэснээр w001 зэрэг хуучин картын ID шинэ 25 картын тоонд холилдохгүй.
+      name: 'czech-mn-a0-storage-v2',
       partialize: (state) => ({
         userName: state.userName,
         progress: state.progress,
-        lessons: state.lessons,
         isDarkMode: state.isDarkMode,
       }),
     }
