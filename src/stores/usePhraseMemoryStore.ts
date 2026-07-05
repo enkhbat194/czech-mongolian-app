@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { a0MemoryTargets, getPriorActiveTargetIds } from '../data/a0MemoryPlan';
 import { getA0CarryoverSeedRank } from '../data/a0CarryoverSeeds';
+import { useAppStore } from './useAppStore';
 
 export interface PhraseMemory {
   targetId: string;
@@ -59,6 +60,7 @@ export const usePhraseMemoryStore = create<PhraseMemoryState>()(
       phrases: {},
 
       recordExposure: (targetId) => {
+        useAppStore.getState().activateWordForReview(targetId);
         const { phrases } = get();
         const existing = phrases[targetId] || createMemory(targetId);
         set({
