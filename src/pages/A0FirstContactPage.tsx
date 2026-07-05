@@ -1,5 +1,5 @@
-import React, { useMemo, useState } from 'react';
-import { ChevronLeft, ChevronRight, RotateCcw } from 'lucide-react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { Check, ChevronLeft, ChevronRight, Mic, RotateCcw, X } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useAppStore } from '../stores/useAppStore';
 import { AudioButton, ProgressBar } from '../components/UI/SharedComponents';
@@ -12,9 +12,86 @@ import {
 
 type Stage = 'cards' | 'exercises' | 'mission' | 'complete';
 type Feedback = 'correct' | 'wrong' | null;
+type PronunciationState = 'idle' | 'listening' | 'passed' | 'notMatched' | 'unavailable';
 
-const shell: React.CSSProperties = { background:'#0C0C0E', minHeight:'100vh', fontFamily:'Inter,sans-serif', color:'#FFF' };
-const panel: React.CSSProperties = { background:'#1C1C1F', border:'1px solid #2A2A2F', borderRadius:24, padding:22 };
+type RecognitionResultLike = { 0: { transcript: string } };
+type RecognitionEventLike = { results: { 0: RecognitionResultLike } };
+type RecognitionErrorLike = { error: string };
+
+type SpeechRecognitionLike = {
+  lang: string;
+  continuous: boolean;
+  interimResults: boolean;
+  maxAlternatives: number;
+  start: () => void;
+  abort: () => void;
+  onstart: (() => void) | null;
+  onend: (() => void) | null;
+  onresult: ((event: RecognitionEventLike) => void) | null;
+  onerror: ((event: RecognitionErrorLike) => void) | null;
+};
+
+type SpeechRecognitionConstructor = new () => SpeechRecognitionLike;
+
+declare global {
+  interface Window {
+    SpeechRecognition?: SpeechRecognitionConstructor;
+    webkitSpeechRecognition?: SpeechRecognitionConstructor;
+  }
+}
+
+const shell: React.CSSProperties = {
+  background:'#0C0C0E',
+  minHeight:'100dvh',
+  fontFamily:'Inter,sans-serif',
+  color:'#FFF',
+};
+
+const panel: React.CSSProperties = {
+  background:'#1C1C1F',
+  border:'1px solid #2A2A2F',
+  borderRadius:24,
+  padding:22,
+};
+
+function normalizeCzech(text: string): string {
+  return text
+    .toLocaleLowerCase('cs-CZ')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^\p{L}\p{N}\s]/gu, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function editDistance(left: string, right: string): number {
+  const rows = Array.from({ length:left.length + 1 }, (_, index) => index);
+  for (let column = 1; column <= right.length; column += 1) {
+    let previousDiagonal = rows[0];
+    rows[0] = column;
+    for (let row = 1; row <= left.length; row += 1) {
+      const saved = rows[row];
+      rows[row] = Math.min(
+        rows[row] + 1,
+        rows[row - 1] + 1,
+        previousDiagonal + (left[row - 1] === right[column - 1] ? 0 : 1),
+      );
+      previousDiagonal = saved;
+    }
+  }
+  return rows[left.length];
+}
+
+function pronunciationAccepted(expected: string, heard: string): boolean {
+  const target = normalizeCzech(expected);
+  const transcript = normalizeCzech(heard);
+  if (!target || !transcript) return false;
+  if (transcript.includes(target) || target.includes(transcript)) return true;
+  const distance = editDistance(target, transcript);
+  const similarity = 1 - distance / Math.max(target.length, transcript.length);
+  const threshold = target.includes(' ') ? 0.72 : 0.7;
+  return similarity >= threshold;
+}
 
 const A0FirstContactPage: React.FC = () => {
   const {
@@ -32,11 +109,17 @@ const A0FirstContactPage: React.FC = () => {
   const [orderedTokens, setOrderedTokens] = useState<string[]>([]);
   const [missionIndex, setMissionIndex] = useState(0);
   const [completed, setCompleted] = useState(false);
+  const [pronunciationState, setPronunciationState] = useState<PronunciationState>('idle');
+  const [heardText, setHeardText] = useState('');
+
+  const recognitionRef = useRef<SpeechRecognitionLike | null>(null);
+  const advanceTimerRef = useRef<number | null>(null);
 
   const currentMicro = a0FirstContactMicroLessons[microIndex];
   const currentCard = currentMicro ? getA0FirstContactCard(currentMicro.cardIds[cardIndex]) : null;
   const currentExercise = currentMicro?.exercises[exerciseIndex] ?? null;
   const totalSteps = a0FirstContactMicroLessons.reduce((sum, item) => sum + item.cardIds.length + item.exercises.length, 0) + a0FirstContactMission.length;
+
   const completedSteps = useMemo(() => {
     const finishedMicros = a0FirstContactMicroLessons.slice(0, microIndex)
       .reduce((sum, item) => sum + item.cardIds.length + item.exercises.length, 0);
@@ -46,14 +129,29 @@ const A0FirstContactPage: React.FC = () => {
     return totalSteps;
   }, [cardIndex, currentMicro, exerciseIndex, microIndex, missionIndex, stage, totalSteps]);
 
+  useEffect(() => () => {
+    recognitionRef.current?.abort();
+    if (advanceTimerRef.current) window.clearTimeout(advanceTimerRef.current);
+  }, []);
+
   const resetAnswer = () => {
     setChoice(null);
     setFeedback(null);
     setOrderedTokens([]);
   };
 
+  const resetPronunciation = () => {
+    recognitionRef.current?.abort();
+    recognitionRef.current = null;
+    if (advanceTimerRef.current) window.clearTimeout(advanceTimerRef.current);
+    advanceTimerRef.current = null;
+    setPronunciationState('idle');
+    setHeardText('');
+  };
+
   const nextCard = () => {
     if (!currentMicro) return;
+    resetPronunciation();
     if (cardIndex < currentMicro.cardIds.length - 1) {
       setCardIndex((value) => value + 1);
       setShowMeaning(false);
@@ -77,10 +175,62 @@ const A0FirstContactPage: React.FC = () => {
       setStage('cards');
       setShowMeaning(false);
       resetAnswer();
+      resetPronunciation();
       return;
     }
     setStage('mission');
     resetAnswer();
+  };
+
+  const moveToNextCardSoon = (milliseconds: number) => {
+    if (advanceTimerRef.current) window.clearTimeout(advanceTimerRef.current);
+    advanceTimerRef.current = window.setTimeout(() => nextCard(), milliseconds);
+  };
+
+  const startPronunciationCheck = () => {
+    if (!currentCard || pronunciationState === 'listening') return;
+    const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+    if (!Recognition) {
+      setPronunciationState('unavailable');
+      setHeardText('Энэ браузер Чех яриа танихыг дэмжихгүй байна. Chrome ашиглаарай.');
+      return;
+    }
+
+    const recognition = new Recognition();
+    recognitionRef.current = recognition;
+    recognition.lang = 'cs-CZ';
+    recognition.continuous = false;
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+    recognition.onstart = () => {
+      setHeardText('');
+      setPronunciationState('listening');
+    };
+    recognition.onerror = (event) => {
+      const permissionError = event.error === 'not-allowed' || event.error === 'service-not-allowed';
+      setPronunciationState('unavailable');
+      setHeardText(permissionError
+        ? 'Микрофоны зөвшөөрөл олгогдоогүй. Browser-ийн address bar дээрх микрофоны зөвшөөрлийг Allow болго.'
+        : 'Яриа танигдсангүй. Дахин оролдох эсвэл алгасаж болно.');
+    };
+    recognition.onresult = (event) => {
+      const transcript = event.results[0][0].transcript;
+      const passed = pronunciationAccepted(currentCard.czech, transcript);
+      setHeardText(`Танигдсан хэллэг: “${transcript}”`);
+      setPronunciationState(passed ? 'passed' : 'notMatched');
+      moveToNextCardSoon(passed ? 1100 : 1700);
+    };
+    recognition.onend = () => {
+      recognitionRef.current = null;
+    };
+
+    try {
+      recognition.start();
+    } catch {
+      setPronunciationState('unavailable');
+      setHeardText('Микрофон эхэлсэнгүй. Дахин оролдоорой.');
+    }
   };
 
   const answerChoice = (correctId: string, pickedId: string) => {
@@ -123,7 +273,7 @@ const A0FirstContactPage: React.FC = () => {
 
   if (stage === 'complete') {
     return (
-      <div style={{ ...shell, display:'flex', alignItems:'center', padding:24 }}>
+      <div style={{ ...shell, display:'flex', alignItems:'center', padding:'24px 20px' }}>
         <div style={{ ...panel, width:'100%', textAlign:'center' }}>
           <div style={{ fontSize:58, marginBottom:12 }}>🏆</div>
           <h1 style={{ margin:'0 0 8px', fontSize:24 }}>A0.1 дууслаа</h1>
@@ -156,14 +306,61 @@ const A0FirstContactPage: React.FC = () => {
     </div>
   );
 
+  const pronunciationPanel = currentCard && showMeaning && (
+    <div style={{ marginTop:16 }}>
+      {pronunciationState === 'idle' && (
+        <button onClick={startPronunciationCheck} className="btn-gold" style={{ width:'100%', padding:15, fontSize:15, display:'flex', justifyContent:'center', alignItems:'center', gap:9 }}>
+          <Mic size={19} /> Дуудлага шалгах
+        </button>
+      )}
+      {pronunciationState === 'listening' && (
+        <div style={{ ...panel, padding:18, textAlign:'center', borderColor:'rgba(239,68,68,.4)' }}>
+          <motion.div animate={{ scale:[1, 1.14, 1] }} transition={{ duration:1.15, repeat:Infinity }} style={{ width:66, height:66, margin:'0 auto 10px', borderRadius:33, display:'flex', alignItems:'center', justifyContent:'center', background:'rgba(239,68,68,.13)', border:'2px solid rgba(239,68,68,.45)' }}>
+            <Mic size={29} color="#F87171" />
+          </motion.div>
+          <p style={{ margin:0, color:'#F87171', fontWeight:800 }}>Сонсож байна…</p>
+          <p style={{ margin:'6px 0 0', color:'#A0A0A8', fontSize:12 }}>“{currentCard.czech}” гэж хэлээрэй</p>
+        </div>
+      )}
+      {pronunciationState === 'passed' && (
+        <div style={{ ...panel, padding:16, textAlign:'center', borderColor:'rgba(34,197,94,.45)', background:'rgba(34,197,94,.10)' }}>
+          <Check size={28} color="#4ADE80" />
+          <p style={{ margin:'6px 0 0', color:'#4ADE80', fontWeight:800 }}>Сайн байна. Дараагийн карт руу шилжиж байна…</p>
+          <p style={{ margin:'5px 0 0', color:'#D1D1D6', fontSize:12 }}>{heardText}</p>
+        </div>
+      )}
+      {pronunciationState === 'notMatched' && (
+        <div style={{ ...panel, padding:16, textAlign:'center', borderColor:'rgba(245,200,66,.45)', background:'rgba(245,200,66,.08)' }}>
+          <X size={28} color="#F5C842" />
+          <p style={{ margin:'6px 0 0', color:'#F5C842', fontWeight:800 }}>Танилт баталгаагүй. Дараагийн карт руу шилжиж байна…</p>
+          <p style={{ margin:'5px 0 0', color:'#D1D1D6', fontSize:12 }}>{heardText}</p>
+        </div>
+      )}
+      {pronunciationState === 'unavailable' && (
+        <div style={{ ...panel, padding:16, textAlign:'center', borderColor:'rgba(248,113,113,.45)', background:'rgba(248,113,113,.08)' }}>
+          <p style={{ margin:0, color:'#F87171', fontWeight:800 }}>Дуудлага шалгалт эхэлсэнгүй</p>
+          <p style={{ margin:'6px 0 0', color:'#D1D1D6', fontSize:12, lineHeight:1.45 }}>{heardText}</p>
+          <button onClick={startPronunciationCheck} className="btn-outline" style={{ width:'100%', marginTop:12, padding:12, fontSize:14 }}>
+            Дахин оролдох
+          </button>
+        </div>
+      )}
+      {pronunciationState !== 'listening' && pronunciationState !== 'passed' && pronunciationState !== 'notMatched' && (
+        <button onClick={nextCard} style={{ width:'100%', marginTop:10, padding:10, border:0, background:'transparent', color:'#A0A0A8', cursor:'pointer', fontSize:13, textDecoration:'underline' }}>
+          Одоохондоо алгасах
+        </button>
+      )}
+    </div>
+  );
+
   return (
     <div style={shell}>
-      <header style={{ background:'#141416', borderBottom:'1px solid #2A2A2F', padding:'16px 20px 13px' }}>
+      <header style={{ background:'#141416', borderBottom:'1px solid #2A2A2F', padding:'max(16px, env(safe-area-inset-top)) 20px 13px' }}>
         <div style={{ display:'flex', alignItems:'center', gap:12, marginBottom:12 }}>
           <button onClick={() => setPage('path')} aria-label="Буцах" style={{ width:34, height:34, borderRadius:10, background:'#242428', border:0, cursor:'pointer', color:'#A0A0A8' }}>
             <ChevronLeft size={20} />
           </button>
-          <div style={{ flex:1 }}>
+          <div style={{ flex:1, minWidth:0 }}>
             <p style={{ margin:0, fontSize:12, color:'#A0A0A8' }}>A0.1 · ойролцоогоор 30 минут</p>
             <h1 style={{ margin:'2px 0 0', fontSize:17 }}>Анхны харилцаа</h1>
           </div>
@@ -172,14 +369,14 @@ const A0FirstContactPage: React.FC = () => {
         <ProgressBar value={completedSteps} max={totalSteps} height={5} />
       </header>
 
-      <main style={{ padding:'18px 16px 28px' }}>
+      <main style={{ maxWidth:430, margin:'0 auto', padding:'18px 16px max(28px, env(safe-area-inset-bottom))' }}>
         {stage === 'cards' && currentCard && (
           <>
             <p style={{ color:'#C8952A', fontSize:12, fontWeight:800, margin:'0 0 6px' }}>{currentMicro.titleMn}</p>
             <p style={{ color:'#A0A0A8', fontSize:13, margin:'0 0 16px', lineHeight:1.45 }}>{currentMicro.canDoMn}</p>
             <motion.div key={currentCard.id} initial={{ opacity:0, x:20 }} animate={{ opacity:1, x:0 }} style={panel}>
               <p style={{ margin:'0 0 10px', fontSize:12, color:'#606068' }}>Шинэ карт {cardIndex + 1}/{currentMicro.cardIds.length}</p>
-              <h2 style={{ margin:'0 0 14px', textAlign:'center', fontSize:33, lineHeight:1.16 }}>{currentCard.czech}</h2>
+              <h2 style={{ margin:'0 0 14px', textAlign:'center', fontSize:'clamp(28px, 9vw, 36px)', lineHeight:1.16, overflowWrap:'anywhere' }}>{currentCard.czech}</h2>
               <div style={{ display:'flex', justifyContent:'center', marginBottom:18 }}>
                 <AudioButton word={currentCard.czech} audioFile={currentCard.audioFile} size="lg" />
               </div>
@@ -194,9 +391,7 @@ const A0FirstContactPage: React.FC = () => {
                 </div>
               )}
             </motion.div>
-            <button onClick={nextCard} className="btn-gold" style={{ width:'100%', marginTop:16, padding:15, fontSize:15 }}>
-              {cardIndex === currentMicro.cardIds.length - 1 ? 'Одоо бататгая' : <>Дараах <ChevronRight size={16} style={{ verticalAlign:'middle' }} /></>}
-            </button>
+            {pronunciationPanel}
           </>
         )}
 
