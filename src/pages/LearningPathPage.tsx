@@ -5,13 +5,15 @@ import { useAppStore } from '../stores/useAppStore';
 import { lessons as courseLessons } from '../data/lessons';
 import { ProgressBar } from '../components/UI/SharedComponents';
 
+const pageForLesson: Record<string, string> = { l001: 'a0FirstContact', l002: 'a0Needs' };
+
 const LearningPathPage: React.FC = () => {
   const { setCurrentLesson, setPage, getLessonProgress, progress } = useAppStore();
   const total = courseLessons.filter((lesson) => lesson.status === 'ready').reduce((sum, lesson) => sum + lesson.wordCount, 0);
 
   const openLesson = (lessonId: string) => {
     setCurrentLesson(lessonId);
-    setPage(lessonId === 'l001' ? 'a0FirstContact' : 'flashcard');
+    setPage(pageForLesson[lessonId] || 'flashcard');
   };
 
   return (
@@ -32,7 +34,8 @@ const LearningPathPage: React.FC = () => {
           const progressPercent = getLessonProgress(lesson.id);
           const done = progress.completedLessons.includes(lesson.id);
           const ready = lesson.status === 'ready';
-          const locked = lesson.isLocked || !ready;
+          const sequenceOpen = index === 0 || progress.completedLessons.includes(courseLessons[index - 1].id);
+          const locked = !ready || !sequenceOpen;
 
           return (
             <div key={lesson.id}>
