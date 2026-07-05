@@ -1,7 +1,7 @@
 import React from 'react';
 import A0LessonEngine from '../components/lessons/A0LessonEngineV4';
 import { a0FirstContactCards, a0FirstContactMicroLessons, getA0FirstContactCard } from '../data/a0FirstContact';
-import { a0FirstContactFinalDialogue, a0FirstContactMicroDialogues } from '../data/a0Dialogues';
+import { a0FirstContactCoveredFinalDialogue, a0FirstContactCoveredMicroDialogues } from '../data/a0CoverageDialogues';
 
 const A0FirstContactPage: React.FC = () => (
   <A0LessonEngine
@@ -12,8 +12,8 @@ const A0FirstContactPage: React.FC = () => (
       cards: a0FirstContactCards,
       microLessons: a0FirstContactMicroLessons,
       getCard: getA0FirstContactCard,
-      microDialogues: a0FirstContactMicroDialogues,
-      finalDialogue: a0FirstContactFinalDialogue,
+      microDialogues: a0FirstContactCoveredMicroDialogues,
+      finalDialogue: a0FirstContactCoveredFinalDialogue,
       xpReward: 150,
       completionIcon: '🏆',
       completionSummaryMn: 'Та албан ёсоор мэндэлж, нэрээ болон хаанаас ирснээ хэлж, ойлгохгүй үед яриаг удаашруулах хүсэлт тавьж чадна.',
