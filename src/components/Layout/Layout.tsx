@@ -38,7 +38,6 @@ const pages: Record<string, React.FC> = {
   reverseQuiz: ReverseQuizPage,
   writing: WritingPage,
   dictation: DictationPage,
-  sentenceBuilder: SentenceBuilderPage,
   fillBlank: FillBlankPage,
   interactiveLearning: InteractiveLearningPage,
   a0FirstContact: A0FirstContactPage,
@@ -47,18 +46,19 @@ const pages: Record<string, React.FC> = {
 const Layout: React.FC = () => {
   const { currentPage } = useAppStore();
   const Page = pages[currentPage] || HomePage;
+  const isImmersiveLesson = currentPage === 'a0FirstContact';
 
   return (
-    <div style={{ minHeight:'100vh', background:'#080810', display:'flex', justifyContent:'center' }}>
-      <div style={{ position:'relative', width:'100%', maxWidth:430, minHeight:'100vh', background:'#0C0C0E', boxShadow:'0 0 80px rgba(200,149,42,.08)' }}>
-        <div style={{ overflowY:'auto', paddingBottom:82 }}>
+    <div style={{ minHeight:'100dvh', background:'#080810', display:'flex', justifyContent:'center' }}>
+      <div style={{ position:'relative', width:'100%', maxWidth:430, minHeight:'100dvh', background:'#0C0C0E', boxShadow:'0 0 80px rgba(200,149,42,.08)' }}>
+        <div style={{ overflowY:'auto', minHeight:'100dvh', paddingBottom:isImmersiveLesson ? 0 : 82 }}>
           <AnimatePresence mode="wait">
             <motion.div key={currentPage} variants={v} initial="initial" animate="animate" exit="exit">
               <Page />
             </motion.div>
           </AnimatePresence>
         </div>
-        <BottomNav />
+        {!isImmersiveLesson && <BottomNav />}
       </div>
     </div>
   );
