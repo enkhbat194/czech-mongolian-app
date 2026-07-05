@@ -14,10 +14,10 @@ import WordQuizPage from '../../pages/WordQuizPage';
 import ReverseQuizPage from '../../pages/ReverseQuizPage';
 import WritingPage from '../../pages/WritingPage';
 import DictationPage from '../../pages/DictationPage';
-import SentenceBuilderPage from '../../pages/SentenceBuilderPage';
 import FillBlankPage from '../../pages/FillBlankPage';
 import InteractiveLearningPage from '../../pages/InteractiveLearningPage';
 import A0FirstContactPage from '../../pages/A0FirstContactPage';
+import A0NeedsPage from '../../pages/A0NeedsPage';
 
 const v: Variants = {
   initial: { opacity:0, y:10 },
@@ -41,12 +41,13 @@ const pages: Record<string, React.FC> = {
   fillBlank: FillBlankPage,
   interactiveLearning: InteractiveLearningPage,
   a0FirstContact: A0FirstContactPage,
+  a0Needs: A0NeedsPage,
 };
 
 const Layout: React.FC = () => {
   const { currentPage } = useAppStore();
   const Page = pages[currentPage] || HomePage;
-  const isImmersiveLesson = currentPage === 'a0FirstContact';
+  const isImmersiveLesson = currentPage === 'a0FirstContact' || currentPage === 'a0Needs';
 
   return (
     <div style={{ minHeight:'100dvh', background:'#080810', display:'flex', justifyContent:'center' }}>
