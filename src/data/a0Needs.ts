@@ -10,6 +10,17 @@ export interface A0NeedsMicroLesson {
   exercises: A0Exercise[];
 }
 
+export interface A0DialogueStep {
+  id: string;
+  speaker: string;
+  staffCzech: string;
+  staffMn: string;
+  promptMn: string;
+  choices: { id: string; text: string }[];
+  correctId: string;
+  feedbackMn: string;
+}
+
 const byId = new Map(czechWords.map((card) => [card.id, card]));
 
 export const a0NeedsCards: CzechWord[] = czechWords.filter((card) => card.lessonId === 'l002');
@@ -38,17 +49,27 @@ export const a0NeedsMicroLessons: A0NeedsMicroLesson[] = [
     exercises: [
       {
         id:'a0-2-a-1', type:'choice', titleMn:'Сонсож таних', promptMn:'Аудиог сонсоод зөв утгыг сонго.', audioText:'Potřebuji pomoc.',
-        choices:[{id:'a',text:'Надад тусламж хэрэгтэй.'},{id:'b',text:'Надад ус хэрэгтэй.'},{id:'c',text:'Би туслахыг хүсэж байна.'},{id:'d',text:'Би ойлгохгүй байна.'}], correctId:'a',
+        choices:[{id:'a',text:'Би туслахыг хүсэж байна.'},{id:'b',text:'Надад ус хэрэгтэй.'},{id:'c',text:'Надад тусламж хэрэгтэй.'},{id:'d',text:'Би ойлгохгүй байна.'}], correctId:'c',
         feedbackMn:'Potřebuji pomoc. = Надад тусламж хэрэгтэй.'
       },
       {
         id:'a0-2-a-2', type:'choice', titleMn:'Нөхцөлд хэрэглэх', promptMn:'Та ус авах хэрэгтэй байна. Аль өгүүлбэр зөв бэ?',
-        choices:[{id:'a',text:'Potřebuji vodu.'},{id:'b',text:'Nemám vodu.'},{id:'c',text:'Chci telefon.'}], correctId:'a',
+        choices:[{id:'a',text:'Nemám vodu.'},{id:'b',text:'Potřebuji vodu.'},{id:'c',text:'Chci telefon.'}], correctId:'b',
         feedbackMn:'Potřebuji vodu. = Надад ус хэрэгтэй.'
       },
       {
         id:'a0-2-a-3', type:'order', titleMn:'Өгүүлбэр бүтээх', promptMn:'“Надад ус хэрэгтэй” гэсэн өгүүлбэрийг зөв дарааллаар байрлуул.',
         tokens:['vodu.','Potřebuji'], expectedText:'Potřebuji vodu.', feedbackMn:'Potřebuji vodu. = Надад ус хэрэгтэй.'
+      },
+      {
+        id:'a0-2-a-4', type:'choice', titleMn:'Утга таних', promptMn:'Potřebuji telefon. ямар утгатай вэ?',
+        choices:[{id:'a',text:'Би утас хүсэж байна.'},{id:'b',text:'Миний утас ажиллахгүй байна.'},{id:'c',text:'Утсаар ярьж болох уу?'},{id:'d',text:'Надад утас хэрэгтэй.'}], correctId:'d',
+        feedbackMn:'Potřebuji telefon. = Надад утас хэрэгтэй.'
+      },
+      {
+        id:'a0-2-a-5', type:'choice', titleMn:'Асуултад хариулах', promptMn:'Ажилтан: Co potřebujete? Та ус хүсэх гэж байна. Аль хариулт тохирох вэ?',
+        choices:[{id:'a',text:'Nemám kartu.'},{id:'b',text:'Potřebuji vodu.'},{id:'c',text:'Na shledanou.'}], correctId:'b',
+        feedbackMn:'Co potřebujete? = Танд юу хэрэгтэй вэ? Potřebuji vodu. гэж хариулна.'
       },
     ],
   },
@@ -70,17 +91,27 @@ export const a0NeedsMicroLessons: A0NeedsMicroLesson[] = [
     exercises: [
       {
         id:'a0-2-b-1', type:'choice', titleMn:'Утгын ялгаа', promptMn:'“Би ус хүсэж байна” гэсэн хамгийн тохирох өгүүлбэр аль нь вэ?',
-        choices:[{id:'a',text:'Chci vodu.'},{id:'b',text:'Nemám vodu.'},{id:'c',text:'Co potřebujete?'}], correctId:'a',
+        choices:[{id:'a',text:'Nemám vodu.'},{id:'b',text:'Co potřebujete?'},{id:'c',text:'Chci vodu.'}], correctId:'c',
         feedbackMn:'Chci vodu. нь хүсэлт, сонголтоо илэрхийлж байна.'
       },
       {
         id:'a0-2-b-2', type:'choice', titleMn:'Сонсож таних', promptMn:'Аудиог сонсоод зөв Монгол утгыг сонго.', audioText:'Chci něco k jídlu.',
-        choices:[{id:'a',text:'Би идэх юм хүсэж байна.'},{id:'b',text:'Надад хоол байхгүй.'},{id:'c',text:'Би хоол идсэн.'},{id:'d',text:'Надад ус хэрэгтэй.'}], correctId:'a',
+        choices:[{id:'a',text:'Надад ус хэрэгтэй.'},{id:'b',text:'Надад хоол байхгүй.'},{id:'c',text:'Би хоол идсэн.'},{id:'d',text:'Би идэх юм хүсэж байна.'}], correctId:'d',
         feedbackMn:'Chci něco k jídlu. = Би идэх юм хүсэж байна.'
       },
       {
         id:'a0-2-b-3', type:'order', titleMn:'Өгүүлбэр бүтээх', promptMn:'“Би үүнийг хүсэж байна” гэсэн өгүүлбэрийг зөв дарааллаар байрлуул.',
         tokens:['tohle.','Chci'], expectedText:'Chci tohle.', feedbackMn:'Chci tohle. = Би үүнийг хүсэж байна.'
+      },
+      {
+        id:'a0-2-b-4', type:'choice', titleMn:'Нөхцөлд сонгох', promptMn:'Та дэлгүүрт заасан сэндвичээ авахыг хүсэж байна. Аль нь зөв бэ?',
+        choices:[{id:'a',text:'Chci tohle.'},{id:'b',text:'Nemám tohle.'},{id:'c',text:'Potřebuji kartu.'}], correctId:'a',
+        feedbackMn:'Chci tohle. = Би үүнийг хүсэж байна.'
+      },
+      {
+        id:'a0-2-b-5', type:'choice', titleMn:'Хэллэг ялгах', promptMn:'Аль өгүүлбэр “Би хоол хүсэж байна” гэсэн утгатай вэ?',
+        choices:[{id:'a',text:'Potřebuji pomoc.'},{id:'b',text:'Chci jídlo.'},{id:'c',text:'Nemám peníze.'}], correctId:'b',
+        feedbackMn:'Chci jídlo. = Би хоол хүсэж байна.'
       },
     ],
   },
@@ -101,45 +132,61 @@ export const a0NeedsMicroLessons: A0NeedsMicroLesson[] = [
     exercises: [
       {
         id:'a0-2-c-1', type:'choice', titleMn:'Асуулт ойлгох', promptMn:'Co potřebujete? гэж асуувал юу гэсэн үг вэ?',
-        choices:[{id:'a',text:'Танд юу хэрэгтэй вэ?'},{id:'b',text:'Та хаана байна вэ?'},{id:'c',text:'Та хэн бэ?'},{id:'d',text:'Та хэдэн төгрөгтэй вэ?'}], correctId:'a',
+        choices:[{id:'a',text:'Та хэн бэ?'},{id:'b',text:'Та хаана байна вэ?'},{id:'c',text:'Танд юу хэрэгтэй вэ?'},{id:'d',text:'Та хэдэн төгрөгтэй вэ?'}], correctId:'c',
         feedbackMn:'Co potřebujete? = Танд юу хэрэгтэй вэ?'
       },
       {
         id:'a0-2-c-2', type:'choice', titleMn:'Нөхцөлд хариулах', promptMn:'Та картаар төлж чадахгүй байна. Аль өгүүлбэр зөв бэ?',
-        choices:[{id:'a',text:'Nemám kartu.'},{id:'b',text:'Chci kartu.'},{id:'c',text:'Potřebuji jídlo.'}], correctId:'a',
+        choices:[{id:'a',text:'Chci kartu.'},{id:'b',text:'Nemám kartu.'},{id:'c',text:'Potřebuji jídlo.'}], correctId:'b',
         feedbackMn:'Nemám kartu. = Надад карт байхгүй.'
       },
       {
         id:'a0-2-c-3', type:'order', titleMn:'Өгүүлбэр бүтээх', promptMn:'Эелдгээр тусламж хүсэх өгүүлбэрийг зөв дарааллаар байрлуул.',
         tokens:['pomoc,','Potřebuji','prosím.'], expectedText:'Potřebuji pomoc, prosím.', feedbackMn:'Potřebuji pomoc, prosím. = Надад туслаач.'
       },
+      {
+        id:'a0-2-c-4', type:'choice', titleMn:'Утга таних', promptMn:'Nemám peníze. ямар утгатай вэ?',
+        choices:[{id:'a',text:'Би мөнгө хүсэж байна.'},{id:'b',text:'Надад мөнгө хэрэгтэй.'},{id:'c',text:'Би картаар төлнө.'},{id:'d',text:'Надад мөнгө байхгүй.'}], correctId:'d',
+        feedbackMn:'Nemám peníze. = Надад мөнгө байхгүй.'
+      },
+      {
+        id:'a0-2-c-5', type:'choice', titleMn:'Хариулт сонгох', promptMn:'Та мөнгөгүй болсон байна. Аль өгүүлбэрийг хэлэх вэ?',
+        choices:[{id:'a',text:'Chci peníze.'},{id:'b',text:'Potřebuji telefon.'},{id:'c',text:'Nemám peníze.'}], correctId:'c',
+        feedbackMn:'Nemám peníze. = Надад мөнгө байхгүй.'
+      },
     ],
   },
 ];
 
-export const a0NeedsMission = [
+export const a0NeedsMission: A0DialogueStep[] = [
   {
-    id:'a0-2-m1',
-    promptMn:'Та ресепшнд очлоо. Ажилтан: “Dobrý den. Co potřebujete?” Та юу гэж хариулах вэ?',
-    choices:[{id:'a',text:'Potřebuji pomoc, prosím.'},{id:'b',text:'Na shledanou.'},{id:'c',text:'Kdo jste?'}], correctId:'a',
+    id:'a0-2-m1', speaker:'Ресепшний ажилтан', staffCzech:'Dobrý den. Co potřebujete?', staffMn:'Сайн байна уу. Танд юу хэрэгтэй вэ?',
+    promptMn:'Та эхлээд тусламж хүсэх хэрэгтэй. Аль хариултыг сонгох вэ?',
+    choices:[{id:'a',text:'Na shledanou.'},{id:'b',text:'Chci telefon.'},{id:'c',text:'Potřebuji pomoc, prosím.'}], correctId:'c',
     feedbackMn:'Та хэрэгцээгээ эелдгээр, ойлгомжтой хэллээ.'
   },
   {
-    id:'a0-2-m2',
-    promptMn:'Хүлээж байхдаа ус хүсэх хэрэг гарлаа. Аль нь зөв бэ?',
-    choices:[{id:'a',text:'Chci vodu, prosím.'},{id:'b',text:'Nemám vodu.'},{id:'c',text:'Chci telefon.'}], correctId:'a',
-    feedbackMn:'Chci vodu, prosím. = Би ус хүсэж байна, гуйя.'
+    id:'a0-2-m2', speaker:'Ресепшний ажилтан', staffCzech:'Dobře. Potřebujete vodu?', staffMn:'За. Танд ус хэрэгтэй юу?',
+    promptMn:'Танд ус хэрэгтэй байна. Аль хариулт тохирох вэ?',
+    choices:[{id:'a',text:'Ano, prosím.'},{id:'b',text:'Nemám vodu.'},{id:'c',text:'Nerozumím.'}], correctId:'a',
+    feedbackMn:'Ano, prosím. = Тийм, гуйя.'
   },
   {
-    id:'a0-2-m3',
-    promptMn:'Төлбөрийн карт асуухад танд байхгүй байна. Юу гэж хэлэх вэ?',
-    choices:[{id:'a',text:'Nemám kartu.'},{id:'b',text:'Potřebuji kartu.'},{id:'c',text:'Chci jídlo.'}], correctId:'a',
+    id:'a0-2-m3', speaker:'Ресепшний ажилтан', staffCzech:'Tady je voda. Chcete něco k jídlu?', staffMn:'Энд ус байна. Та идэх юм хүсэж байна уу?',
+    promptMn:'Та идэх юм хүсэж байгаагаа хэлэх хэрэгтэй. Аль хариулт тохирох вэ?',
+    choices:[{id:'a',text:'Nemám kartu.'},{id:'b',text:'Ano, chci něco k jídlu.'},{id:'c',text:'Potřebuji telefon.'}], correctId:'b',
+    feedbackMn:'Chci něco k jídlu. = Би идэх юм хүсэж байна.'
+  },
+  {
+    id:'a0-2-m4', speaker:'Ресепшний ажилтан', staffCzech:'Máte kartu?', staffMn:'Танд карт байна уу?',
+    promptMn:'Танд карт байхгүй. Аль хариулт зөв бэ?',
+    choices:[{id:'a',text:'Chci kartu.'},{id:'b',text:'Nemám kartu.'},{id:'c',text:'Potřebuji kartu.'}], correctId:'b',
     feedbackMn:'Nemám kartu. = Надад карт байхгүй.'
   },
   {
-    id:'a0-2-m4',
-    promptMn:'Асуудал шийдэгдсэний дараа юу гэж хэлэх вэ?',
-    choices:[{id:'a',text:'Děkuji.'},{id:'b',text:'Ne.'},{id:'c',text:'Nerozumím.'}], correctId:'a',
+    id:'a0-2-m5', speaker:'Ресепшний ажилтан', staffCzech:'Nevadí. Pomůžu vám.', staffMn:'Зүгээр. Би танд тусална.',
+    promptMn:'Яриаг эелдгээр дуусгахын тулд юу гэж хэлэх вэ?',
+    choices:[{id:'a',text:'Děkuji.'},{id:'b',text:'Ne.'},{id:'c',text:'Kdo jste?'}], correctId:'a',
     feedbackMn:'Děkuji. = Баярлалаа.'
   },
 ];
