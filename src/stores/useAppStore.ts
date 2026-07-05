@@ -7,12 +7,12 @@ import type { Lesson } from '../data/lessons';
 
 export interface SRSCard {
   wordId: string;
-  interval: number;       // days
+  interval: number;
   repetitions: number;
   easeFactor: number;
-  nextReview: string;     // ISO date string
+  nextReview: string;
   lastReview: string;
-  quality: 0 | 1 | 2 | 3 | 4 | 5; // 0-2 fail, 3-5 pass
+  quality: 0 | 1 | 2 | 3 | 4 | 5;
 }
 
 export interface UserProgress {
@@ -20,37 +20,34 @@ export interface UserProgress {
   streak: number;
   lastStudyDate: string;
   completedLessons: string[];
+  introducedWords: string[];
   learnedWords: string[];
   srsCards: Record<string, SRSCard>;
   dailyGoalMinutes: number;
   todayMinutes: number;
   totalMinutes: number;
-  weeklyXP: number[];   // last 7 days
+  weeklyXP: number[];
 }
 
 export interface AppState {
-  // Data
   words: CzechWord[];
   lessons: Lesson[];
-  
-  // Navigation
+
   currentPage: string;
   currentLessonId: string | null;
   currentWordIndex: number;
-  
-  // User
+
   userName: string;
   progress: UserProgress;
-  
-  // UI State
+
   isDarkMode: boolean;
   isAudioPlaying: boolean;
-  
-  // Actions
+
   setPage: (page: string) => void;
   setCurrentLesson: (lessonId: string) => void;
   setCurrentWordIndex: (index: number) => void;
   setUserName: (name: string) => void;
+  activateWordForReview: (wordId: string) => void;
   markWordLearned: (wordId: string) => void;
   completeLesson: (lessonId: string) => void;
   addXP: (amount: number) => void;
@@ -58,8 +55,8 @@ export interface AppState {
   updateStreak: () => void;
   updateSRSCard: (wordId: string, quality: 0 | 1 | 2 | 3 | 4 | 5) => void;
   getDueReviewCards: () => SRSCard[];
-  srsCards: SRSCard[];           // computed flat array
-  dailyGoalMinutes: number;       // top-level alias - same as progress.dailyGoalMinutes
+  srsCards: SRSCard[];
+  dailyGoalMinutes: number;
   getWordsForLesson: (lessonId: string) => CzechWord[];
   getLessonProgress: (lessonId: string) => number;
   toggleDarkMode: () => void;
@@ -73,6 +70,7 @@ const initialProgress: UserProgress = {
   streak: 0,
   lastStudyDate: '',
   completedLessons: [],
+  introducedWords: [],
   learnedWords: [],
   srsCards: {},
   dailyGoalMinutes: 15,
@@ -81,25 +79,42 @@ const initialProgress: UserProgress = {
   weeklyXP: [0, 0, 0, 0, 0, 0, 0],
 };
 
-// SM-2 SRS algorithm
+function tomorrowIso() {
+  const date = new Date();
+  date.setDate(date.getDate() + 1);
+  return date.toISOString();
+}
+
+function createReviewCard(wordId: string): SRSCard {
+  const now = new Date().toISOString();
+  return {
+    wordId,
+    interval: 1,
+    repetitions: 0,
+    easeFactor: 2.5,
+    nextReview: tomorrowIso(),
+    lastReview: now,
+    quality: 3,
+  };
+}
+
 function sm2(card: SRSCard, quality: 0 | 1 | 2 | 3 | 4 | 5): SRSCard {
-  let { interval, repetitions, easeFactor } = card;
-  
+  let { repetitions, easeFactor } = card;
+  let interval = 0;
+
   if (quality >= 3) {
-    if (repetitions === 0) interval = 1;
-    else if (repetitions === 1) interval = 6;
-    else interval = Math.round(interval * easeFactor);
     repetitions += 1;
+    interval = repetitions <= 1 ? 1 : repetitions === 2 ? 3 : repetitions === 3 ? 7 : repetitions === 4 ? 14 : 30;
   } else {
     repetitions = 0;
-    interval = 1;
+    interval = 0;
   }
-  
+
   easeFactor = Math.max(1.3, easeFactor + 0.1 - (5 - quality) * (0.08 + (5 - quality) * 0.02));
-  
+
   const nextDate = new Date();
   nextDate.setDate(nextDate.getDate() + interval);
-  
+
   return {
     ...card,
     interval,
@@ -111,11 +126,16 @@ function sm2(card: SRSCard, quality: 0 | 1 | 2 | 3 | 4 | 5): SRSCard {
   };
 }
 
+function withIntroducedWord(progress: UserProgress, wordId: string) {
+  const introduced = progress.introducedWords || [];
+  return introduced.includes(wordId) ? introduced : [...introduced, wordId];
+}
+
 export const useAppStore = create<AppState>()(
   persist(
     (set, get) => ({
       words: czechWords,
-      lessons: lessons,
+      lessons,
       currentPage: 'home',
       currentLessonId: null,
       currentWordIndex: 0,
@@ -131,27 +151,24 @@ export const useAppStore = create<AppState>()(
       setCurrentWordIndex: (index) => set({ currentWordIndex: index }),
       setUserName: (name) => set({ userName: name }),
 
-      markWordLearned: (wordId) => {
+      activateWordForReview: (wordId) => {
         const { progress } = get();
-        if (!progress.learnedWords.includes(wordId)) {
-          const newCard: SRSCard = {
-            wordId,
-            interval: 1,
-            repetitions: 0,
-            easeFactor: 2.5,
-            nextReview: new Date(Date.now() + 86400000).toISOString(),
-            lastReview: new Date().toISOString(),
-            quality: 3,
-          };
-          set({
-            progress: {
-              ...progress,
-              learnedWords: [...progress.learnedWords, wordId],
-              srsCards: { ...progress.srsCards, [wordId]: newCard },
-            },
-            srsCards: [...Object.values({ ...progress.srsCards, [wordId]: newCard })],
-          });
-        }
+        const existing = progress.srsCards[wordId];
+        const newCards = existing ? progress.srsCards : { ...progress.srsCards, [wordId]: createReviewCard(wordId) };
+        set({
+          progress: {
+            ...progress,
+            introducedWords: withIntroducedWord(progress, wordId),
+            srsCards: newCards,
+          },
+          srsCards: Object.values(newCards),
+        });
+      },
+
+      markWordLearned: (wordId) => {
+        // Legacy callers use this action when a card was completed. It now only
+        // activates the card for review; true mastery is earned through spaced recall.
+        get().activateWordForReview(wordId);
       },
 
       completeLesson: (lessonId) => {
@@ -161,7 +178,7 @@ export const useAppStore = create<AppState>()(
             progress: {
               ...progress,
               completedLessons: [...progress.completedLessons, lessonId],
-            }
+            },
           });
         }
       },
@@ -176,7 +193,7 @@ export const useAppStore = create<AppState>()(
             ...progress,
             totalXP: progress.totalXP + amount,
             weeklyXP: weekly,
-          }
+          },
         });
       },
 
@@ -187,46 +204,43 @@ export const useAppStore = create<AppState>()(
             ...progress,
             todayMinutes: progress.todayMinutes + minutes,
             totalMinutes: (progress.totalMinutes || 0) + minutes,
-          }
+          },
         });
       },
 
       updateStreak: () => {
         const { progress } = get();
         const today = new Date().toDateString();
-        const lastDate = progress.lastStudyDate;
         const yesterday = new Date(Date.now() - 86400000).toDateString();
-        
-        let newStreak = progress.streak;
-        if (lastDate === today) return;
-        if (lastDate === yesterday) newStreak += 1;
-        else if (lastDate !== today) newStreak = 1;
-        
+        if (progress.lastStudyDate === today) return;
+
+        const streak = progress.lastStudyDate === yesterday ? progress.streak + 1 : 1;
         set({
           progress: {
             ...progress,
-            streak: newStreak,
+            streak,
             lastStudyDate: today,
-          }
+          },
         });
       },
 
       updateSRSCard: (wordId, quality) => {
         const { progress } = get();
-        const existing = progress.srsCards[wordId] || {
-          wordId,
-          interval: 1,
-          repetitions: 0,
-          easeFactor: 2.5,
-          nextReview: new Date().toISOString(),
-          lastReview: new Date().toISOString(),
-          quality: 0 as const,
-        };
+        const existing = progress.srsCards[wordId] || createReviewCard(wordId);
         const updated = sm2(existing, quality);
         const newCards = { ...progress.srsCards, [wordId]: updated };
+        const currentMastered = progress.learnedWords || [];
+        const learnedWords = quality < 3
+          ? currentMastered.filter((id) => id !== wordId)
+          : updated.repetitions >= 3 && quality >= 4 && !currentMastered.includes(wordId)
+            ? [...currentMastered, wordId]
+            : currentMastered;
+
         set({
           progress: {
             ...progress,
+            introducedWords: withIntroducedWord(progress, wordId),
+            learnedWords,
             srsCards: newCards,
           },
           srsCards: Object.values(newCards),
@@ -236,24 +250,21 @@ export const useAppStore = create<AppState>()(
       getDueReviewCards: () => {
         const { progress } = get();
         const now = new Date();
-        return Object.values(progress.srsCards).filter(card => 
-          new Date(card.nextReview) <= now
-        );
+        return Object.values(progress.srsCards).filter((card) => new Date(card.nextReview) <= now);
       },
 
-      getWordsForLesson: (lessonId) => {
-        return get().words.filter(w => w.lessonId === lessonId);
-      },
+      getWordsForLesson: (lessonId) => get().words.filter((word) => word.lessonId === lessonId),
 
       getLessonProgress: (lessonId) => {
         const { progress, words } = get();
-        const lessonWords = words.filter(w => w.lessonId === lessonId);
+        const lessonWords = words.filter((word) => word.lessonId === lessonId);
         if (lessonWords.length === 0) return 0;
-        const learned = lessonWords.filter(w => progress.learnedWords.includes(w.id)).length;
-        return Math.round((learned / lessonWords.length) * 100);
+        const introduced = progress.introducedWords || progress.learnedWords || [];
+        const count = lessonWords.filter((word) => introduced.includes(word.id)).length;
+        return Math.round((count / lessonWords.length) * 100);
       },
 
-      toggleDarkMode: () => set((s) => ({ isDarkMode: !s.isDarkMode })),
+      toggleDarkMode: () => set((state) => ({ isDarkMode: !state.isDarkMode })),
 
       setDailyGoal: (minutes) => {
         const { progress } = get();
@@ -261,29 +272,24 @@ export const useAppStore = create<AppState>()(
       },
 
       resetProgress: () => {
-        set({ progress: initialProgress, lessons: lessons, currentWordIndex: 0, currentLessonId: null, srsCards: [] });
+        set({ progress: initialProgress, lessons, currentWordIndex: 0, currentLessonId: null, srsCards: [] });
       },
 
       unlockNextLesson: (currentLessonId) => {
-        const { lessons: ls } = get();
-        const currentIndex = ls.findIndex(l => l.id === currentLessonId);
-        if (currentIndex < ls.length - 1) {
-          const updated = ls.map((lesson, idx) =>
-            idx === currentIndex + 1 ? { ...lesson, isLocked: false } : lesson
-          );
-          set({ lessons: updated });
-        }
+        const { lessons: currentLessons } = get();
+        const currentIndex = currentLessons.findIndex((lesson) => lesson.id === currentLessonId);
+        if (currentIndex < 0 || currentIndex >= currentLessons.length - 1) return;
+        const updated = currentLessons.map((lesson, index) => index === currentIndex + 1 ? { ...lesson, isLocked: false } : lesson);
+        set({ lessons: updated });
       },
     }),
     {
-      // A0 curriculum нь өмнөх demo data-тай нийцэхгүй тул шинэ storage ашиглана.
-      // Ингэснээр w001 зэрэг хуучин картын ID шинэ 25 картын тоонд холилдохгүй.
       name: 'czech-mn-a0-storage-v2',
       partialize: (state) => ({
         userName: state.userName,
         progress: state.progress,
         isDarkMode: state.isDarkMode,
       }),
-    }
-  )
+    },
+  ),
 );
