@@ -102,10 +102,7 @@ export const a0NeedsCoveredMicroDialogues: Record<string, DialogueScenario> = {
       },
     ],
   },
-  'a0-2-c': {
-    ...a0NeedsMicroDialogues,
-    'a0-2-c': a0NeedsMicroDialogues['a0-2-c'],
-  }['a0-2-c'],
+  'a0-2-c': a0NeedsMicroDialogues['a0-2-c'],
 };
 
 export const a0NeedsCoveredFinalDialogue: DialogueScenario = {
