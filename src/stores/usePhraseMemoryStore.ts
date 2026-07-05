@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { getPriorActiveTargetIds } from '../data/a0MemoryPlan';
+import { getA0CarryoverSeedRank } from '../data/a0CarryoverSeeds';
 
 export interface PhraseMemory {
   targetId: string;
@@ -101,6 +102,10 @@ export const usePhraseMemoryStore = create<PhraseMemoryState>()(
             const aWeakness = a ? a.incorrectAttempts * 3 - a.correctAttempts : 0;
             const bWeakness = b ? b.incorrectAttempts * 3 - b.correctAttempts : 0;
             if (aWeakness !== bWeakness) return bWeakness - aWeakness;
+
+            const aSeedRank = getA0CarryoverSeedRank(lessonId, left);
+            const bSeedRank = getA0CarryoverSeedRank(lessonId, right);
+            if (aSeedRank !== bSeedRank) return aSeedRank - bSeedRank;
 
             const aSeen = a ? new Date(a.lastSeen).getTime() : 0;
             const bSeen = b ? new Date(b.lastSeen).getTime() : 0;
