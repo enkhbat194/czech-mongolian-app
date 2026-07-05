@@ -18,11 +18,12 @@ import FillBlankPage from '../../pages/FillBlankPage';
 import InteractiveLearningPage from '../../pages/InteractiveLearningPage';
 import A0FirstContactPage from '../../pages/A0FirstContactPage';
 import A0NeedsPage from '../../pages/A0NeedsPage';
+import TodayReviewPage from '../../pages/TodayReviewPage';
 
 const v: Variants = {
-  initial: { opacity:0, y:10 },
-  animate: { opacity:1, y:0, transition:{ duration:.25 } },
-  exit: { opacity:0, y:-6, transition:{ duration:.15 } },
+  initial: { opacity: 0, y: 10 },
+  animate: { opacity: 1, y: 0, transition: { duration: 0.25 } },
+  exit: { opacity: 0, y: -6, transition: { duration: 0.15 } },
 };
 
 const pages: Record<string, React.FC> = {
@@ -42,17 +43,18 @@ const pages: Record<string, React.FC> = {
   interactiveLearning: InteractiveLearningPage,
   a0FirstContact: A0FirstContactPage,
   a0Needs: A0NeedsPage,
+  todayReview: TodayReviewPage,
 };
 
 const Layout: React.FC = () => {
   const { currentPage } = useAppStore();
   const Page = pages[currentPage] || HomePage;
-  const isImmersiveLesson = currentPage === 'a0FirstContact' || currentPage === 'a0Needs';
+  const isImmersiveLesson = ['a0FirstContact', 'a0Needs', 'todayReview'].includes(currentPage);
 
   return (
-    <div style={{ minHeight:'100dvh', background:'#080810', display:'flex', justifyContent:'center' }}>
-      <div style={{ position:'relative', width:'100%', maxWidth:430, minHeight:'100dvh', background:'#0C0C0E', boxShadow:'0 0 80px rgba(200,149,42,.08)' }}>
-        <div style={{ overflowY:'auto', minHeight:'100dvh', paddingBottom:isImmersiveLesson ? 0 : 82 }}>
+    <div style={{ minHeight: '100dvh', background: '#080810', display: 'flex', justifyContent: 'center' }}>
+      <div style={{ position: 'relative', width: '100%', maxWidth: 430, minHeight: '100dvh', background: '#0C0C0E', boxShadow: '0 0 80px rgba(200,149,42,.08)' }}>
+        <div style={{ overflowY: 'auto', minHeight: '100dvh', paddingBottom: isImmersiveLesson ? 0 : 82 }}>
           <AnimatePresence mode="wait">
             <motion.div key={currentPage} variants={v} initial="initial" animate="animate" exit="exit">
               <Page />
