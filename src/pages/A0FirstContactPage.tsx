@@ -1,5 +1,5 @@
 import React from 'react';
-import A0LessonEngine from '../components/lessons/A0LessonEngineV2';
+import A0LessonEngine from '../components/lessons/A0LessonEngineV3';
 import { a0FirstContactCards, a0FirstContactMicroLessons, getA0FirstContactCard } from '../data/a0FirstContact';
 import { a0FirstContactFinalDialogue, a0FirstContactMicroDialogues } from '../data/a0Dialogues';
 
