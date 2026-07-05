@@ -7,6 +7,7 @@ import { CircularProgress, ProgressBar } from '../components/UI/SharedComponents
 import { AreaChart, Area, XAxis, Tooltip, ResponsiveContainer } from 'recharts';
 
 const DAYS = ['Да','Мя','Лх','Пү','Ба','Бя','Ня'];
+const lessonPage: Record<string, string> = { l001:'a0FirstContact', l002:'a0Needs' };
 
 const HomePage: React.FC = () => {
   const { userName, progress, updateStreak, setPage, setCurrentLesson, getLessonProgress } = useAppStore();
@@ -14,10 +15,13 @@ const HomePage: React.FC = () => {
 
   const weekData = DAYS.map((d, i) => ({ d, xp:progress.weeklyXP[i] || 0 }));
   const goalPct = Math.min(100, Math.round((progress.todayMinutes / Math.max(progress.dailyGoalMinutes, 1)) * 100));
-  const active = courseLessons.filter((lesson) => !lesson.isLocked && lesson.status === 'ready');
+  const isUnlockedInSequence = (lessonIndex: number) => lessonIndex === 0 || progress.completedLessons.includes(courseLessons[lessonIndex - 1].id);
+  const active = courseLessons.filter((lesson, index) => lesson.status === 'ready' && isUnlockedInSequence(index));
+  const nextLesson = active.find((lesson) => !progress.completedLessons.includes(lesson.id)) || active[0];
+
   const openLesson = (lessonId: string) => {
     setCurrentLesson(lessonId);
-    setPage(lessonId === 'l001' ? 'a0FirstContact' : 'flashcard');
+    setPage(lessonPage[lessonId] || 'flashcard');
   };
 
   return (
@@ -30,7 +34,7 @@ const HomePage: React.FC = () => {
 
         <div style={{ background:'linear-gradient(135deg,#1C1C1F,#242428)', borderRadius:24, padding:20, marginBottom:16, border:'1px solid #2A2A2F', boxShadow:'0 4px 24px rgba(0,0,0,.4)' }}>
           <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center' }}>
-            <div><p style={{ fontSize:12, color:'#A0A0A8', marginBottom:4 }}>Өнөөдрийн зорилго</p><p style={{ fontSize:13, color:'#FFF', marginBottom:2 }}><span style={{ color:'#C8952A', fontWeight:700 }}>{progress.dailyGoalMinutes} мин</span>{' · '}<span style={{ color:'#C8952A', fontWeight:700 }}>A0.1</span></p><div style={{ marginTop:12, width:160 }}><ProgressBar value={progress.todayMinutes} max={progress.dailyGoalMinutes} height={6} showPct /></div></div>
+            <div><p style={{ fontSize:12, color:'#A0A0A8', marginBottom:4 }}>Өнөөдрийн зорилго</p><p style={{ fontSize:13, color:'#FFF', marginBottom:2 }}><span style={{ color:'#C8952A', fontWeight:700 }}>{progress.dailyGoalMinutes} мин</span>{' · '}<span style={{ color:'#C8952A', fontWeight:700 }}>{nextLesson?.title.split(' ')[0] || 'A0'}</span></p><div style={{ marginTop:12, width:160 }}><ProgressBar value={progress.todayMinutes} max={progress.dailyGoalMinutes} height={6} showPct /></div></div>
             <CircularProgress value={goalPct} max={100} size={80} stroke={8} color="#C8952A" label={`${goalPct}%`} sub="зорилго" />
           </div>
         </div>
@@ -51,7 +55,7 @@ const HomePage: React.FC = () => {
           </div>
         </div>
 
-        <motion.button whileTap={{ scale:.97 }} onClick={() => openLesson('l001')} className="btn-gold" style={{ width:'100%', padding:'16px', fontSize:16, borderRadius:18, marginBottom:8 }}>🚀 A0.1 эхлэх</motion.button>
+        {nextLesson && <motion.button whileTap={{ scale:.97 }} onClick={() => openLesson(nextLesson.id)} className="btn-gold" style={{ width:'100%', padding:'16px', fontSize:16, borderRadius:18, marginBottom:8 }}>🚀 {nextLesson.titleMn.split(' — ')[0]} эхлэх</motion.button>}
       </div>
     </div>
   );
