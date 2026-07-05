@@ -96,7 +96,8 @@ export const a0FirstContactMicroLessons: A0MicroLesson[] = [
       { id:'a0-1-b-1', type:'choice', titleMn:'Утга таних', promptMn:'Энэ асуултын Монгол утгыг сонго.', promptCzech:'Jak se jmenujete?', choices:[{id:'a',text:'Та хаана байна?'},{id:'b',text:'Таны нэр хэн бэ?'},{id:'c',text:'Та хэдэн настай вэ?'},{id:'d',text:'Та юу хүсэж байна?'}], correctId:'b', feedbackMn:'Jak se jmenujete? нь албан хэлбэрийн нэр асуулт.' },
       { id:'a0-1-b-2', type:'order', titleMn:'Өгүүлбэр бүтээх', promptMn:'Нэрээ хэлэх үгсийг зөв дарааллаар байрлуул.', tokens:['se','Jmenuji','…'], expectedText:'Jmenuji se …', feedbackMn:'Нэрээ хэлэх суурь хэлбэр: Jmenuji se …' },
       { id:'a0-1-b-3', type:'choice', titleMn:'Албан хэлбэр', promptMn:'Та ресепшний ажилтнаас нэрийг нь асууж байна. Аль асуулт зөв бэ?', choices:[{id:'a',text:'Kdo jste?'},{id:'b',text:'Jak se jmenujete?'}], correctId:'b', feedbackMn:'Нэр асуухдаа Jak se jmenujete? гэж асууна.' },
-      { id:'a0-1-b-4', type:'typing', titleMn:'Бичих дасгал', promptMn:'“Миний нэр Эба” гэдгийг Чехээр бич.', targetText:'Jmenuji se Eba.', inputHint:'Jmenuji se …', feedbackMn:'Jmenuji se Eba. = Миний нэр Эба.' },
+      { id:'a0-1-b-4', type:'choice', titleMn:'Утга тааруулах · 1/2', promptMn:'Чех хэллэгийг зөв Монгол утгатай нь холбо.', promptCzech:'Jmenuji se Eba.', choices:[{id:'a',text:'Би Монголоос ирсэн.'},{id:'b',text:'Миний нэр Эба.'},{id:'c',text:'Таны нэр хэн бэ?'}], correctId:'b', feedbackMn:'Jmenuji se Eba. = Миний нэр Эба.' },
+      { id:'a0-1-b-5', type:'choice', titleMn:'Утга тааруулах · 2/2', promptMn:'Чех хэллэгийг зөв Монгол утгатай нь холбо.', promptCzech:'Kdo jste?', choices:[{id:'a',text:'Та хэн бэ?'},{id:'b',text:'Та сайн уу?'},{id:'c',text:'Та хаанаас ирсэн бэ?'}], correctId:'a', feedbackMn:'Kdo jste? = Та хэн бэ?' },
     ],
   },
   {
@@ -121,7 +122,8 @@ export const a0FirstContactMicroLessons: A0MicroLesson[] = [
       { id:'a0-1-c-2', type:'choice', titleMn:'Асуултад хариулах', promptMn:'Jak se máte? гэсэн асуултад аль нь тохирох хариу вэ?', choices:[{id:'a',text:'Odkud?'},{id:'b',text:'Dobře.'},{id:'c',text:'Na shledanou.'}], correctId:'b', feedbackMn:'Jak se máte? = Та сайн уу? Dobře. = Сайн.' },
       { id:'a0-1-c-3', type:'order', titleMn:'Өгүүлбэр бүтээх', promptMn:'“Би Монголоос ирсэн” гэсэн өгүүлбэрийг зөв дарааллаар байрлуул.', tokens:['z','Jsem','Mongolska.'], expectedText:'Jsem z Mongolska.', feedbackMn:'Jsem z Mongolska. = Би Монголоос ирсэн.' },
       { id:'a0-1-c-4', type:'choice', titleMn:'Яаралтай хэрэглэх хэллэг', promptMn:'Хэн нэгэн хэт хурдан ярьж байна. Юу гэж хэлэх вэ?', choices:[{id:'a',text:'Na shledanou.'},{id:'b',text:'Kdo jste?'},{id:'c',text:'Mluvte prosím pomalu.'}], correctId:'c', feedbackMn:'Mluvte prosím pomalu. = Удаан ярьж өгнө үү.' },
-      { id:'a0-1-c-5', type:'typing', titleMn:'Сонсоод бичих', promptMn:'Аудиог сонсоод бүтэн өгүүлбэрийг бич.', audioText:'Jsem z Mongolska.', targetText:'Jsem z Mongolska.', inputHint:'Сонссон өгүүлбэрээ бич…', feedbackMn:'Jsem z Mongolska. = Би Монголоос ирсэн.' },
+      { id:'a0-1-c-5', type:'choice', titleMn:'Утга тааруулах · 1/2', promptMn:'Чех хэллэгийг зөв Монгол утгатай нь холбо.', promptCzech:'Jsem z Mongolska.', choices:[{id:'a',text:'Би Монголоос ирсэн.'},{id:'b',text:'Би Монгол руу явж байна.'},{id:'c',text:'Би Монголоор ярьдаг.'}], correctId:'a', feedbackMn:'Jsem z Mongolska. = Би Монголоос ирсэн.' },
+      { id:'a0-1-c-6', type:'choice', titleMn:'Утга тааруулах · 2/2', promptMn:'Чех хэллэгийг зөв Монгол утгатай нь холбо.', promptCzech:'Nerozumím.', choices:[{id:'a',text:'Би удаан ярьж байна.'},{id:'b',text:'Би ойлгохгүй байна.'},{id:'c',text:'Би Монголоос ирсэн.'}], correctId:'b', feedbackMn:'Nerozumím. = Би ойлгохгүй байна.' },
     ],
   },
 ];
