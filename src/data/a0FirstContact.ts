@@ -20,6 +20,26 @@ export type A0Exercise =
       tokens: string[];
       expectedText: string;
       feedbackMn: string;
+    }
+  | {
+      id: string;
+      type: 'fillBlank';
+      titleMn: string;
+      promptMn: string;
+      promptCzech: string;
+      choices: { id: string; text: string }[];
+      correctId: string;
+      feedbackMn: string;
+    }
+  | {
+      id: string;
+      type: 'typing';
+      titleMn: string;
+      promptMn: string;
+      targetText: string;
+      audioText?: string;
+      inputHint?: string;
+      feedbackMn: string;
     };
 
 export interface A0MicroLesson {
@@ -51,21 +71,10 @@ export const a0FirstContactMicroLessons: A0MicroLesson[] = [
       a0c0003:'Албан болон саармаг “баяртай” хэлбэр.',
     },
     exercises: [
-      {
-        id:'a0-1-a-1', type:'choice', titleMn:'Сонсож таних', promptMn:'Аудиог сонсоод зөв Монгол утгыг сонго.', audioText:'Dobrý den',
-        choices:[{id:'a',text:'Баяртай'},{id:'b',text:'Баярлалаа'},{id:'c',text:'Сайн байна уу'},{id:'d',text:'Уучлаарай'}], correctId:'c',
-        feedbackMn:'Dobrý den нь албан, аюулгүй мэндчилгээ.'
-      },
-      {
-        id:'a0-1-a-2', type:'choice', titleMn:'Нөхцөлд тохируулах', promptMn:'Та ажил дээрээ анх удаа даргатайгаа уулзаж байна. Аль нь зөв бэ?',
-        choices:[{id:'a',text:'Ahoj'},{id:'b',text:'Dobrý den'}], correctId:'b',
-        feedbackMn:'Dobrý den нь ажил болон албан нөхцөлд эхний аюулгүй сонголт.'
-      },
-      {
-        id:'a0-1-a-3', type:'choice', titleMn:'Нөхцөлд хариулах', promptMn:'Хэн нэгэн танд тусаллаа. Та юу гэж хэлэх вэ?',
-        choices:[{id:'a',text:'Na shledanou'},{id:'b',text:'Děkuji'},{id:'c',text:'Ne'}], correctId:'b',
-        feedbackMn:'Děkuji = Баярлалаа.'
-      },
+      { id:'a0-1-a-1', type:'choice', titleMn:'Сонсож таних', promptMn:'Аудиог сонсоод зөв Монгол утгыг сонго.', audioText:'Dobrý den', choices:[{id:'a',text:'Баяртай'},{id:'b',text:'Баярлалаа'},{id:'c',text:'Сайн байна уу'},{id:'d',text:'Уучлаарай'}], correctId:'c', feedbackMn:'Dobrý den нь албан, аюулгүй мэндчилгээ.' },
+      { id:'a0-1-a-2', type:'choice', titleMn:'Нөхцөлд тохируулах', promptMn:'Та ажил дээрээ анх удаа даргатайгаа уулзаж байна. Аль нь зөв бэ?', choices:[{id:'a',text:'Ahoj'},{id:'b',text:'Dobrý den'}], correctId:'b', feedbackMn:'Dobrý den нь ажил болон албан нөхцөлд эхний аюулгүй сонголт.' },
+      { id:'a0-1-a-3', type:'choice', titleMn:'Нөхцөлд хариулах', promptMn:'Хэн нэгэн танд тусаллаа. Та юу гэж хэлэх вэ?', choices:[{id:'a',text:'Na shledanou'},{id:'b',text:'Děkuji'},{id:'c',text:'Ne'}], correctId:'b', feedbackMn:'Děkuji = Баярлалаа.' },
+      { id:'a0-1-a-4', type:'fillBlank', titleMn:'Хоосон үг нөхөх', promptMn:'Албан мэндчилгээг гүйцээ.', promptCzech:'Dobrý ___.', choices:[{id:'a',text:'děkuji'},{id:'b',text:'den'},{id:'c',text:'prosím'}], correctId:'b', feedbackMn:'Dobrý den. = Сайн байна уу.' },
     ],
   },
   {
@@ -84,20 +93,10 @@ export const a0FirstContactMicroLessons: A0MicroLesson[] = [
       a0c0015:'Kdo jste? = Та хэн бэ? Ресепшн, хамгаалалттай хэсэг, ажил дээр сонсогдож болно.',
     },
     exercises: [
-      {
-        id:'a0-1-b-1', type:'choice', titleMn:'Утга таних', promptMn:'Энэ асуултын Монгол утгыг сонго.', promptCzech:'Jak se jmenujete?',
-        choices:[{id:'a',text:'Та хаана байна?'},{id:'b',text:'Таны нэр хэн бэ?'},{id:'c',text:'Та хэдэн настай вэ?'},{id:'d',text:'Та юу хүсэж байна?'}], correctId:'b',
-        feedbackMn:'Jak se jmenujete? нь албан хэлбэрийн нэр асуулт.'
-      },
-      {
-        id:'a0-1-b-2', type:'order', titleMn:'Өгүүлбэр бүтээх', promptMn:'Нэрээ хэлэх үгсийг зөв дарааллаар байрлуул.',
-        tokens:['se','Jmenuji','…'], expectedText:'Jmenuji se …', feedbackMn:'Нэрээ хэлэх суурь хэлбэр: Jmenuji se …'
-      },
-      {
-        id:'a0-1-b-3', type:'choice', titleMn:'Албан хэлбэр', promptMn:'Та ресепшний ажилтнаас нэрийг нь асууж байна. Аль асуулт зөв бэ?',
-        choices:[{id:'a',text:'Kdo jste?'},{id:'b',text:'Jak se jmenujete?'}], correctId:'b',
-        feedbackMn:'Нэр асуухдаа Jak se jmenujete? гэж асууна.'
-      },
+      { id:'a0-1-b-1', type:'choice', titleMn:'Утга таних', promptMn:'Энэ асуултын Монгол утгыг сонго.', promptCzech:'Jak se jmenujete?', choices:[{id:'a',text:'Та хаана байна?'},{id:'b',text:'Таны нэр хэн бэ?'},{id:'c',text:'Та хэдэн настай вэ?'},{id:'d',text:'Та юу хүсэж байна?'}], correctId:'b', feedbackMn:'Jak se jmenujete? нь албан хэлбэрийн нэр асуулт.' },
+      { id:'a0-1-b-2', type:'order', titleMn:'Өгүүлбэр бүтээх', promptMn:'Нэрээ хэлэх үгсийг зөв дарааллаар байрлуул.', tokens:['se','Jmenuji','…'], expectedText:'Jmenuji se …', feedbackMn:'Нэрээ хэлэх суурь хэлбэр: Jmenuji se …' },
+      { id:'a0-1-b-3', type:'choice', titleMn:'Албан хэлбэр', promptMn:'Та ресепшний ажилтнаас нэрийг нь асууж байна. Аль асуулт зөв бэ?', choices:[{id:'a',text:'Kdo jste?'},{id:'b',text:'Jak se jmenujete?'}], correctId:'b', feedbackMn:'Нэр асуухдаа Jak se jmenujete? гэж асууна.' },
+      { id:'a0-1-b-4', type:'typing', titleMn:'Бичих дасгал', promptMn:'“Миний нэр Эба” гэдгийг Чехээр бич.', targetText:'Jmenuji se Eba.', inputHint:'Jmenuji se …', feedbackMn:'Jmenuji se Eba. = Миний нэр Эба.' },
     ],
   },
   {
@@ -118,36 +117,16 @@ export const a0FirstContactMicroLessons: A0MicroLesson[] = [
       a0c0327:'Хэн нэгэн хурдан ярихад шууд хэрэглэнэ.',
     },
     exercises: [
-      {
-        id:'a0-1-c-1', type:'choice', titleMn:'Сонсож таних', promptMn:'Аудиог сонсоод зөв Монгол утгыг сонго.', audioText:'Jsem z Mongolska.',
-        choices:[{id:'a',text:'Би Монголд ажилладаг.'},{id:'b',text:'Би Монгол хэл мэдэхгүй.'},{id:'c',text:'Би Монгол руу явж байна.'},{id:'d',text:'Би Монголоос ирсэн.'}], correctId:'d',
-        feedbackMn:'Jsem z Mongolska. = Би Монголоос ирсэн.'
-      },
-      {
-        id:'a0-1-c-2', type:'choice', titleMn:'Асуултад хариулах', promptMn:'Jak se máte? гэсэн асуултад аль нь тохирох хариу вэ?',
-        choices:[{id:'a',text:'Odkud?'},{id:'b',text:'Dobře.'},{id:'c',text:'Na shledanou.'}], correctId:'b',
-        feedbackMn:'Jak se máte? = Та сайн уу? Dobře. = Сайн.'
-      },
-      {
-        id:'a0-1-c-3', type:'order', titleMn:'Өгүүлбэр бүтээх', promptMn:'“Би Монголоос ирсэн” гэсэн өгүүлбэрийг зөв дарааллаар байрлуул.',
-        tokens:['z','Jsem','Mongolska.'], expectedText:'Jsem z Mongolska.', feedbackMn:'Jsem z Mongolska. = Би Монголоос ирсэн.'
-      },
-      {
-        id:'a0-1-c-4', type:'choice', titleMn:'Яаралтай хэрэглэх хэллэг', promptMn:'Хэн нэгэн хэт хурдан ярьж байна. Юу гэж хэлэх вэ?',
-        choices:[{id:'a',text:'Na shledanou.'},{id:'b',text:'Kdo jste?'},{id:'c',text:'Mluvte prosím pomalu.'}], correctId:'c',
-        feedbackMn:'Mluvte prosím pomalu. = Удаан ярьж өгнө үү.'
-      },
+      { id:'a0-1-c-1', type:'choice', titleMn:'Сонсож таних', promptMn:'Аудиог сонсоод зөв Монгол утгыг сонго.', audioText:'Jsem z Mongolska.', choices:[{id:'a',text:'Би Монголд ажилладаг.'},{id:'b',text:'Би Монгол хэл мэдэхгүй.'},{id:'c',text:'Би Монгол руу явж байна.'},{id:'d',text:'Би Монголоос ирсэн.'}], correctId:'d', feedbackMn:'Jsem z Mongolska. = Би Монголоос ирсэн.' },
+      { id:'a0-1-c-2', type:'choice', titleMn:'Асуултад хариулах', promptMn:'Jak se máte? гэсэн асуултад аль нь тохирох хариу вэ?', choices:[{id:'a',text:'Odkud?'},{id:'b',text:'Dobře.'},{id:'c',text:'Na shledanou.'}], correctId:'b', feedbackMn:'Jak se máte? = Та сайн уу? Dobře. = Сайн.' },
+      { id:'a0-1-c-3', type:'order', titleMn:'Өгүүлбэр бүтээх', promptMn:'“Би Монголоос ирсэн” гэсэн өгүүлбэрийг зөв дарааллаар байрлуул.', tokens:['z','Jsem','Mongolska.'], expectedText:'Jsem z Mongolska.', feedbackMn:'Jsem z Mongolska. = Би Монголоос ирсэн.' },
+      { id:'a0-1-c-4', type:'choice', titleMn:'Яаралтай хэрэглэх хэллэг', promptMn:'Хэн нэгэн хэт хурдан ярьж байна. Юу гэж хэлэх вэ?', choices:[{id:'a',text:'Na shledanou.'},{id:'b',text:'Kdo jste?'},{id:'c',text:'Mluvte prosím pomalu.'}], correctId:'c', feedbackMn:'Mluvte prosím pomalu. = Удаан ярьж өгнө үү.' },
+      { id:'a0-1-c-5', type:'typing', titleMn:'Сонсоод бичих', promptMn:'Аудиог сонсоод бүтэн өгүүлбэрийг бич.', audioText:'Jsem z Mongolska.', targetText:'Jsem z Mongolska.', inputHint:'Сонссон өгүүлбэрээ бич…', feedbackMn:'Jsem z Mongolska. = Би Монголоос ирсэн.' },
     ],
   },
 ];
 
-export const a0FirstContactMission = [
-  { id:'m1', promptMn:'Та Чехийн ажлын газрын ресепшнд анх орж ирлээ. Эхлээд юу гэж хэлэх вэ?', choices:[{id:'a',text:'Ahoj.'},{id:'b',text:'Dobrý den.'}], correctId:'b', feedbackMn:'Албан нөхцөлд Dobrý den нь зөв эхлэл.' },
-  { id:'m2', promptMn:'Одоо өөрийн нэрийг хэл.', choices:[{id:'a',text:'Kdo jste?'},{id:'b',text:'Jmenuji se Eba.'}], correctId:'b', feedbackMn:'Jmenuji se … нь нэрээ хэлэх бүтэц.' },
-  { id:'m3', promptMn:'Та хаанаас ирснээ хэл.', choices:[{id:'a',text:'Mluvte pomalu.'},{id:'b',text:'Jsem z Mongolska.'}], correctId:'b', feedbackMn:'Jsem z Mongolska. = Би Монголоос ирсэн.' },
-  { id:'m4', promptMn:'Ресепшний ажилтан хурдан ярьж байна. Аль хариулт бүхэлдээ зөв бэ?', choices:[{id:'a',text:'Ano. Na shledanou.'},{id:'b',text:'Nerozumím. Mluvte prosím pomalu.'}], correctId:'b', feedbackMn:'Эхлээд ойлгохгүйгээ хэлээд, дараа нь удаан ярихыг хүснэ.' },
-  { id:'m5', promptMn:'Яриаг албан хэлбэрээр дуусга.', choices:[{id:'a',text:'Ahoj.'},{id:'b',text:'Na shledanou.'}], correctId:'b', feedbackMn:'Na shledanou нь албан болон саармаг баяртай хэлбэр.' },
-] as const;
+export const a0FirstContactMission = [] as const;
 
 export function getA0FirstContactCard(id: string): CzechWord {
   const card = byId.get(id);
