@@ -53,7 +53,7 @@ export const a0FirstContactMicroLessons: A0MicroLesson[] = [
     exercises: [
       {
         id:'a0-1-a-1', type:'choice', titleMn:'Сонсож таних', promptMn:'Аудиог сонсоод зөв Монгол утгыг сонго.', audioText:'Dobrý den',
-        choices:[{id:'a',text:'Сайн байна уу'},{id:'b',text:'Баяртай'},{id:'c',text:'Баярлалаа'},{id:'d',text:'Уучлаарай'}], correctId:'a',
+        choices:[{id:'a',text:'Баяртай'},{id:'b',text:'Баярлалаа'},{id:'c',text:'Сайн байна уу'},{id:'d',text:'Уучлаарай'}], correctId:'c',
         feedbackMn:'Dobrý den нь албан, аюулгүй мэндчилгээ.'
       },
       {
@@ -63,7 +63,7 @@ export const a0FirstContactMicroLessons: A0MicroLesson[] = [
       },
       {
         id:'a0-1-a-3', type:'choice', titleMn:'Нөхцөлд хариулах', promptMn:'Хэн нэгэн танд тусаллаа. Та юу гэж хэлэх вэ?',
-        choices:[{id:'a',text:'Děkuji'},{id:'b',text:'Na shledanou'},{id:'c',text:'Ne'}], correctId:'a',
+        choices:[{id:'a',text:'Na shledanou'},{id:'b',text:'Děkuji'},{id:'c',text:'Ne'}], correctId:'b',
         feedbackMn:'Děkuji = Баярлалаа.'
       },
     ],
@@ -86,7 +86,7 @@ export const a0FirstContactMicroLessons: A0MicroLesson[] = [
     exercises: [
       {
         id:'a0-1-b-1', type:'choice', titleMn:'Утга таних', promptMn:'Энэ асуултын Монгол утгыг сонго.', promptCzech:'Jak se jmenujete?',
-        choices:[{id:'a',text:'Таны нэр хэн бэ?'},{id:'b',text:'Та хаана байна?'},{id:'c',text:'Та хэдэн настай вэ?'},{id:'d',text:'Та юу хүсэж байна?'}], correctId:'a',
+        choices:[{id:'a',text:'Та хаана байна?'},{id:'b',text:'Таны нэр хэн бэ?'},{id:'c',text:'Та хэдэн настай вэ?'},{id:'d',text:'Та юу хүсэж байна?'}], correctId:'b',
         feedbackMn:'Jak se jmenujete? нь албан хэлбэрийн нэр асуулт.'
       },
       {
@@ -95,7 +95,7 @@ export const a0FirstContactMicroLessons: A0MicroLesson[] = [
       },
       {
         id:'a0-1-b-3', type:'choice', titleMn:'Албан хэлбэр', promptMn:'Та ресепшний ажилтнаас нэрийг нь асууж байна. Аль асуулт зөв бэ?',
-        choices:[{id:'a',text:'Jak se jmenujete?'},{id:'b',text:'Kdo jste?'}], correctId:'a',
+        choices:[{id:'a',text:'Kdo jste?'},{id:'b',text:'Jak se jmenujete?'}], correctId:'b',
         feedbackMn:'Нэр асуухдаа Jak se jmenujete? гэж асууна.'
       },
     ],
@@ -120,12 +120,12 @@ export const a0FirstContactMicroLessons: A0MicroLesson[] = [
     exercises: [
       {
         id:'a0-1-c-1', type:'choice', titleMn:'Сонсож таних', promptMn:'Аудиог сонсоод зөв Монгол утгыг сонго.', audioText:'Jsem z Mongolska.',
-        choices:[{id:'a',text:'Би Монголоос ирсэн.'},{id:'b',text:'Би Монголд ажилладаг.'},{id:'c',text:'Би Монгол хэл мэдэхгүй.'},{id:'d',text:'Би Монгол руу явж байна.'}], correctId:'a',
+        choices:[{id:'a',text:'Би Монголд ажилладаг.'},{id:'b',text:'Би Монгол хэл мэдэхгүй.'},{id:'c',text:'Би Монгол руу явж байна.'},{id:'d',text:'Би Монголоос ирсэн.'}], correctId:'d',
         feedbackMn:'Jsem z Mongolska. = Би Монголоос ирсэн.'
       },
       {
         id:'a0-1-c-2', type:'choice', titleMn:'Асуултад хариулах', promptMn:'Jak se máte? гэсэн асуултад аль нь тохирох хариу вэ?',
-        choices:[{id:'a',text:'Dobře.'},{id:'b',text:'Odkud?'},{id:'c',text:'Na shledanou.'}], correctId:'a',
+        choices:[{id:'a',text:'Odkud?'},{id:'b',text:'Dobře.'},{id:'c',text:'Na shledanou.'}], correctId:'b',
         feedbackMn:'Jak se máte? = Та сайн уу? Dobře. = Сайн.'
       },
       {
@@ -134,7 +134,7 @@ export const a0FirstContactMicroLessons: A0MicroLesson[] = [
       },
       {
         id:'a0-1-c-4', type:'choice', titleMn:'Яаралтай хэрэглэх хэллэг', promptMn:'Хэн нэгэн хэт хурдан ярьж байна. Юу гэж хэлэх вэ?',
-        choices:[{id:'a',text:'Mluvte prosím pomalu.'},{id:'b',text:'Na shledanou.'},{id:'c',text:'Kdo jste?'}], correctId:'a',
+        choices:[{id:'a',text:'Na shledanou.'},{id:'b',text:'Kdo jste?'},{id:'c',text:'Mluvte prosím pomalu.'}], correctId:'c',
         feedbackMn:'Mluvte prosím pomalu. = Удаан ярьж өгнө үү.'
       },
     ],
@@ -142,11 +142,11 @@ export const a0FirstContactMicroLessons: A0MicroLesson[] = [
 ];
 
 export const a0FirstContactMission = [
-  { id:'m1', promptMn:'Та Чехийн ажлын газрын ресепшнд анх орж ирлээ. Эхлээд юу гэж хэлэх вэ?', choices:[{id:'a',text:'Dobrý den.'},{id:'b',text:'Ahoj.'}], correctId:'a', feedbackMn:'Албан нөхцөлд Dobrý den нь зөв эхлэл.' },
-  { id:'m2', promptMn:'Одоо өөрийн нэрийг хэл.', choices:[{id:'a',text:'Jmenuji se Eba.'},{id:'b',text:'Kdo jste?'}], correctId:'a', feedbackMn:'Jmenuji se … нь нэрээ хэлэх бүтэц.' },
-  { id:'m3', promptMn:'Та хаанаас ирснээ хэл.', choices:[{id:'a',text:'Jsem z Mongolska.'},{id:'b',text:'Mluvte pomalu.'}], correctId:'a', feedbackMn:'Jsem z Mongolska. = Би Монголоос ирсэн.' },
-  { id:'m4', promptMn:'Ресепшний ажилтан хурдан ярьж байна. Аль хариулт бүхэлдээ зөв бэ?', choices:[{id:'a',text:'Nerozumím. Mluvte prosím pomalu.'},{id:'b',text:'Ano. Na shledanou.'}], correctId:'a', feedbackMn:'Эхлээд ойлгохгүйгээ хэлээд, дараа нь удаан ярихыг хүснэ.' },
-  { id:'m5', promptMn:'Яриаг албан хэлбэрээр дуусга.', choices:[{id:'a',text:'Na shledanou.'},{id:'b',text:'Ahoj.'}], correctId:'a', feedbackMn:'Na shledanou нь албан болон саармаг баяртай хэлбэр.' },
+  { id:'m1', promptMn:'Та Чехийн ажлын газрын ресепшнд анх орж ирлээ. Эхлээд юу гэж хэлэх вэ?', choices:[{id:'a',text:'Ahoj.'},{id:'b',text:'Dobrý den.'}], correctId:'b', feedbackMn:'Албан нөхцөлд Dobrý den нь зөв эхлэл.' },
+  { id:'m2', promptMn:'Одоо өөрийн нэрийг хэл.', choices:[{id:'a',text:'Kdo jste?'},{id:'b',text:'Jmenuji se Eba.'}], correctId:'b', feedbackMn:'Jmenuji se … нь нэрээ хэлэх бүтэц.' },
+  { id:'m3', promptMn:'Та хаанаас ирснээ хэл.', choices:[{id:'a',text:'Mluvte pomalu.'},{id:'b',text:'Jsem z Mongolska.'}], correctId:'b', feedbackMn:'Jsem z Mongolska. = Би Монголоос ирсэн.' },
+  { id:'m4', promptMn:'Ресепшний ажилтан хурдан ярьж байна. Аль хариулт бүхэлдээ зөв бэ?', choices:[{id:'a',text:'Ano. Na shledanou.'},{id:'b',text:'Nerozumím. Mluvte prosím pomalu.'}], correctId:'b', feedbackMn:'Эхлээд ойлгохгүйгээ хэлээд, дараа нь удаан ярихыг хүснэ.' },
+  { id:'m5', promptMn:'Яриаг албан хэлбэрээр дуусга.', choices:[{id:'a',text:'Ahoj.'},{id:'b',text:'Na shledanou.'}], correctId:'b', feedbackMn:'Na shledanou нь албан болон саармаг баяртай хэлбэр.' },
 ] as const;
 
 export function getA0FirstContactCard(id: string): CzechWord {
