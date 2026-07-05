@@ -166,7 +166,7 @@ async function main() {
   const key = process.env.AZURE_SPEECH_KEY;
   const region = process.env.AZURE_SPEECH_REGION;
   if (!key || !region) {
-    throw new Error('AZURE_SPEECH_KEY болон AZURE_SPEECH_REGION-г .env.local дотор оруул. .env.example-г хар.');
+    throw new Error('Azure-ийн local credential болон region дутуу байна. audio/README.md зааврыг дага.');
   }
 
   const endpoint = `https://${region}.tts.speech.microsoft.com/cognitiveservices/v1`;
