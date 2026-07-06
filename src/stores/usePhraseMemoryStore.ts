@@ -58,23 +58,12 @@ export const usePhraseMemoryStore = create<PhraseMemoryState>()(
   persist(
     (set, get) => ({
       phrases: {},
-
       recordExposure: (targetId) => {
         useAppStore.getState().activateWordForReview(targetId);
         const { phrases } = get();
         const existing = phrases[targetId] || createMemory(targetId);
-        set({
-          phrases: {
-            ...phrases,
-            [targetId]: {
-              ...existing,
-              exposures: existing.exposures + 1,
-              lastSeen: new Date().toISOString(),
-            },
-          },
-        });
+        set({ phrases: { ...phrases, [targetId]: { ...existing, exposures: existing.exposures + 1, lastSeen: new Date().toISOString() } } });
       },
-
       recordAttempt: (targetId, correct) => {
         const { phrases } = get();
         const existing = phrases[targetId] || createMemory(targetId);
@@ -94,12 +83,10 @@ export const usePhraseMemoryStore = create<PhraseMemoryState>()(
           },
         });
       },
-
       getCarryoverTargetIds: (lessonId, limit = 3) => {
         const now = new Date();
         const priorIds = getPriorActiveTargetIds(lessonId);
         const { phrases } = get();
-
         return [...priorIds]
           .sort((left, right) => {
             const a = phrases[left];
@@ -107,56 +94,39 @@ export const usePhraseMemoryStore = create<PhraseMemoryState>()(
             const aMissing = !a ? 1 : 0;
             const bMissing = !b ? 1 : 0;
             if (aMissing !== bMissing) return bMissing - aMissing;
-
             const aDue = a && new Date(a.nextReview) <= now ? 1 : 0;
             const bDue = b && new Date(b.nextReview) <= now ? 1 : 0;
             if (aDue !== bDue) return bDue - aDue;
-
             const aWeakness = a ? weaknessScore(a) : 0;
             const bWeakness = b ? weaknessScore(b) : 0;
             if (aWeakness !== bWeakness) return bWeakness - aWeakness;
-
             const aSeedRank = getA0CarryoverSeedRank(lessonId, left);
             const bSeedRank = getA0CarryoverSeedRank(lessonId, right);
             if (aSeedRank !== bSeedRank) return aSeedRank - bSeedRank;
-
             const aSeen = a ? new Date(a.lastSeen).getTime() : 0;
             const bSeen = b ? new Date(b.lastSeen).getTime() : 0;
             return aSeen - bSeen;
           })
           .slice(0, limit);
       },
-
       getTodayReviewTargetIds: (limit = 5) => {
         const now = new Date();
         const { phrases } = get();
-
         return Object.values(phrases)
           .filter((memory) => {
             const target = a0MemoryTargets.find((item) => item.id === memory.targetId);
-            return target?.priority === 'active' && memory.exposures > 0;
+            return target?.priority === 'active' && memory.exposures > 0 && new Date(memory.nextReview) <= now;
           })
           .sort((left, right) => {
-            const leftWeak = left.incorrectAttempts > 0 ? 1 : 0;
-            const rightWeak = right.incorrectAttempts > 0 ? 1 : 0;
-            if (leftWeak !== rightWeak) return rightWeak - leftWeak;
-
-            const leftDue = new Date(left.nextReview) <= now ? 1 : 0;
-            const rightDue = new Date(right.nextReview) <= now ? 1 : 0;
-            if (leftDue !== rightDue) return rightDue - leftDue;
-
             const leftScore = weaknessScore(left);
             const rightScore = weaknessScore(right);
             if (leftScore !== rightScore) return rightScore - leftScore;
-
             return new Date(left.nextReview).getTime() - new Date(right.nextReview).getTime();
           })
           .slice(0, limit)
           .map((memory) => memory.targetId);
       },
     }),
-    {
-      name: 'czech-mn-a0-phrase-memory-v1',
-    },
+    { name: 'czech-mn-a0-phrase-memory-v1' },
   ),
 );
