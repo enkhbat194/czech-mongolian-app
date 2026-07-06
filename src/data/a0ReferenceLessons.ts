@@ -3,9 +3,10 @@ import { a0NeedsCards, a0NeedsMicroLessons, getA0NeedsCard } from './a0Needs';
 import { a0LocationCards, a0LocationMicroLessons, getA0LocationCard } from './a0Location';
 import { a0FirstContactCoveredFinalDialogue, a0FirstContactCoveredMicroDialogues, a0NeedsCoveredFinalDialogue, a0NeedsCoveredMicroDialogues } from './a0CoverageDialogues';
 import { a0LocationFinalDialogue, a0LocationMicroDialogues } from './a0LocationDialogues';
+import { a0ReferenceNewLessons } from './a0ReferenceNewLessons';
 import { auditA0Lesson, defineA0Lesson, type A0LessonDefinition } from './a0LessonSchema';
 
-export const a0ReferenceLessons: Record<'l001' | 'l002' | 'l003', A0LessonDefinition> = {
+const coreReferenceLessons: Record<'l001' | 'l002' | 'l003', A0LessonDefinition> = {
   l001: defineA0Lesson({
     lessonId: 'l001',
     titleMn: 'A0.1 — Анхны харилцаа',
@@ -48,6 +49,11 @@ export const a0ReferenceLessons: Record<'l001' | 'l002' | 'l003', A0LessonDefini
     completionSummaryMn: 'Та танихгүй газарт ариун цэврийн өрөө, дэлгүүр, эмийн сан, галт тэрэгний буудал хаана байгааг асууж, “энд / тэнд” гэсэн хариуг тодруулж чадна.',
     completionPhrases: ['Prosím, kde je toaleta?', 'Tady.', 'Tam.', 'Kde je lékárna?', 'Tady, nebo tam?'],
   }),
+};
+
+export const a0ReferenceLessons: Record<string, A0LessonDefinition> = {
+  ...coreReferenceLessons,
+  ...a0ReferenceNewLessons,
 };
 
 export const a0ReferenceAudit = Object.values(a0ReferenceLessons).map(auditA0Lesson);
