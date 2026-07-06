@@ -57,6 +57,11 @@ const aliasMap: Record<string, string[]> = {
   a0c0051: ['Prosím, kde je obchod?'],
   a0c0053: ['Prosím, kde je lékárna?'],
   a0c0055: ['Prosím, kde je nádraží?'],
+  a0c0064: ['Autobus, prosím.'],
+  a0c0065: ['Tramvaj, prosím.'],
+  a0c0081: ['Dnes mám čas.', 'Zítra večer mám čas.'],
+  a0c0082: ['Teď nemám čas.'],
+  a0c0099: ['Nerozumím. Potřebuji pomoc.'],
 };
 
 function normalizeCzech(text: string) {
