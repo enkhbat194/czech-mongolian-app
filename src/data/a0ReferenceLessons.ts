@@ -3,7 +3,7 @@ import { a0NeedsCards, a0NeedsMicroLessons, getA0NeedsCard } from './a0Needs';
 import { a0LocationCards, a0LocationMicroLessons, getA0LocationCard } from './a0Location';
 import { a0FirstContactCoveredFinalDialogue, a0FirstContactCoveredMicroDialogues, a0NeedsCoveredFinalDialogue, a0NeedsCoveredMicroDialogues } from './a0CoverageDialogues';
 import { a0LocationFinalDialogue, a0LocationMicroDialogues } from './a0LocationDialogues';
-import { defineA0Lesson, type A0LessonDefinition } from './a0LessonSchema';
+import { auditA0Lesson, defineA0Lesson, type A0LessonDefinition } from './a0LessonSchema';
 
 export const a0ReferenceLessons: Record<'l001' | 'l002' | 'l003', A0LessonDefinition> = {
   l001: defineA0Lesson({
@@ -49,3 +49,5 @@ export const a0ReferenceLessons: Record<'l001' | 'l002' | 'l003', A0LessonDefini
     completionPhrases: ['Prosím, kde je toaleta?', 'Kde je obchod?', 'Kde je lékárna?', 'Kde je nádraží?', 'Tady, nebo tam?'],
   }),
 };
+
+export const a0ReferenceAudit = Object.values(a0ReferenceLessons).map(auditA0Lesson);
