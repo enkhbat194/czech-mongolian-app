@@ -2,7 +2,7 @@ export type MemoryPriority = 'active' | 'support';
 
 export interface A0MemoryTarget {
   id: string;
-  lessonId: 'l001' | 'l002';
+  lessonId: 'l001' | 'l002' | 'l003';
   czech: string;
   mongolian: string;
   priority: MemoryPriority;
@@ -37,7 +37,7 @@ export const a0MemoryTargets: A0MemoryTarget[] = [
   { id: 'a0c0002', lessonId: 'l001', czech: 'Ahoj.', mongolian: 'Сайн уу.', priority: 'support', aliases: ['Ahoj'], requiredCoverage: supportCoverage },
   { id: 'a0c0003', lessonId: 'l001', czech: 'Na shledanou.', mongolian: 'Баяртай.', priority: 'active', aliases: ['Na shledanou'], requiredCoverage: activeCoverage },
   { id: 'a0c0004', lessonId: 'l001', czech: 'Prosím.', mongolian: 'Гуйя.', priority: 'support', aliases: ['Prosím'], requiredCoverage: supportCoverage },
-  { id: 'a0c0005', lessonId: 'l001', czech: 'Děkuji.', mongolian: 'Баярлалаа.', priority: 'active', aliases: ['Děkuji'], requiredCoverage: activeCoverage },
+  { id: 'a0c0005', lessonId: 'l001', czech: 'Děkuji.', mongolian: 'Баярлалаа.', priority: 'active', aliases: ['Děkuji', 'Děkuji. Na shledanou.'], requiredCoverage: activeCoverage },
   { id: 'a0c0006', lessonId: 'l001', czech: 'Ano.', mongolian: 'Тийм.', priority: 'active', aliases: ['Ano', 'Ano, prosím.', 'Ano, děkuji.'], requiredCoverage: activeCoverage },
   { id: 'a0c0007', lessonId: 'l001', czech: 'Ne.', mongolian: 'Үгүй.', priority: 'support', aliases: ['Ne', 'Ne, děkuji.'], requiredCoverage: supportCoverage },
   { id: 'a0c0008', lessonId: 'l001', czech: 'být', mongolian: 'байх', priority: 'support', requiredCoverage: supportCoverage },
@@ -81,9 +81,23 @@ export const a0MemoryTargets: A0MemoryTarget[] = [
   { id: 'a0c0042', lessonId: 'l002', czech: 'Nemám kartu.', mongolian: 'Надад карт байхгүй.', priority: 'active', requiredCoverage: activeCoverage },
   { id: 'a0c0043', lessonId: 'l002', czech: 'Co potřebujete?', mongolian: 'Танд юу хэрэгтэй вэ?', priority: 'active', requiredCoverage: activeCoverage },
   { id: 'a0c0044', lessonId: 'l002', czech: 'Potřebuji pomoc, prosím.', mongolian: 'Надад туслаач, гуйя.', priority: 'active', aliases: ['Potřebuji pomoc.'], requiredCoverage: activeCoverage },
+
+  { id: 'a0c0045', lessonId: 'l003', czech: 'kde', mongolian: 'хаана', priority: 'support', requiredCoverage: supportCoverage },
+  { id: 'a0c0046', lessonId: 'l003', czech: 'toaleta', mongolian: 'ариун цэврийн өрөө', priority: 'support', requiredCoverage: supportCoverage },
+  { id: 'a0c0047', lessonId: 'l003', czech: 'Prosím, kde je toaleta?', mongolian: 'Уучлаарай, ариун цэврийн өрөө хаана байна?', priority: 'active', aliases: ['Kde je toaleta?'], requiredCoverage: activeCoverage },
+  { id: 'a0c0048', lessonId: 'l003', czech: 'Tady.', mongolian: 'Энд.', priority: 'active', aliases: ['Tady', 'Toaleta je tady.', 'Lékárna je tady.'], requiredCoverage: activeCoverage },
+  { id: 'a0c0049', lessonId: 'l003', czech: 'Tam.', mongolian: 'Тэнд.', priority: 'active', aliases: ['Tam', 'Obchod je tam.', 'Nádraží je tam.'], requiredCoverage: activeCoverage },
+  { id: 'a0c0050', lessonId: 'l003', czech: 'obchod', mongolian: 'дэлгүүр', priority: 'support', requiredCoverage: supportCoverage },
+  { id: 'a0c0051', lessonId: 'l003', czech: 'Kde je obchod?', mongolian: 'Дэлгүүр хаана байна?', priority: 'active', aliases: ['Prosím, kde je obchod?'], requiredCoverage: activeCoverage },
+  { id: 'a0c0052', lessonId: 'l003', czech: 'lékárna', mongolian: 'эмийн сан', priority: 'support', requiredCoverage: supportCoverage },
+  { id: 'a0c0053', lessonId: 'l003', czech: 'Kde je lékárna?', mongolian: 'Эмийн сан хаана байна?', priority: 'active', aliases: ['Prosím, kde je lékárna?'], requiredCoverage: activeCoverage },
+  { id: 'a0c0054', lessonId: 'l003', czech: 'nádraží', mongolian: 'галт тэрэгний буудал', priority: 'support', requiredCoverage: supportCoverage },
+  { id: 'a0c0055', lessonId: 'l003', czech: 'Kde je nádraží?', mongolian: 'Галт тэрэгний буудал хаана байна?', priority: 'active', aliases: ['Prosím, kde je nádraží?'], requiredCoverage: activeCoverage },
+  { id: 'a0c0056', lessonId: 'l003', czech: 'nebo', mongolian: 'эсвэл', priority: 'support', requiredCoverage: supportCoverage },
+  { id: 'a0c0057', lessonId: 'l003', czech: 'Tady, nebo tam?', mongolian: 'Энд үү, тэнд үү?', priority: 'active', requiredCoverage: activeCoverage },
 ];
 
-const lessonOrder = ['l001', 'l002'];
+const lessonOrder = ['l001', 'l002', 'l003'];
 
 function normalizeCzech(text: string) {
   return text
