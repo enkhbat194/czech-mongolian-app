@@ -18,6 +18,7 @@ import FillBlankPage from '../../pages/FillBlankPage';
 import InteractiveLearningPage from '../../pages/InteractiveLearningPage';
 import A0FirstContactPage from '../../pages/A0FirstContactPage';
 import A0NeedsPage from '../../pages/A0NeedsPage';
+import A0LocationPage from '../../pages/A0LocationPage';
 import TodayReviewPage from '../../pages/TodayReviewPage';
 
 const v: Variants = {
@@ -43,13 +44,14 @@ const pages: Record<string, React.FC> = {
   interactiveLearning: InteractiveLearningPage,
   a0FirstContact: A0FirstContactPage,
   a0Needs: A0NeedsPage,
+  a0Location: A0LocationPage,
   todayReview: TodayReviewPage,
 };
 
 const Layout: React.FC = () => {
   const { currentPage } = useAppStore();
   const Page = pages[currentPage] || HomePage;
-  const isImmersiveLesson = ['a0FirstContact', 'a0Needs', 'todayReview'].includes(currentPage);
+  const isImmersiveLesson = ['a0FirstContact', 'a0Needs', 'a0Location', 'todayReview'].includes(currentPage);
 
   return (
     <div style={{ minHeight: '100dvh', background: '#080810', display: 'flex', justifyContent: 'center' }}>
