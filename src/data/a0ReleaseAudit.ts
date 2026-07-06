@@ -31,7 +31,7 @@ export function validateA0Release(): A0ReleaseAuditResult {
 
   const audits = readyLessons.map((lesson) => {
     const definition = a0ReferenceCatalog[lesson.id];
-    assertA0Release(Boolean(definition), `${lesson.id} is ready but has no lesson definition`);
+    assertA0Release(definition, `${lesson.id} is ready but has no lesson definition`);
     const audit = auditA0Lesson(definition);
     assertA0Release(
       audit.cardCount === lesson.wordCount,
