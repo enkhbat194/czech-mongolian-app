@@ -2,7 +2,6 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { ChevronLeft, RotateCcw, Volume2 } from 'lucide-react';
 import { a0ReferenceCatalog } from '../data/a0ReferenceCatalog';
 import type { DialogueChoice, DialogueScenario } from '../data/a0Dialogues';
-import A0DialogueScene from '../components/lessons/A0DialogueScene';
 import { useAppStore } from '../stores/useAppStore';
 
 type Feedback = 'correct' | 'wrong' | null;
@@ -111,8 +110,7 @@ const A0DialoguePreviewPage: React.FC = () => {
       <div style={{ flex: 1, minWidth: 0 }}><p style={{ margin: 0, color: '#C8952A', fontSize: 10, fontWeight: 900 }}>ТҮР ШАЛГАЛТ</p><h1 style={{ margin: '2px 0 0', fontSize: 15, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{lesson.titleMn.split(' — ')[0]} · Төгсгөлийн яриа</h1></div>
       <button onClick={restart} aria-label="Яриаг дахин эхлүүлэх" style={{ width: 34, height: 34, flex: '0 0 34px', borderRadius: 10, border: '1px solid #34343A', background: '#242428', color: '#F5C842', display: 'grid', placeItems: 'center', cursor: 'pointer' }}><RotateCcw size={15} /></button>
     </div></header>
-    <main style={{ maxWidth: 430, margin: '0 auto', padding: '10px 12px 24px' }}>
-      <A0DialogueScene lessonId={currentLessonId} />
+    <main style={{ maxWidth: 430, margin: '0 auto', padding: '12px 12px 24px' }}>
       <div style={{ marginBottom: 8, minHeight: 42, padding: '8px 10px', borderRadius: 14, background: '#1C1C1F', border: '1px solid #2A2A2F', display: 'flex', alignItems: 'center', gap: 8 }}><p style={{ flex: 1, minWidth: 0, margin: 0, fontSize: 12, fontWeight: 900, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{scenario.titleMn}</p><button onClick={() => setAutoAudio((value) => !value)} style={{ padding: '6px 8px', flex: '0 0 auto', borderRadius: 9, border: '1px solid rgba(200,149,42,.4)', background: autoAudio ? 'rgba(200,149,42,.16)' : 'transparent', color: autoAudio ? '#F5C842' : '#A0A0A8', cursor: 'pointer', fontSize: 10, fontWeight: 800 }}>{autoAudio ? '🔊 Авто' : '🔇 Дуугүй'}</button></div>
       <section style={{ background: '#1C1C1F', border: '1px solid #2A2A2F', borderRadius: 18, padding: 12 }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 7, marginBottom: transitioning || completed ? 0 : 11 }}>{visibleHistory.map(bubble)}{!transitioning && !completed && bubble({ id: `${step.id}-current`, side: 'staff', speaker: step.speaker, czech: step.staffCzech, mongolian: step.staffMn })}</div>
