@@ -14,7 +14,7 @@ export interface Lesson {
 }
 
 export const lessons: Lesson[] = [
-  { id:'l001', title:'A0.1 First contact', titleMn:'A0.1 — Анхны харилцаа', description:'Мэндлэх, нэрээ хэлэх, ойлгохгүй үед удаан ярихыг хүсэх', wordCount:25, estimatedMinutes:38, icon:'👋', order:1, isLocked:false, status:'ready' },
+  { id:'l001', title:'A0.1 First contact', titleMn:'A0.1 — Анхны харилцаа', description:'Мэндлэх, нэрээ хэлэх, ойлгохгүй үед удаан ярихыг хүсэх', wordCount:26, estimatedMinutes:38, icon:'👋', order:1, isLocked:false, status:'ready' },
   { id:'l002', title:'A0.2 Needs', titleMn:'A0.2 — Надад хэрэгтэй', description:'Тусламж, ус, хоол хэрэгтэйгээ хэлж, байхгүй зүйлээ тайлбарлах', wordCount:22, estimatedMinutes:38, icon:'🧾', order:2, isLocked:true, status:'ready' },
   { id:'l003', title:'A0.3 Location', titleMn:'A0.3 — Хаана байна?', description:'Ариун цэврийн өрөө, дэлгүүр, эмийн сан, буудал хаана байгааг асуух', wordCount:13, estimatedMinutes:32, icon:'📍', order:3, isLocked:true, status:'ready' },
   { id:'l004', title:'A0.4 Directions', titleMn:'A0.4 — Яаж очих вэ?', description:'Чиглэл, буудал, автобус, трамвай, буух заавар', wordCount:14, estimatedMinutes:34, icon:'🚌', order:4, isLocked:true, status:'ready' },
