@@ -58,9 +58,9 @@ export const a0MatchExercisesBySourceId: Record<string, A0MatchExercise> = {
     pairs: [
       { id: 'shop', czech: 'Kde je obchod?', mongolian: 'Дэлгүүр хаана байна?' },
       { id: 'pharmacy', czech: 'Kde je lékárna?', mongolian: 'Эмийн сан хаана байна?' },
-      { id: 'station', czech: 'Kde je nádraží?', mongolian: 'Галт тэрэгний буудал хаана байна?' },
+      { id: 'there', czech: 'Tam.', mongolian: 'Тэнд.' },
     ],
-    feedbackMn: 'Хэрэгтэй газраа асуух хэллэгүүдийг зөв таарууллаа.',
+    feedbackMn: 'Дэлгүүр, эмийн сан асуух болон заасан хариуг зөв таарууллаа.',
   },
 };
 
