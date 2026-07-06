@@ -32,17 +32,13 @@ export interface UserProgress {
 export interface AppState {
   words: CzechWord[];
   lessons: Lesson[];
-
   currentPage: string;
   currentLessonId: string | null;
   currentWordIndex: number;
-
   userName: string;
   progress: UserProgress;
-
   isDarkMode: boolean;
   isAudioPlaying: boolean;
-
   setPage: (page: string) => void;
   setCurrentLesson: (lessonId: string) => void;
   setCurrentWordIndex: (index: number) => void;
@@ -89,8 +85,9 @@ function createReviewCard(wordId: string): SRSCard {
   const now = new Date().toISOString();
   return {
     wordId,
+    // The first lesson exposure schedules tomorrow's review. It is not mastery.
+    repetitions: 1,
     interval: 1,
-    repetitions: 0,
     easeFactor: 2.5,
     nextReview: tomorrowIso(),
     lastReview: now,
@@ -111,7 +108,6 @@ function sm2(card: SRSCard, quality: 0 | 1 | 2 | 3 | 4 | 5): SRSCard {
   }
 
   easeFactor = Math.max(1.3, easeFactor + 0.1 - (5 - quality) * (0.08 + (5 - quality) * 0.02));
-
   const nextDate = new Date();
   nextDate.setDate(nextDate.getDate() + interval);
 
@@ -129,6 +125,10 @@ function sm2(card: SRSCard, quality: 0 | 1 | 2 | 3 | 4 | 5): SRSCard {
 function withIntroducedWord(progress: UserProgress, wordId: string) {
   const introduced = progress.introducedWords || [];
   return introduced.includes(wordId) ? introduced : [...introduced, wordId];
+}
+
+function isDue(card: SRSCard) {
+  return new Date(card.nextReview).getTime() <= Date.now();
 }
 
 export const useAppStore = create<AppState>()(
@@ -166,20 +166,15 @@ export const useAppStore = create<AppState>()(
       },
 
       markWordLearned: (wordId) => {
-        // Legacy callers use this action when a card was completed. It now only
-        // activates the card for review; true mastery is earned through spaced recall.
+        // Legacy callers use this after a card is introduced. Mastery is only
+        // granted through successful scheduled recall in updateSRSCard().
         get().activateWordForReview(wordId);
       },
 
       completeLesson: (lessonId) => {
         const { progress } = get();
         if (!progress.completedLessons.includes(lessonId)) {
-          set({
-            progress: {
-              ...progress,
-              completedLessons: [...progress.completedLessons, lessonId],
-            },
-          });
+          set({ progress: { ...progress, completedLessons: [...progress.completedLessons, lessonId] } });
         }
       },
 
@@ -188,24 +183,12 @@ export const useAppStore = create<AppState>()(
         const weekly = [...progress.weeklyXP];
         const dayIndex = new Date().getDay();
         weekly[dayIndex] = (weekly[dayIndex] || 0) + amount;
-        set({
-          progress: {
-            ...progress,
-            totalXP: progress.totalXP + amount,
-            weeklyXP: weekly,
-          },
-        });
+        set({ progress: { ...progress, totalXP: progress.totalXP + amount, weeklyXP: weekly } });
       },
 
       addMinutes: (minutes) => {
         const { progress } = get();
-        set({
-          progress: {
-            ...progress,
-            todayMinutes: progress.todayMinutes + minutes,
-            totalMinutes: (progress.totalMinutes || 0) + minutes,
-          },
-        });
+        set({ progress: { ...progress, todayMinutes: progress.todayMinutes + minutes, totalMinutes: (progress.totalMinutes || 0) + minutes } });
       },
 
       updateStreak: () => {
@@ -213,26 +196,26 @@ export const useAppStore = create<AppState>()(
         const today = new Date().toDateString();
         const yesterday = new Date(Date.now() - 86400000).toDateString();
         if (progress.lastStudyDate === today) return;
-
         const streak = progress.lastStudyDate === yesterday ? progress.streak + 1 : 1;
-        set({
-          progress: {
-            ...progress,
-            streak,
-            lastStudyDate: today,
-          },
-        });
+        set({ progress: { ...progress, streak, lastStudyDate: today } });
       },
 
       updateSRSCard: (wordId, quality) => {
         const { progress } = get();
         const existing = progress.srsCards[wordId] || createReviewCard(wordId);
-        const updated = sm2(existing, quality);
+        // Learning exercises may repeat a phrase several times in one sitting.
+        // Only a due review is allowed to advance 1 → 3 → 7 → 14 → 30 days.
+        // A wrong answer always resets it to the same-day queue.
+        const updated = quality < 3
+          ? sm2(existing, quality)
+          : isDue(existing)
+            ? sm2(existing, quality)
+            : { ...existing, quality: Math.max(existing.quality, quality) as SRSCard['quality'] };
         const newCards = { ...progress.srsCards, [wordId]: updated };
         const currentMastered = progress.learnedWords || [];
         const learnedWords = quality < 3
           ? currentMastered.filter((id) => id !== wordId)
-          : updated.repetitions >= 3 && quality >= 4 && !currentMastered.includes(wordId)
+          : updated.repetitions >= 3 && updated.quality >= 4 && !currentMastered.includes(wordId)
             ? [...currentMastered, wordId]
             : currentMastered;
 
@@ -247,12 +230,7 @@ export const useAppStore = create<AppState>()(
         });
       },
 
-      getDueReviewCards: () => {
-        const { progress } = get();
-        const now = new Date();
-        return Object.values(progress.srsCards).filter((card) => new Date(card.nextReview) <= now);
-      },
-
+      getDueReviewCards: () => Object.values(get().progress.srsCards).filter(isDue),
       getWordsForLesson: (lessonId) => get().words.filter((word) => word.lessonId === lessonId),
 
       getLessonProgress: (lessonId) => {
@@ -265,15 +243,11 @@ export const useAppStore = create<AppState>()(
       },
 
       toggleDarkMode: () => set((state) => ({ isDarkMode: !state.isDarkMode })),
-
       setDailyGoal: (minutes) => {
         const { progress } = get();
         set({ progress: { ...progress, dailyGoalMinutes: minutes }, dailyGoalMinutes: minutes });
       },
-
-      resetProgress: () => {
-        set({ progress: initialProgress, lessons, currentWordIndex: 0, currentLessonId: null, srsCards: [] });
-      },
+      resetProgress: () => set({ progress: initialProgress, lessons, currentWordIndex: 0, currentLessonId: null, srsCards: [] }),
 
       unlockNextLesson: (currentLessonId) => {
         const { lessons: currentLessons } = get();
@@ -285,11 +259,7 @@ export const useAppStore = create<AppState>()(
     }),
     {
       name: 'czech-mn-a0-storage-v2',
-      partialize: (state) => ({
-        userName: state.userName,
-        progress: state.progress,
-        isDarkMode: state.isDarkMode,
-      }),
+      partialize: (state) => ({ userName: state.userName, progress: state.progress, isDarkMode: state.isDarkMode }),
     },
   ),
 );
