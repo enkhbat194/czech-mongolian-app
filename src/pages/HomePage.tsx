@@ -8,7 +8,7 @@ import { CircularProgress, ProgressBar } from '../components/UI/SharedComponents
 import { AreaChart, Area, XAxis, Tooltip, ResponsiveContainer } from 'recharts';
 
 const DAYS = ['Да', 'Мя', 'Лх', 'Пү', 'Ба', 'Бя', 'Ня'];
-const lessonPage: Record<string, string> = { l001: 'a0FirstContact', l002: 'a0Needs' };
+const lessonPage: Record<string, string> = { l001: 'a0FirstContact', l002: 'a0Needs', l003: 'a0Location' };
 
 const HomePage: React.FC = () => {
   const { userName, progress, updateStreak, setPage, setCurrentLesson, getLessonProgress } = useAppStore();
