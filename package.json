@@ -9,7 +9,8 @@
     "lint": "oxlint",
     "preview": "vite preview",
     "audio:dry": "node scripts/synthesize-audio.mjs --dry-run",
-    "audio:generate": "node scripts/synthesize-audio.mjs"
+    "audio:generate": "node scripts/synthesize-audio.mjs",
+    "check": "npm run lint && npm run build && npm run audio:dry"
   },
   "dependencies": {
     "@types/howler": "^2.2.13",
