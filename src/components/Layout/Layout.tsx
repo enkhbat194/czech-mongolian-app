@@ -16,6 +16,9 @@ import WritingPage from '../../pages/WritingPage';
 import DictationPage from '../../pages/DictationPage';
 import FillBlankPage from '../../pages/FillBlankPage';
 import InteractiveLearningPage from '../../pages/InteractiveLearningPage';
+import A0FirstContactPage from '../../pages/A0FirstContactPage';
+import A0NeedsPage from '../../pages/A0NeedsPage';
+import A0LocationPage from '../../pages/A0LocationPage';
 import A0ReferenceLessonPage from '../../pages/A0ReferenceLessonPage';
 import TodayReviewPage from '../../pages/TodayReviewPage';
 
@@ -40,14 +43,19 @@ const pages: Record<string, React.FC> = {
   dictation: DictationPage,
   fillBlank: FillBlankPage,
   interactiveLearning: InteractiveLearningPage,
+  a0FirstContact: A0FirstContactPage,
+  a0Needs: A0NeedsPage,
+  a0Location: A0LocationPage,
   a0Lesson: A0ReferenceLessonPage,
   todayReview: TodayReviewPage,
 };
 
+const immersivePages = ['a0FirstContact', 'a0Needs', 'a0Location', 'a0Lesson', 'todayReview'];
+
 const Layout: React.FC = () => {
   const { currentPage } = useAppStore();
   const Page = pages[currentPage] || HomePage;
-  const isImmersiveLesson = ['a0Lesson', 'todayReview'].includes(currentPage);
+  const isImmersiveLesson = immersivePages.includes(currentPage);
 
   return (
     <div style={{ minHeight: '100dvh', background: '#080810', display: 'flex', justifyContent: 'center' }}>
