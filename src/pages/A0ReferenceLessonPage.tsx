@@ -1,17 +1,14 @@
 import React from 'react';
 import '../stores/a0WordBridge';
-import '../data/a0DirectionsMemory';
-import '../data/a0TimeMemory';
-import '../data/a0WorkMemory';
+import { a0ReferenceCatalog } from '../data/a0ReferenceCatalog';
 import A0LessonEngine from '../components/lessons/A0LessonEngine';
-import { a0ReferenceLessons } from '../data/a0ReferenceLessons';
 import { useAppStore } from '../stores/useAppStore';
 
 const A0ReferenceLessonPage: React.FC = () => {
   const currentLessonId = useAppStore((state) => state.currentLessonId);
   const setPage = useAppStore((state) => state.setPage);
   const lesson = currentLessonId
-    ? a0ReferenceLessons[currentLessonId as keyof typeof a0ReferenceLessons]
+    ? a0ReferenceCatalog[currentLessonId as keyof typeof a0ReferenceCatalog]
     : undefined;
 
   if (!lesson) {
