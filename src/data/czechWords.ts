@@ -12,7 +12,7 @@ export interface CzechWord {
 }
 
 /**
- * A0.1–A0.3 сургалтын нэгжүүд.
+ * A0 сургалтын нэгжүүд.
  * Аудио файл байхгүй үед интерфэйс нь төхөөрөмжийн Чех TTS (яриа синтез)-д шилжинэ.
  * Native speaker (төрөлх хэлтэй хүн)-ийн аудио орох үед audioFile талбарыг л бөглөнө.
  */
@@ -79,4 +79,61 @@ export const czechWords: CzechWord[] = [
   { id:'a0c0055', czech:'Kde je nádraží?', ipa:'', mongolian:'Галт тэрэгний буудал хаана байна?', example:'Prosím, kde je nádraží?', exampleTranslation:'Уучлаарай, галт тэрэгний буудал хаана байна?', category:'pattern', lessonId:'l003', difficulty:'medium' },
   { id:'a0c0056', czech:'nebo', ipa:'', mongolian:'эсвэл', example:'Tady, nebo tam?', exampleTranslation:'Энд үү, тэнд үү?', category:'connector', lessonId:'l003', difficulty:'easy' },
   { id:'a0c0057', czech:'Tady, nebo tam?', ipa:'', mongolian:'Энд үү, тэнд үү?', example:'Nádraží — tady, nebo tam?', exampleTranslation:'Буудал — энд үү, тэнд үү?', category:'pattern', lessonId:'l003', difficulty:'medium' },
+
+  { id:'a0c0058', czech:'jak', ipa:'', mongolian:'яаж', example:'Jak se dostanu na nádraží?', exampleTranslation:'Буудал руу яаж очих вэ?', category:'question', lessonId:'l004', difficulty:'easy' },
+  { id:'a0c0059', czech:'dostanu se', ipa:'', mongolian:'очих; хүрэх', example:'Jak se dostanu tam?', exampleTranslation:'Тийшээ яаж очих вэ?', category:'verb-pattern', lessonId:'l004', difficulty:'medium' },
+  { id:'a0c0060', czech:'Jak se dostanu na nádraží?', ipa:'', mongolian:'Галт тэрэгний буудал руу яаж очих вэ?', example:'Prosím, jak se dostanu na nádraží?', exampleTranslation:'Уучлаарай, буудал руу яаж очих вэ?', category:'pattern', lessonId:'l004', difficulty:'hard' },
+  { id:'a0c0061', czech:'rovně', ipa:'', mongolian:'шулуун', example:'Jděte rovně.', exampleTranslation:'Шулуун яваарай.', category:'direction', lessonId:'l004', difficulty:'easy' },
+  { id:'a0c0062', czech:'doleva', ipa:'', mongolian:'зүүн тийш', example:'Odbočte doleva.', exampleTranslation:'Зүүн тийш эргээрэй.', category:'direction', lessonId:'l004', difficulty:'easy' },
+  { id:'a0c0063', czech:'doprava', ipa:'', mongolian:'баруун тийш', example:'Odbočte doprava.', exampleTranslation:'Баруун тийш эргээрэй.', category:'direction', lessonId:'l004', difficulty:'easy' },
+  { id:'a0c0064', czech:'Jděte rovně.', ipa:'', mongolian:'Шулуун яваарай.', example:'Jděte rovně.', exampleTranslation:'Шулуун яваарай.', category:'pattern', lessonId:'l004', difficulty:'medium' },
+  { id:'a0c0065', czech:'Odbočte doleva.', ipa:'', mongolian:'Зүүн тийш эргээрэй.', example:'Odbočte doleva.', exampleTranslation:'Зүүн тийш эргээрэй.', category:'pattern', lessonId:'l004', difficulty:'medium' },
+  { id:'a0c0066', czech:'Odbočte doprava.', ipa:'', mongolian:'Баруун тийш эргээрэй.', example:'Odbočte doprava.', exampleTranslation:'Баруун тийш эргээрэй.', category:'pattern', lessonId:'l004', difficulty:'medium' },
+  { id:'a0c0067', czech:'zastávka', ipa:'', mongolian:'буудал', example:'Kde je zastávka?', exampleTranslation:'Буудал хаана байна?', category:'transport', lessonId:'l004', difficulty:'easy' },
+  { id:'a0c0068', czech:'autobus', ipa:'', mongolian:'автобус', example:'Jedu autobusem.', exampleTranslation:'Би автобусаар явж байна.', category:'transport', lessonId:'l004', difficulty:'easy' },
+  { id:'a0c0069', czech:'tramvaj', ipa:'', mongolian:'трамвай', example:'Jedu tramvají.', exampleTranslation:'Би трамвайгаар явж байна.', category:'transport', lessonId:'l004', difficulty:'easy' },
+  { id:'a0c0070', czech:'Kde je zastávka?', ipa:'', mongolian:'Буудал хаана байна?', example:'Prosím, kde je zastávka?', exampleTranslation:'Уучлаарай, буудал хаана байна?', category:'pattern', lessonId:'l004', difficulty:'medium' },
+  { id:'a0c0071', czech:'Jedu autobusem.', ipa:'', mongolian:'Би автобусаар явж байна.', example:'Jedu autobusem.', exampleTranslation:'Би автобусаар явж байна.', category:'pattern', lessonId:'l004', difficulty:'medium' },
+  { id:'a0c0072', czech:'Jedu tramvají.', ipa:'', mongolian:'Би трамвайгаар явж байна.', example:'Jedu tramvají.', exampleTranslation:'Би трамвайгаар явж байна.', category:'pattern', lessonId:'l004', difficulty:'medium' },
+  { id:'a0c0073', czech:'daleko', ipa:'', mongolian:'хол', example:'Je to daleko?', exampleTranslation:'Энэ хол уу?', category:'distance', lessonId:'l004', difficulty:'easy' },
+  { id:'a0c0074', czech:'blízko', ipa:'', mongolian:'ойрхон', example:'Je to blízko.', exampleTranslation:'Энэ ойрхон.', category:'distance', lessonId:'l004', difficulty:'easy' },
+  { id:'a0c0075', czech:'Je to daleko?', ipa:'', mongolian:'Энэ хол уу?', example:'Je to daleko?', exampleTranslation:'Энэ хол уу?', category:'pattern', lessonId:'l004', difficulty:'medium' },
+
+  { id:'a0c0076', czech:'kdy', ipa:'', mongolian:'хэзээ', example:'Kdy je schůzka?', exampleTranslation:'Уулзалт хэзээ вэ?', category:'question', lessonId:'l005', difficulty:'easy' },
+  { id:'a0c0077', czech:'čas', ipa:'', mongolian:'цаг', example:'Nemám čas.', exampleTranslation:'Надад цаг алга.', category:'time', lessonId:'l005', difficulty:'easy' },
+  { id:'a0c0078', czech:'Kolik je hodin?', ipa:'', mongolian:'Цаг хэд болж байна?', example:'Prosím, kolik je hodin?', exampleTranslation:'Уучлаарай, цаг хэд болж байна?', category:'pattern', lessonId:'l005', difficulty:'medium' },
+  { id:'a0c0079', czech:'dnes', ipa:'', mongolian:'өнөөдөр', example:'Dnes mám čas.', exampleTranslation:'Өнөөдөр надад цаг байна.', category:'time', lessonId:'l005', difficulty:'easy' },
+  { id:'a0c0080', czech:'zítra', ipa:'', mongolian:'маргааш', example:'Přijdu zítra.', exampleTranslation:'Би маргааш ирнэ.', category:'time', lessonId:'l005', difficulty:'easy' },
+  { id:'a0c0081', czech:'včera', ipa:'', mongolian:'өчигдөр', example:'Včera jsem tady nebyl.', exampleTranslation:'Өчигдөр би энд байгаагүй.', category:'time', lessonId:'l005', difficulty:'medium' },
+  { id:'a0c0082', czech:'ráno', ipa:'', mongolian:'өглөө', example:'Ráno mám čas.', exampleTranslation:'Өглөө надад цаг байна.', category:'time', lessonId:'l005', difficulty:'easy' },
+  { id:'a0c0083', czech:'večer', ipa:'', mongolian:'орой', example:'Večer nemám čas.', exampleTranslation:'Орой надад цаг алга.', category:'time', lessonId:'l005', difficulty:'easy' },
+  { id:'a0c0084', czech:'v kolik', ipa:'', mongolian:'хэдэн цагт', example:'V kolik je schůzka?', exampleTranslation:'Уулзалт хэдэн цагт вэ?', category:'question', lessonId:'l005', difficulty:'medium' },
+  { id:'a0c0085', czech:'schůzka', ipa:'', mongolian:'уулзалт', example:'Kdy je schůzka?', exampleTranslation:'Уулзалт хэзээ вэ?', category:'time', lessonId:'l005', difficulty:'medium' },
+  { id:'a0c0086', czech:'Kdy je schůzka?', ipa:'', mongolian:'Уулзалт хэзээ вэ?', example:'Kdy je schůzka?', exampleTranslation:'Уулзалт хэзээ вэ?', category:'pattern', lessonId:'l005', difficulty:'medium' },
+  { id:'a0c0087', czech:'v osm', ipa:'', mongolian:'найман цагт', example:'Schůzka je v osm.', exampleTranslation:'Уулзалт найман цагт.', category:'time', lessonId:'l005', difficulty:'medium' },
+  { id:'a0c0088', czech:'v devět', ipa:'', mongolian:'есөн цагт', example:'Práce je v devět.', exampleTranslation:'Ажил есөн цагт.', category:'time', lessonId:'l005', difficulty:'medium' },
+  { id:'a0c0089', czech:'pondělí', ipa:'', mongolian:'даваа гараг', example:'V pondělí mám čas.', exampleTranslation:'Даваа гарагт надад цаг байна.', category:'day', lessonId:'l005', difficulty:'medium' },
+  { id:'a0c0090', czech:'pátek', ipa:'', mongolian:'баасан гараг', example:'V pátek nemám čas.', exampleTranslation:'Баасан гарагт надад цаг алга.', category:'day', lessonId:'l005', difficulty:'medium' },
+  { id:'a0c0091', czech:'Přijdu zítra.', ipa:'', mongolian:'Би маргааш ирнэ.', example:'Přijdu zítra.', exampleTranslation:'Би маргааш ирнэ.', category:'pattern', lessonId:'l005', difficulty:'medium' },
+  { id:'a0c0092', czech:'Nemám čas.', ipa:'', mongolian:'Надад цаг алга.', example:'Nemám čas.', exampleTranslation:'Надад цаг алга.', category:'pattern', lessonId:'l005', difficulty:'medium' },
+  { id:'a0c0093', czech:'Mám čas.', ipa:'', mongolian:'Надад цаг байна.', example:'Mám čas.', exampleTranslation:'Надад цаг байна.', category:'pattern', lessonId:'l005', difficulty:'medium' },
+
+  { id:'a0c0094', czech:'práce', ipa:'', mongolian:'ажил', example:'Jdu do práce.', exampleTranslation:'Би ажил руу явж байна.', category:'work', lessonId:'l006', difficulty:'easy' },
+  { id:'a0c0095', czech:'pracovat', ipa:'', mongolian:'ажиллах', example:'Pracuji tady.', exampleTranslation:'Би энд ажилладаг.', category:'verb', lessonId:'l006', difficulty:'medium' },
+  { id:'a0c0096', czech:'Kde pracujete?', ipa:'', mongolian:'Та хаана ажилладаг вэ?', example:'Kde pracujete?', exampleTranslation:'Та хаана ажилладаг вэ?', category:'pattern', lessonId:'l006', difficulty:'medium' },
+  { id:'a0c0097', czech:'Pracuji tady.', ipa:'', mongolian:'Би энд ажилладаг.', example:'Pracuji tady.', exampleTranslation:'Би энд ажилладаг.', category:'pattern', lessonId:'l006', difficulty:'medium' },
+  { id:'a0c0098', czech:'směna', ipa:'', mongolian:'ээлж', example:'Dnes mám směnu.', exampleTranslation:'Өнөөдөр би ээлжтэй.', category:'work', lessonId:'l006', difficulty:'medium' },
+  { id:'a0c0099', czech:'Dnes mám směnu.', ipa:'', mongolian:'Өнөөдөр би ээлжтэй.', example:'Dnes mám směnu.', exampleTranslation:'Өнөөдөр би ээлжтэй.', category:'pattern', lessonId:'l006', difficulty:'medium' },
+  { id:'a0c0100', czech:'Zítra mám volno.', ipa:'', mongolian:'Маргааш би амарна.', example:'Zítra mám volno.', exampleTranslation:'Маргааш би амарна.', category:'pattern', lessonId:'l006', difficulty:'medium' },
+  { id:'a0c0101', czech:'volno', ipa:'', mongolian:'амралт; сул цаг', example:'Mám volno.', exampleTranslation:'Би амарна.', category:'work', lessonId:'l006', difficulty:'easy' },
+  { id:'a0c0102', czech:'úkol', ipa:'', mongolian:'даалгавар; үүрэг', example:'Rozumím úkolu.', exampleTranslation:'Би даалгаврыг ойлголоо.', category:'work', lessonId:'l006', difficulty:'medium' },
+  { id:'a0c0103', czech:'Hotovo.', ipa:'', mongolian:'Дууссан.', example:'Hotovo.', exampleTranslation:'Дууссан.', category:'work', lessonId:'l006', difficulty:'easy' },
+  { id:'a0c0104', czech:'Není hotovo.', ipa:'', mongolian:'Дуусаагүй.', example:'Není hotovo.', exampleTranslation:'Дуусаагүй.', category:'work', lessonId:'l006', difficulty:'medium' },
+  { id:'a0c0105', czech:'Rozumím.', ipa:'', mongolian:'Би ойлголоо.', example:'Rozumím.', exampleTranslation:'Би ойлголоо.', category:'work', lessonId:'l006', difficulty:'easy' },
+  { id:'a0c0106', czech:'Nerozumím úkolu.', ipa:'', mongolian:'Би даалгаврыг ойлгохгүй байна.', example:'Nerozumím úkolu.', exampleTranslation:'Би даалгаврыг ойлгохгүй байна.', category:'survival', lessonId:'l006', difficulty:'hard' },
+  { id:'a0c0107', czech:'Prosím, ukažte.', ipa:'', mongolian:'Үзүүлж өгнө үү.', example:'Prosím, ukažte.', exampleTranslation:'Үзүүлж өгнө үү.', category:'survival', lessonId:'l006', difficulty:'medium' },
+  { id:'a0c0108', czech:'Můžu.', ipa:'', mongolian:'Би чадна; болно.', example:'Můžu.', exampleTranslation:'Би чадна.', category:'work', lessonId:'l006', difficulty:'medium' },
+  { id:'a0c0109', czech:'Nemůžu.', ipa:'', mongolian:'Би чадахгүй; болохгүй.', example:'Nemůžu.', exampleTranslation:'Би чадахгүй.', category:'work', lessonId:'l006', difficulty:'medium' },
+  { id:'a0c0110', czech:'Potřebuji přestávku.', ipa:'', mongolian:'Надад завсарлага хэрэгтэй.', example:'Potřebuji přestávku.', exampleTranslation:'Надад завсарлага хэрэгтэй.', category:'survival', lessonId:'l006', difficulty:'medium' },
+  { id:'a0c0111', czech:'bezpečnost', ipa:'', mongolian:'аюулгүй байдал', example:'Bezpečnost je důležitá.', exampleTranslation:'Аюулгүй байдал чухал.', category:'work', lessonId:'l006', difficulty:'medium' },
 ];
