@@ -38,13 +38,13 @@ export const a0FirstContactMicroDialogues: Record<string, DialogueScenario> = {
         ], correctId: 'b', feedbackMn: 'Албан нөхцөлд Dobrý den. гэдэг нь аюулгүй сонголт.'
       },
       {
-        id: 'a01a-d2', speaker: 'Ажилтан', staffCzech: 'Jak se máte?', staffMn: 'Та сайн уу?',
-        promptMn: 'Та сайн байгаагаа, баярлаж байгаагаа хэлээрэй.',
+        id: 'a01a-d2', speaker: 'Ажилтан', staffCzech: 'Děkuji.', staffMn: 'Баярлалаа.',
+        promptMn: 'Эелдгээр “зүгээр” гэж хариулаарай.',
         choices: [
-          { id: 'a', text: 'Dobře, děkuji.', mongolian: 'Сайн, баярлалаа.' },
-          { id: 'b', text: 'Ne, děkuji.', mongolian: 'Үгүй, баярлалаа.' },
+          { id: 'a', text: 'Prosím.', mongolian: 'Зүгээр ээ.' },
+          { id: 'b', text: 'Ne.', mongolian: 'Үгүй.' },
           { id: 'c', text: 'Kdo jste?', mongolian: 'Та хэн бэ?' },
-        ], correctId: 'a', feedbackMn: 'Dobře, děkuji. = Сайн, баярлалаа.'
+        ], correctId: 'a', feedbackMn: 'Děkuji. гэсний дараа Prosím. гэж эелдгээр хариулж болно.'
       },
     ],
   },
@@ -63,23 +63,32 @@ export const a0FirstContactMicroDialogues: Record<string, DialogueScenario> = {
         ], correctId: 'b', feedbackMn: 'Jmenuji se … гэдэг нь нэрээ хэлэх бэлэн бүтэц.'
       },
       {
-        id: 'a01b-d2', speaker: 'Ресепшний ажилтан', staffCzech: 'Dobře, Ebo.', staffMn: 'За, Эба.',
-        promptMn: 'Эелдгээр хариулна уу.',
+        id: 'a01b-d2', speaker: 'Ресепшний ажилтан', staffCzech: 'Děkuji.', staffMn: 'Баярлалаа.',
+        promptMn: 'Эелдгээр “зүгээр” гэж хариулаарай.',
         choices: [
-          { id: 'a', text: 'Děkuji.', mongolian: 'Баярлалаа.' },
+          { id: 'a', text: 'Prosím.', mongolian: 'Зүгээр ээ.' },
           { id: 'b', text: 'Ne.', mongolian: 'Үгүй.' },
           { id: 'c', text: 'Kdo jste?', mongolian: 'Та хэн бэ?' },
-        ], correctId: 'a', feedbackMn: 'Děkuji. = Баярлалаа.'
+        ], correctId: 'a', feedbackMn: 'Děkuji. гэсний дараа Prosím. гэж хариулж болно.'
       },
     ],
   },
   'a0-1-c': {
     id: 'a0-1-c-dialogue',
     titleMn: 'Богино яриа — хаанаас ирсэн бэ?',
-    contextMn: 'Ажилтан таныг танилцаж, хурдан ярьж эхэллээ.',
+    contextMn: 'Та таних хүнтэйгээ өөрийгөө танилцуулж байна.',
     steps: [
       {
-        id: 'a01c-d1', speaker: 'Ажилтан', staffCzech: 'Odkud jste?', staffMn: 'Та хаанаас ирсэн бэ?',
+        id: 'a01c-d1', speaker: 'Ажилтан', staffCzech: 'Jak se máte?', staffMn: 'Та сайн уу?',
+        promptMn: 'Та сайн байгаагаа, баярлаж байгаагаа хэлээрэй.',
+        choices: [
+          { id: 'a', text: 'Dobře, děkuji.', mongolian: 'Сайн, баярлалаа.' },
+          { id: 'b', text: 'Ne, děkuji.', mongolian: 'Үгүй, баярлалаа.' },
+          { id: 'c', text: 'Kdo jste?', mongolian: 'Та хэн бэ?' },
+        ], correctId: 'a', feedbackMn: 'Dobře, děkuji. = Сайн, баярлалаа.'
+      },
+      {
+        id: 'a01c-d2', speaker: 'Ажилтан', staffCzech: 'Odkud jste?', staffMn: 'Та хаанаас ирсэн бэ?',
         promptMn: 'Та Монголоос ирснээ хэлээрэй.',
         choices: [
           { id: 'a', text: 'Jmenuji se Eba.', mongolian: 'Миний нэр Эба.' },
@@ -88,8 +97,8 @@ export const a0FirstContactMicroDialogues: Record<string, DialogueScenario> = {
         ], correctId: 'b', feedbackMn: 'Jsem z Mongolska. = Би Монголоос ирсэн.'
       },
       {
-        id: 'a01c-d2', speaker: 'Ажилтан', staffCzech: 'Mluvím rychle?', staffMn: 'Би хурдан ярьж байна уу?',
-        promptMn: 'Ойлгохгүй байгаагаа хэлээд удаан ярихыг хүсээрэй.',
+        id: 'a01c-d3', speaker: 'Ажилтан', staffCzech: 'Prosím?', staffMn: 'Уучлаарай? Дахин хэлнэ үү?',
+        promptMn: 'Та ойлгохгүй байгаагаа хэлээд удаан ярихыг хүсээрэй.',
         choices: [
           { id: 'a', text: 'Ano, děkuji.', mongolian: 'Тийм, баярлалаа.' },
           { id: 'b', text: 'Nerozumím. Mluvte prosím pomalu.', mongolian: 'Би ойлгохгүй байна. Удаан ярьж өгнө үү.' },
@@ -115,7 +124,16 @@ export const a0FirstContactFinalDialogue: DialogueScenario = {
       ], correctId: 'a', feedbackMn: 'Албан нөхцөлд Dobrý den. хэрэглэнэ.'
     },
     {
-      id: 'a01f-2', speaker: 'Ресепшний ажилтан', staffCzech: 'Jak se jmenujete?', staffMn: 'Таны нэр хэн бэ?',
+      id: 'a01f-2', speaker: 'Ресепшний ажилтан', staffCzech: 'Jak se máte?', staffMn: 'Та сайн уу?',
+      promptMn: 'Та сайн байгаагаа, баярлаж байгаагаа хэлээрэй.',
+      choices: [
+        { id: 'a', text: 'Dobře, děkuji.', mongolian: 'Сайн, баярлалаа.' },
+        { id: 'b', text: 'Ne, děkuji.', mongolian: 'Үгүй, баярлалаа.' },
+        { id: 'c', text: 'Kdo jste?', mongolian: 'Та хэн бэ?' },
+      ], correctId: 'a', feedbackMn: 'Dobře, děkuji. = Сайн, баярлалаа.'
+    },
+    {
+      id: 'a01f-3', speaker: 'Ресепшний ажилтан', staffCzech: 'Jak se jmenujete?', staffMn: 'Таны нэр хэн бэ?',
       promptMn: 'Нэрээ хэлээрэй.',
       choices: [
         { id: 'a', text: 'Jsem z Mongolska.', mongolian: 'Би Монголоос ирсэн.' },
@@ -124,7 +142,7 @@ export const a0FirstContactFinalDialogue: DialogueScenario = {
       ], correctId: 'b', feedbackMn: 'Jmenuji se … гэж нэрээ хэлнэ.'
     },
     {
-      id: 'a01f-3', speaker: 'Ресепшний ажилтан', staffCzech: 'Odkud jste?', staffMn: 'Та хаанаас ирсэн бэ?',
+      id: 'a01f-4', speaker: 'Ресепшний ажилтан', staffCzech: 'Odkud jste?', staffMn: 'Та хаанаас ирсэн бэ?',
       promptMn: 'Гарал орноо хэлээрэй.',
       choices: [
         { id: 'a', text: 'Jsem z Mongolska.', mongolian: 'Би Монголоос ирсэн.' },
@@ -133,7 +151,7 @@ export const a0FirstContactFinalDialogue: DialogueScenario = {
       ], correctId: 'a', feedbackMn: 'Jsem z Mongolska. = Би Монголоос ирсэн.'
     },
     {
-      id: 'a01f-4', speaker: 'Ресепшний ажилтан', staffCzech: 'Prosím?', staffMn: 'Уучлаарай? Дахин хэлнэ үү?',
+      id: 'a01f-5', speaker: 'Ресепшний ажилтан', staffCzech: 'Prosím?', staffMn: 'Уучлаарай? Дахин хэлнэ үү?',
       promptMn: 'Та ойлгохгүй байгаагаа хэлээд удаан ярихыг хүсээрэй.',
       choices: [
         { id: 'a', text: 'Ano. Na shledanou.', mongolian: 'Тийм. Баяртай.' },
@@ -142,7 +160,7 @@ export const a0FirstContactFinalDialogue: DialogueScenario = {
       ], correctId: 'b', feedbackMn: 'Энэ бол ойлгохгүй үед хэрэглэх хамгаалах хэллэг.'
     },
     {
-      id: 'a01f-5', speaker: 'Ресепшний ажилтан', staffCzech: 'Dobře. Na shledanou.', staffMn: 'За. Баяртай.',
+      id: 'a01f-6', speaker: 'Ресепшний ажилтан', staffCzech: 'Na shledanou.', staffMn: 'Баяртай.',
       promptMn: 'Яриаг албан хэлбэрээр дуусгаарай.',
       choices: [
         { id: 'a', text: 'Ahoj.', mongolian: 'Сайн уу.' },
@@ -160,7 +178,7 @@ export const a0NeedsMicroDialogues: Record<string, DialogueScenario> = {
     contextMn: 'Та ресепшн дээр очоод тусламж, ус хэрэгтэй боллоо.',
     steps: [
       {
-        id: 'a02a-d1', speaker: 'Ресепшний ажилтан', staffCzech: 'Co potřebujete?', staffMn: 'Танд юу хэрэгтэй вэ?',
+        id: 'a02a-d1', speaker: 'Ресепшний ажилтан', staffCzech: 'Dobrý den.', staffMn: 'Сайн байна уу.',
         promptMn: 'Эелдгээр тусламж хүсээрэй.',
         choices: [
           { id: 'a', text: 'Potřebuji pomoc, prosím.', mongolian: 'Надад туслаач, гуйя.' },
@@ -169,23 +187,23 @@ export const a0NeedsMicroDialogues: Record<string, DialogueScenario> = {
         ], correctId: 'a', feedbackMn: 'Potřebuji pomoc, prosím. = Надад туслаач, гуйя.'
       },
       {
-        id: 'a02a-d2', speaker: 'Ресепшний ажилтан', staffCzech: 'Potřebujete vodu?', staffMn: 'Танд ус хэрэгтэй юу?',
-        promptMn: 'Тийм, гуйя гэж хариулаарай.',
+        id: 'a02a-d2', speaker: 'Ресепшний ажилтан', staffCzech: 'Voda?', staffMn: 'Ус?',
+        promptMn: 'Танд ус хэрэгтэйгээ хэлээрэй.',
         choices: [
           { id: 'a', text: 'Ne, děkuji.', mongolian: 'Үгүй, баярлалаа.' },
-          { id: 'b', text: 'Ano, prosím.', mongolian: 'Тийм, гуйя.' },
+          { id: 'b', text: 'Potřebuji vodu.', mongolian: 'Надад ус хэрэгтэй.' },
           { id: 'c', text: 'Chci telefon.', mongolian: 'Би утас хүсэж байна.' },
-        ], correctId: 'b', feedbackMn: 'Ano, prosím. = Тийм, гуйя.'
+        ], correctId: 'b', feedbackMn: 'Potřebuji vodu. = Надад ус хэрэгтэй.'
       },
     ],
   },
   'a0-2-b': {
     id: 'a0-2-b-dialogue',
     titleMn: 'Богино яриа — хоол хүсэх',
-    contextMn: 'Танд ус өгсний дараа ажилтан хоол хүсэж байгаа эсэхийг асуулаа.',
+    contextMn: 'Та хоолны сонголтоо хэлж байна.',
     steps: [
       {
-        id: 'a02b-d1', speaker: 'Ресепшний ажилтан', staffCzech: 'Chcete něco k jídlu?', staffMn: 'Та идэх юм хүсэж байна уу?',
+        id: 'a02b-d1', speaker: 'Ресепшний ажилтан', staffCzech: 'Jídlo?', staffMn: 'Хоол?',
         promptMn: 'Та идэх юм хүсэж байгаагаа хэлээрэй.',
         choices: [
           { id: 'a', text: 'Ano, chci něco k jídlu.', mongolian: 'Тийм, би идэх юм хүсэж байна.' },
@@ -194,7 +212,7 @@ export const a0NeedsMicroDialogues: Record<string, DialogueScenario> = {
         ], correctId: 'a', feedbackMn: 'Chci něco k jídlu. = Би идэх юм хүсэж байна.'
       },
       {
-        id: 'a02b-d2', speaker: 'Ресепшний ажилтан', staffCzech: 'Tady je jídlo.', staffMn: 'Энд хоол байна.',
+        id: 'a02b-d2', speaker: 'Ресепшний ажилтан', staffCzech: 'Prosím.', staffMn: 'За, аваарай.',
         promptMn: 'Талархаарай.',
         choices: [
           { id: 'a', text: 'Děkuji.', mongolian: 'Баярлалаа.' },
@@ -210,7 +228,7 @@ export const a0NeedsMicroDialogues: Record<string, DialogueScenario> = {
     contextMn: 'Төлбөр хийх мөчид танд карт, мөнгө байхгүй байна.',
     steps: [
       {
-        id: 'a02c-d1', speaker: 'Ресепшний ажилтан', staffCzech: 'Máte kartu?', staffMn: 'Танд карт байна уу?',
+        id: 'a02c-d1', speaker: 'Ресепшний ажилтан', staffCzech: 'Karta?', staffMn: 'Карт?',
         promptMn: 'Карт байхгүйгээ хэлээрэй.',
         choices: [
           { id: 'a', text: 'Chci kartu.', mongolian: 'Би карт хүсэж байна.' },
@@ -219,7 +237,7 @@ export const a0NeedsMicroDialogues: Record<string, DialogueScenario> = {
         ], correctId: 'b', feedbackMn: 'Nemám kartu. = Надад карт байхгүй.'
       },
       {
-        id: 'a02c-d2', speaker: 'Ресепшний ажилтан', staffCzech: 'Máte peníze?', staffMn: 'Танд мөнгө байна уу?',
+        id: 'a02c-d2', speaker: 'Ресепшний ажилтан', staffCzech: 'Peníze?', staffMn: 'Мөнгө?',
         promptMn: 'Мөнгө байхгүйгээ хэлээрэй.',
         choices: [
           { id: 'a', text: 'Nemám peníze.', mongolian: 'Надад мөнгө байхгүй.' },
@@ -246,7 +264,7 @@ export const a0NeedsFinalDialogue: DialogueScenario = {
       ], correctId: 'a', feedbackMn: 'Та хэрэгцээгээ эелдгээр, ойлгомжтой хэллээ.'
     },
     {
-      id: 'a02f-2', speaker: 'Ресепшний ажилтан', staffCzech: 'Potřebujete vodu?', staffMn: 'Танд ус хэрэгтэй юу?',
+      id: 'a02f-2', speaker: 'Ресепшний ажилтан', staffCzech: 'Voda?', staffMn: 'Ус?',
       promptMn: 'Ус хэрэгтэйгээ хэлээрэй.',
       choices: [
         { id: 'a', text: 'Nemám vodu.', mongolian: 'Надад ус байхгүй.' },
@@ -255,7 +273,7 @@ export const a0NeedsFinalDialogue: DialogueScenario = {
       ], correctId: 'b', feedbackMn: 'Potřebuji vodu. = Надад ус хэрэгтэй.'
     },
     {
-      id: 'a02f-3', speaker: 'Ресепшний ажилтан', staffCzech: 'Chcete něco k jídlu?', staffMn: 'Та идэх юм хүсэж байна уу?',
+      id: 'a02f-3', speaker: 'Ресепшний ажилтан', staffCzech: 'Jídlo?', staffMn: 'Хоол?',
       promptMn: 'Идэх юм хүсэж байгаагаа хэлээрэй.',
       choices: [
         { id: 'a', text: 'Ano, chci něco k jídlu.', mongolian: 'Тийм, би идэх юм хүсэж байна.' },
@@ -264,7 +282,7 @@ export const a0NeedsFinalDialogue: DialogueScenario = {
       ], correctId: 'a', feedbackMn: 'Chci něco k jídlu. = Би идэх юм хүсэж байна.'
     },
     {
-      id: 'a02f-4', speaker: 'Ресепшний ажилтан', staffCzech: 'Máte kartu?', staffMn: 'Танд карт байна уу?',
+      id: 'a02f-4', speaker: 'Ресепшний ажилтан', staffCzech: 'Karta?', staffMn: 'Карт?',
       promptMn: 'Карт байхгүйгээ хэлээрэй.',
       choices: [
         { id: 'a', text: 'Chci kartu.', mongolian: 'Би карт хүсэж байна.' },
@@ -273,7 +291,7 @@ export const a0NeedsFinalDialogue: DialogueScenario = {
       ], correctId: 'b', feedbackMn: 'Nemám kartu. = Надад карт байхгүй.'
     },
     {
-      id: 'a02f-5', speaker: 'Ресепшний ажилтан', staffCzech: 'Nevadí. Pomůžu vám.', staffMn: 'Зүгээр. Би танд тусална.',
+      id: 'a02f-5', speaker: 'Ресепшний ажилтан', staffCzech: 'Dobře.', staffMn: 'За.',
       promptMn: 'Яриаг эелдгээр дуусгаарай.',
       choices: [
         { id: 'a', text: 'Děkuji.', mongolian: 'Баярлалаа.' },
