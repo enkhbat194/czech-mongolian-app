@@ -10,6 +10,8 @@ import { getA0MatchExercise, type A0MatchExercise } from '../../data/a0MatchExer
 import { getA0ExerciseMemoryTargetId } from '../../data/a0ExerciseMemoryMap';
 import { getA0MemoryTargetByCzech } from '../../data/a0MemoryPlan';
 import type { DialogueScenario } from '../../data/a0Dialogues';
+import DialogueRunner from './DialogueRunner';
+import { speakCzech } from './dialogueAudio';
 
 type Stage = 'cards' | 'exercises' | 'microDialogue' | 'microReward' | 'finalDialogue' | 'complete';
 type Feedback = 'correct' | 'wrong' | null;
@@ -99,154 +101,6 @@ function normalize(text: string) {
     .trim();
 }
 
-function speakCzech(text: string, onFinished?: () => void) {
-  if (!('speechSynthesis' in window)) {
-    onFinished?.();
-    return;
-  }
-
-  window.speechSynthesis.cancel();
-  const utterance = new SpeechSynthesisUtterance(text);
-  utterance.lang = 'cs-CZ';
-  utterance.rate = 0.84;
-  let settled = false;
-  const done = () => {
-    if (settled) return;
-    settled = true;
-    onFinished?.();
-  };
-  utterance.onend = done;
-  utterance.onerror = done;
-  window.speechSynthesis.speak(utterance);
-}
-
-const DialogueRun: React.FC<{
-  scenario: DialogueScenario;
-  onComplete: () => void;
-  onProgress: (value: number) => void;
-  onAttempt: (correctAnswerText: string, correct: boolean) => void;
-  onExposure: (text: string) => void;
-  onMicroMistake?: () => void;
-}> = ({ scenario, onComplete, onProgress, onAttempt, onExposure, onMicroMistake }) => {
-  const [index, setIndex] = useState(0);
-  const [feedback, setFeedback] = useState<Feedback>(null);
-  const [picked, setPicked] = useState<string | null>(null);
-  const [history, setHistory] = useState<Array<{ id: string; side: 'staff' | 'user'; czech: string; mongolian: string }>>([]);
-  const [autoAudio, setAutoAudio] = useState(true);
-  const [questionPlaying, setQuestionPlaying] = useState(true);
-  const timerRef = useRef<number | null>(null);
-  const logRef = useRef<HTMLDivElement | null>(null);
-
-  const step = scenario.steps[index];
-  const choices = useMemo(() => shuffle(step.choices, step.id), [step]);
-
-  useEffect(() => {
-    onProgress(index);
-    onExposure(step.staffCzech);
-    const frame = window.requestAnimationFrame(() => {
-      logRef.current?.scrollTo({ top: logRef.current.scrollHeight, behavior: 'smooth' });
-    });
-    return () => window.cancelAnimationFrame(frame);
-  }, [index, onExposure, onProgress, step.staffCzech]);
-
-  useEffect(() => {
-    setQuestionPlaying(autoAudio);
-    if (!autoAudio) return;
-    const starter = window.setTimeout(() => {
-      speakCzech(step.staffCzech, () => setQuestionPlaying(false));
-    }, 260);
-    return () => window.clearTimeout(starter);
-  }, [autoAudio, step.id, step.staffCzech]);
-
-  useEffect(() => () => {
-    if (timerRef.current) window.clearTimeout(timerRef.current);
-  }, []);
-
-  const advance = () => {
-    timerRef.current = window.setTimeout(() => {
-      if (index === scenario.steps.length - 1) {
-        onComplete();
-        return;
-      }
-      setIndex((value) => value + 1);
-      setFeedback(null);
-      setPicked(null);
-    }, 420);
-  };
-
-  const choose = (id: string) => {
-    if (feedback === 'correct' || questionPlaying) return;
-    const correct = id === step.correctId;
-    const correctReply = step.choices.find((item) => item.id === step.correctId);
-    if (correctReply) onAttempt(correctReply.text, correct);
-
-    setPicked(id);
-    setFeedback(correct ? 'correct' : 'wrong');
-    if (!correct) {
-      onMicroMistake?.();
-      return;
-    }
-
-    const reply = step.choices.find((item) => item.id === id);
-    if (!reply) return;
-    onExposure(reply.text);
-    setHistory((items) => [
-      ...items,
-      { id: `${step.id}-staff`, side: 'staff', czech: step.staffCzech, mongolian: step.staffMn },
-      { id: `${step.id}-user`, side: 'user', czech: reply.text, mongolian: reply.mongolian },
-    ]);
-
-    if (autoAudio) speakCzech(reply.text, advance);
-    else advance();
-  };
-
-  const bubble = (item: { id: string; side: 'staff' | 'user'; czech: string; mongolian: string }) => {
-    const staff = item.side === 'staff';
-    return (
-      <div key={item.id} style={{ display: 'flex', flexDirection: staff ? 'row' : 'row-reverse', gap: 6, alignItems: 'flex-end' }}>
-        <div style={{ width: 28, height: 28, borderRadius: 14, display: 'grid', placeItems: 'center', background: staff ? '#44526B' : '#7B5B22', fontSize: 15 }}>{staff ? '👩‍💼' : '🙂'}</div>
-        <div style={{ maxWidth: '80%', padding: '8px 10px', borderRadius: 14, background: staff ? '#242428' : 'rgba(200,149,42,.16)', border: staff ? '1px solid #34343A' : '1px solid rgba(200,149,42,.40)' }}>
-          <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
-            <span style={{ flex: 1, color: staff ? '#A0A0A8' : '#F5C842', fontSize: 9, fontWeight: 800 }}>{staff ? step.speaker : 'Та'}</span>
-            <button onClick={() => speakCzech(item.czech)} style={{ width: 24, height: 24, padding: 0, borderRadius: 12, border: '1px solid rgba(200,149,42,.4)', background: 'rgba(200,149,42,.12)', color: '#F5C842', cursor: 'pointer' }}>🔊</button>
-          </div>
-          <p style={{ margin: '3px 0 0', fontSize: 14, fontWeight: 800 }}>{item.czech}</p>
-          <p style={{ margin: '3px 0 0', color: '#A0A0A8', fontSize: 11 }}>{item.mongolian}</p>
-        </div>
-      </div>
-    );
-  };
-
-  return (
-    <>
-      <div style={{ ...panel, padding: 12, marginBottom: 10, display: 'flex', alignItems: 'center', gap: 9 }}>
-        <div style={{ width: 38, height: 38, borderRadius: 19, display: 'grid', placeItems: 'center', background: '#44526B' }}>👩‍💼</div>
-        <div style={{ flex: 1 }}><p style={{ margin: 0, fontSize: 13, fontWeight: 800 }}>{scenario.titleMn}</p><p style={{ margin: '2px 0 0', color: '#A0A0A8', fontSize: 11 }}>{scenario.contextMn}</p></div>
-        <button onClick={() => setAutoAudio((value) => !value)} style={{ padding: '7px 8px', borderRadius: 10, border: '1px solid rgba(200,149,42,.4)', background: autoAudio ? 'rgba(200,149,42,.16)' : 'transparent', color: autoAudio ? '#F5C842' : '#A0A0A8', cursor: 'pointer', fontSize: 10 }}>{autoAudio ? '🔊 Авто' : '🔇 Дуугүй'}</button>
-      </div>
-      <div style={panel}>
-        <div ref={logRef} style={{ maxHeight: 'min(31dvh, 235px)', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 8, paddingRight: 4, marginBottom: 14 }}>
-          {history.map(bubble)}
-          {feedback !== 'correct' && bubble({ id: `${step.id}-current`, side: 'staff', czech: step.staffCzech, mongolian: step.staffMn })}
-        </div>
-        <div style={{ borderTop: '1px solid #2A2A2F', paddingTop: 12 }}>
-          <p style={{ margin: '0 0 8px', color: '#C8952A', fontSize: 11, fontWeight: 800 }}>Таны хариу</p>
-          <h2 style={{ margin: '0 0 12px', fontSize: 16 }}>{step.promptMn}</h2>
-          {questionPlaying && <p style={{ margin: '-4px 0 10px', color: '#A0A0A8', fontSize: 12 }}>Асуулт дуустал сонсож байна…</p>}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-            {choices.map((item) => {
-              const right = feedback === 'correct' && item.id === step.correctId;
-              const wrong = feedback === 'wrong' && item.id === picked;
-              return <button key={item.id} onClick={() => choose(item.id)} disabled={feedback === 'correct' || questionPlaying} style={{ textAlign: 'left', padding: '12px 13px', borderRadius: 13, color: questionPlaying ? '#8A8A93' : '#FFF', opacity: questionPlaying ? 0.55 : 1, background: right ? 'rgba(34,197,94,.16)' : wrong ? 'rgba(239,68,68,.16)' : '#242428', border: right ? '1px solid rgba(34,197,94,.6)' : wrong ? '1px solid rgba(239,68,68,.6)' : '1px solid #34343A', cursor: feedback === 'correct' || questionPlaying ? 'default' : 'pointer' }}>{item.text}</button>;
-            })}
-          </div>
-          {feedback && <p style={{ margin: '10px 0 0', color: feedback === 'correct' ? '#4ADE80' : '#F87171', fontSize: 12, fontWeight: 800 }}>{feedback === 'correct' ? 'Зөв. Таны хариулт дуустал дараагийн асуулт хүлээнэ…' : 'Буруу. Дахин оролдоорой.'}</p>}
-        </div>
-      </div>
-    </>
-  );
-};
-
 const MicroReward: React.FC<{ micro: MicroLessonLike; mistakes: number; onDone: () => void }> = ({ micro, mistakes, onDone }) => {
   const stars = mistakes === 0 ? 3 : mistakes <= 2 ? 2 : 1;
   const summary = stars === 3
@@ -330,7 +184,10 @@ const A0LessonEngineV5: React.FC<{ config: A0LessonEngineConfig }> = ({ config }
   const exercise: EngineExercise | null = baseExercise ? getA0MatchExercise(baseExercise.id) ?? baseExercise : null;
   const microDialogue = micro ? config.microDialogues[micro.id] : null;
 
-  const total = useMemo(() => config.microLessons.reduce((sum, item) => sum + item.cardIds.length + item.exercises.length + (config.microDialogues[item.id]?.steps.length || 0), 0) + config.finalDialogue.steps.length, [config]);
+  const total = useMemo(
+    () => config.microLessons.reduce((sum, item) => sum + item.cardIds.length + item.exercises.length + (config.microDialogues[item.id]?.steps.length || 0), 0) + config.finalDialogue.steps.length,
+    [config],
+  );
   const completed = useMemo(() => {
     const before = config.microLessons.slice(0, microIndex).reduce((sum, item) => sum + item.cardIds.length + item.exercises.length + (config.microDialogues[item.id]?.steps.length || 0), 0);
     if (stage === 'cards') return before + cardIndex;
@@ -375,9 +232,7 @@ const A0LessonEngineV5: React.FC<{ config: A0LessonEngineConfig }> = ({ config }
     if (stage !== 'exercises' || !exercise) return;
     const targetId = baseExercise ? getA0ExerciseMemoryTargetId(baseExercise.id) : undefined;
     if (targetId) recordExposure(targetId);
-    if (exercise.type === 'match') {
-      exercise.pairs.forEach((pair) => trackTextExposure(pair.czech));
-    }
+    if (exercise.type === 'match') exercise.pairs.forEach((pair) => trackTextExposure(pair.czech));
   }, [baseExercise?.id, exercise, recordExposure, stage, trackTextExposure]);
 
   useEffect(() => {
@@ -593,10 +448,10 @@ const A0LessonEngineV5: React.FC<{ config: A0LessonEngineConfig }> = ({ config }
             <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 16 }}><AudioButton word={card.czech} audioFile={card.audioFile} size="lg" /></div>
             {!showMeaning ? <button onClick={() => setShowMeaning(true)} className="btn-outline" style={{ width: '100%', padding: 13 }}>Монгол утгыг харах</button> : <div style={{ padding: 14, borderRadius: 14, background: 'rgba(200,149,42,.10)', border: '1px solid rgba(200,149,42,.28)' }}><p style={{ margin: '0 0 7px', fontSize: 18, fontWeight: 800 }}>{card.mongolian}</p><p style={{ margin: 0, color: '#D1D1D6', fontSize: 13 }}>{micro.instructions[card.id]}</p></div>}
           </motion.div>
-          {showMeaning && speaking === 'idle' && <div style={{ marginTop: 15 }}><button onClick={startSpeaking} className="btn-gold" style={{ width: '100%', padding: 14 }}><Mic size={18} /> Хэлж үзэх</button><button onClick={nextCard} style={{ width: '100%', marginTop: 8, background: 'transparent', border: 0, color: '#A0A0A8', cursor: 'pointer' }}>Одоохондоо алгасах</button></div>}
-          {showMeaning && speaking === 'listening' && <div style={{ ...panel, marginTop: 15, textAlign: 'center', borderColor: 'rgba(239,68,68,.45)' }}><Mic size={28} color="#F87171" /><p style={{ color: '#F87171', fontWeight: 800 }}>Сонсож байна…</p><p style={{ color: '#A0A0A8', fontSize: 12 }}>“{card.czech}” гэж хэлээрэй</p></div>}
-          {showMeaning && speaking === 'heard' && <div style={{ ...panel, marginTop: 15, textAlign: 'center', borderColor: 'rgba(34,197,94,.45)' }}><Check color="#4ADE80" /><p style={{ color: '#4ADE80', fontWeight: 800 }}>Таны яриа танигдлаа</p><p>“{heard}”</p><p style={{ color: '#A0A0A8', fontSize: 12 }}>Дараагийн карт руу шилжиж байна…</p></div>}
-          {showMeaning && speaking === 'unavailable' && <div style={{ ...panel, marginTop: 15, textAlign: 'center' }}><p style={{ color: '#F87171', fontWeight: 800 }}>Хэлж үзэх горим ажилласангүй</p><p style={{ fontSize: 12, color: '#D1D1D6' }}>{heard}</p><button onClick={startSpeaking} className="btn-outline" style={{ width: '100%', padding: 11 }}>Дахин оролдох</button><button onClick={nextCard} style={{ width: '100%', marginTop: 8, background: 'transparent', border: 0, color: '#A0A0A8', cursor: 'pointer' }}>Алгасаад үргэлжлүүлэх</button></div>}
+          {showMeaning && speaking === 'idle' && <div style={{ marginTop: 15 }}><button onClick={startSpeaking} className="btn-gold" style={{ width: '100%', padding: 14 }}><Mic size={18} /> Яриа таних туршилт</button><button onClick={nextCard} style={{ width: '100%', marginTop: 8, background: 'transparent', border: 0, color: '#A0A0A8', cursor: 'pointer' }}>Одоохондоо алгасах</button></div>}
+          {showMeaning && speaking === 'listening' && <div style={{ ...panel, marginTop: 15, textAlign: 'center', borderColor: 'rgba(239,68,68,.45)' }}><Mic size={28} color="#F87171" /><p style={{ color: '#F87171', fontWeight: 800 }}>Яриа таньж байна…</p><p style={{ color: '#A0A0A8', fontSize: 12 }}>“{card.czech}” гэж хэлээрэй</p></div>}
+          {showMeaning && speaking === 'heard' && <div style={{ ...panel, marginTop: 15, textAlign: 'center', borderColor: 'rgba(34,197,94,.45)' }}><Check color="#4ADE80" /><p style={{ color: '#4ADE80', fontWeight: 800 }}>Таны хэлсэн үг танигдлаа</p><p>“{heard}”</p><p style={{ color: '#A0A0A8', fontSize: 12 }}>Энэ нь дуудлагын үнэлгээ биш. Дараагийн карт руу шилжиж байна…</p></div>}
+          {showMeaning && speaking === 'unavailable' && <div style={{ ...panel, marginTop: 15, textAlign: 'center' }}><p style={{ color: '#F87171', fontWeight: 800 }}>Яриа таних горим ажилласангүй</p><p style={{ fontSize: 12, color: '#D1D1D6' }}>{heard}</p><button onClick={startSpeaking} className="btn-outline" style={{ width: '100%', padding: 11 }}>Дахин оролдох</button><button onClick={nextCard} style={{ width: '100%', marginTop: 8, background: 'transparent', border: 0, color: '#A0A0A8', cursor: 'pointer' }}>Алгасаад үргэлжлүүлэх</button></div>}
         </>}
 
         {stage === 'exercises' && exercise && micro && <>
@@ -614,9 +469,9 @@ const A0LessonEngineV5: React.FC<{ config: A0LessonEngineConfig }> = ({ config }
           {feedback === 'correct' && <button onClick={nextExercise} className="btn-gold" style={{ width: '100%', marginTop: 15, padding: 14 }}>Үргэлжлүүлэх</button>}
         </>}
 
-        {stage === 'microDialogue' && microDialogue && <DialogueRun scenario={microDialogue} onProgress={setDialogueProgress} onComplete={() => setStage('microReward')} onAttempt={trackTextAttempt} onExposure={trackTextExposure} onMicroMistake={addMistake} />}
+        {stage === 'microDialogue' && microDialogue && <DialogueRunner scenario={microDialogue} onProgress={setDialogueProgress} onComplete={() => setStage('microReward')} onAttempt={trackTextAttempt} onExposure={trackTextExposure} onMistake={addMistake} />}
         {stage === 'microReward' && micro && <MicroReward micro={micro} mistakes={microMistakes} onDone={nextMicro} />}
-        {stage === 'finalDialogue' && <DialogueRun scenario={config.finalDialogue} onProgress={setDialogueProgress} onComplete={finish} onAttempt={trackTextAttempt} onExposure={trackTextExposure} />}
+        {stage === 'finalDialogue' && <DialogueRunner scenario={config.finalDialogue} onProgress={setDialogueProgress} onComplete={finish} onAttempt={trackTextAttempt} onExposure={trackTextExposure} />}
       </main>
     </div>
   );
