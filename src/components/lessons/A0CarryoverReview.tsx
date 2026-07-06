@@ -2,7 +2,6 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { Check, Volume2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { getA0MemoryTarget } from '../../data/a0MemoryPlan';
-import { useAppStore } from '../../stores/useAppStore';
 import { usePhraseMemoryStore } from '../../stores/usePhraseMemoryStore';
 
 type Feedback = 'correct' | 'wrong' | null;
@@ -37,7 +36,6 @@ function speakCzech(text: string) {
 
 const A0CarryoverReview: React.FC<A0CarryoverReviewProps> = ({ lessonId, onComplete }) => {
   const recordAttempt = usePhraseMemoryStore((state) => state.recordAttempt);
-  const updateSRSCard = useAppStore((state) => state.updateSRSCard);
   const [targetIds] = useState(() => usePhraseMemoryStore.getState().getCarryoverTargetIds(lessonId, 3));
   const [index, setIndex] = useState(0);
   const [feedback, setFeedback] = useState<Feedback>(null);
@@ -69,7 +67,6 @@ const A0CarryoverReview: React.FC<A0CarryoverReviewProps> = ({ lessonId, onCompl
     setPickedId(id);
     setFeedback(correct ? 'correct' : 'wrong');
     recordAttempt(target.id, correct);
-    updateSRSCard(target.id, correct ? 4 : 1);
   };
 
   const continueReview = () => {
