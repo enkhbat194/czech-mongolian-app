@@ -15,11 +15,6 @@ const LearningPathPage: React.FC = () => {
     setPage('a0Lesson');
   };
 
-  const openDialoguePreview = (lessonId: string) => {
-    setCurrentLesson(lessonId);
-    setPage('a0DialoguePreview');
-  };
-
   return (
     <div style={{ background: '#0C0C0E', minHeight: '100vh', fontFamily: 'Inter,sans-serif' }}>
       <div style={{ background: '#141416', padding: '20px 20px 16px', borderBottom: '1px solid #2A2A2F' }}>
@@ -61,7 +56,6 @@ const LearningPathPage: React.FC = () => {
                   </div>
                   {!locked && <ChevronRight size={16} color="#606068" style={{ flexShrink: 0 }} />}
                 </button>
-                {ready && <button onClick={() => openDialoguePreview(lesson.id)} style={{ width: '100%', marginTop: 11, padding: '10px 12px', borderRadius: 12, border: '1px solid rgba(200,149,42,.42)', background: 'rgba(200,149,42,.10)', color: '#F5C842', fontSize: 12, fontWeight: 900, cursor: 'pointer' }}>Түр шалгах: яриа шууд харах</button>}
               </motion.div>
             </div>
           );
