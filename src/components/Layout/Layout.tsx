@@ -51,11 +51,13 @@ const pages: Record<string, React.FC> = {
 };
 
 const immersivePages = ['a0FirstContact', 'a0Needs', 'a0Location', 'a0Lesson', 'todayReview'];
+const genericLessonIds = ['l004', 'l005', 'l006'];
 
 const Layout: React.FC = () => {
-  const { currentPage } = useAppStore();
-  const Page = pages[currentPage] || HomePage;
-  const isImmersiveLesson = immersivePages.includes(currentPage);
+  const { currentPage, currentLessonId } = useAppStore();
+  const isGenericFallback = currentPage === 'flashcard' && genericLessonIds.includes(currentLessonId || '');
+  const Page = isGenericFallback ? A0ReferenceLessonPage : (pages[currentPage] || HomePage);
+  const isImmersiveLesson = immersivePages.includes(currentPage) || isGenericFallback;
 
   return (
     <div style={{ minHeight: '100dvh', background: '#080810', display: 'flex', justifyContent: 'center' }}>
