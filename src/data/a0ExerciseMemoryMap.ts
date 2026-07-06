@@ -16,7 +16,7 @@ export const a0ExerciseMemoryTargetIds: Record<string, string> = {
   'a0-2-a-2': 'a0c0027',
   'a0-2-a-3': 'a0c0027',
   'a0-2-a-4': 'a0c0029',
-  'a0-2-a-5': 'a0c0027',
+  'a0-2-a-5': 'a0c0025',
   'a0-2-b-1': 'a0c0031',
   'a0-2-b-2': 'a0c0035',
   'a0-2-b-3': 'a0c0037',
