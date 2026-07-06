@@ -5,15 +5,6 @@ import A0LessonEngine from '../components/lessons/A0LessonEngine';
 import A0CarryoverReview from '../components/lessons/A0CarryoverReview';
 import { useAppStore } from '../stores/useAppStore';
 
-const DialoguePreviewShortcut: React.FC = () => {
-  const setPage = useAppStore((state) => state.setPage);
-  return (
-    <button onClick={() => setPage('a0DialoguePreview')} style={{ position: 'fixed', right: 14, bottom: 14, zIndex: 30, padding: '10px 12px', borderRadius: 14, border: '1px solid rgba(200,149,42,.55)', background: '#1C1C1F', color: '#F5C842', boxShadow: '0 8px 22px rgba(0,0,0,.38)', fontSize: 12, fontWeight: 900, cursor: 'pointer' }}>
-      💬 Яриаг шууд шалгах
-    </button>
-  );
-};
-
 const A0ReferenceLessonPage: React.FC = () => {
   const currentLessonId = useAppStore((state) => state.currentLessonId);
   const setPage = useAppStore((state) => state.setPage);
@@ -36,7 +27,7 @@ const A0ReferenceLessonPage: React.FC = () => {
   }
 
   if (!carryoverComplete) {
-    return <><A0CarryoverReview lessonId={currentLessonId} onComplete={() => setCarryoverComplete(true)} /><DialoguePreviewShortcut /></>;
+    return <A0CarryoverReview lessonId={currentLessonId} onComplete={() => setCarryoverComplete(true)} />;
   }
 
   return <A0LessonEngine config={lesson} />;
