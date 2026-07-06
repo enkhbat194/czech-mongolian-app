@@ -38,6 +38,30 @@ export const a0MatchExercisesBySourceId: Record<string, A0MatchExercise> = {
     ],
     feedbackMn: 'Өөрийгөө танилцуулах болон ойлгохгүй үед хэрэглэх хэллэгүүдийг зөв таарууллаа.',
   },
+  'a0-3-a-4': {
+    id: 'a0-3-a-4-match',
+    type: 'match',
+    titleMn: 'Утга тааруулах',
+    promptMn: 'Байршил асуух болон зааж хариулах хэллэгүүдийг зөв хослуул.',
+    pairs: [
+      { id: 'toilet', czech: 'Prosím, kde je toaleta?', mongolian: 'Уучлаарай, ариун цэврийн өрөө хаана байна?' },
+      { id: 'here', czech: 'Tady.', mongolian: 'Энд.' },
+      { id: 'there', czech: 'Tam.', mongolian: 'Тэнд.' },
+    ],
+    feedbackMn: 'Байршил асуух болон зааж хариулах хэллэгүүдийг зөв таарууллаа.',
+  },
+  'a0-3-b-3': {
+    id: 'a0-3-b-3-match',
+    type: 'match',
+    titleMn: 'Утга тааруулах',
+    promptMn: 'Хэрэгтэй газраа асуух Чех хэллэгийг Монгол утгатай нь зөв хослуул.',
+    pairs: [
+      { id: 'shop', czech: 'Kde je obchod?', mongolian: 'Дэлгүүр хаана байна?' },
+      { id: 'pharmacy', czech: 'Kde je lékárna?', mongolian: 'Эмийн сан хаана байна?' },
+      { id: 'station', czech: 'Kde je nádraží?', mongolian: 'Галт тэрэгний буудал хаана байна?' },
+    ],
+    feedbackMn: 'Хэрэгтэй газраа асуух хэллэгүүдийг зөв таарууллаа.',
+  },
 };
 
 export function getA0MatchExercise(sourceExerciseId: string): A0MatchExercise | undefined {
