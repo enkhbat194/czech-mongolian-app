@@ -22,20 +22,13 @@ const activeCoverage = { card: 1, recognition: 2, retrieval: 2, dialogue: 2, car
 const supportCoverage = { card: 1, recognition: 1, retrieval: 1, dialogue: 1, carryover: 0 };
 
 const activeCategories = new Set([
-  'pattern',
-  'survival',
-  'direction-pattern',
-  'transport-pattern',
-  'time-pattern',
-  'meeting-pattern',
-  'job-pattern',
-  'job-question',
-  'job-survival',
+  'pattern', 'survival', 'direction-pattern', 'transport-pattern', 'time-pattern', 'meeting-pattern',
+  'job-pattern', 'job-question', 'job-survival', 'job-response', 'listening-pattern',
 ]);
 
 const explicitActiveIds = new Set([
   'a0c0001', 'a0c0003', 'a0c0005', 'a0c0006', 'a0c0012', 'a0c0013', 'a0c0016', 'a0c0017', 'a0c0019', 'a0c0021', 'a0c0326', 'a0c0327',
-  'a0c0048', 'a0c0049',
+  'a0c0048', 'a0c0049', 'a0c0101', 'a0c0102', 'a0c0103', 'a0c0104',
 ]);
 
 const aliasMap: Record<string, string[]> = {
@@ -61,7 +54,12 @@ const aliasMap: Record<string, string[]> = {
   a0c0065: ['Tramvaj, prosím.'],
   a0c0081: ['Dnes mám čas.', 'Zítra večer mám čas.'],
   a0c0082: ['Teď nemám čas.'],
-  a0c0099: ['Nerozumím. Potřebuji pomoc.'],
+  a0c0099: ['Nerozumím. Ukažte mi, prosím.'],
+  a0c0100: ['Mluvím moc rychle?'],
+  a0c0101: ['V pět.'],
+  a0c0102: ['Ve dvanáct.'],
+  a0c0103: ['Nový úkol.'],
+  a0c0104: ['Ukážu vám.'],
 };
 
 function normalizeCzech(text: string) {
@@ -76,15 +74,7 @@ function normalizeCzech(text: string) {
 
 export const a0MemoryTargets: A0MemoryTarget[] = czechWords.map((word) => {
   const priority: MemoryPriority = explicitActiveIds.has(word.id) || activeCategories.has(word.category) ? 'active' : 'support';
-  return {
-    id: word.id,
-    lessonId: word.lessonId,
-    czech: word.czech,
-    mongolian: word.mongolian,
-    priority,
-    aliases: aliasMap[word.id],
-    requiredCoverage: priority === 'active' ? activeCoverage : supportCoverage,
-  };
+  return { id: word.id, lessonId: word.lessonId, czech: word.czech, mongolian: word.mongolian, priority, aliases: aliasMap[word.id], requiredCoverage: priority === 'active' ? activeCoverage : supportCoverage };
 });
 
 const lessonOrder = ['l001', 'l002', 'l003', 'l004', 'l005', 'l006', 'l007', 'l008', 'l009', 'l010', 'l011', 'l012', 'l013', 'l014', 'l015'];
