@@ -61,7 +61,7 @@ export const a0MemoryTargets: A0MemoryTarget[] = [
 
   { id: 'a0c0023', lessonId: 'l002', czech: 'Potřebuji', mongolian: 'надад хэрэгтэй', priority: 'support', requiredCoverage: supportCoverage },
   { id: 'a0c0024', lessonId: 'l002', czech: 'pomoc', mongolian: 'тусламж', priority: 'support', requiredCoverage: supportCoverage },
-  { id: 'a0c0025', lessonId: 'l002', czech: 'Potřebuji pomoc.', mongolian: 'Надад тусламж хэрэгтэй.', priority: 'active', aliases: ['Potřebuji pomoc, prosím.'], requiredCoverage: activeCoverage },
+  { id: 'a0c0025', lessonId: 'l002', czech: 'Potřebuji pomoc.', mongolian: 'Надад тусламж хэрэгтэй.', priority: 'active', requiredCoverage: activeCoverage },
   { id: 'a0c0026', lessonId: 'l002', czech: 'vodu', mongolian: 'ус', priority: 'support', requiredCoverage: supportCoverage },
   { id: 'a0c0027', lessonId: 'l002', czech: 'Potřebuji vodu.', mongolian: 'Надад ус хэрэгтэй.', priority: 'active', aliases: ['Ano, potřebuji vodu.'], requiredCoverage: activeCoverage },
   { id: 'a0c0028', lessonId: 'l002', czech: 'telefon', mongolian: 'утас', priority: 'support', requiredCoverage: supportCoverage },
@@ -80,7 +80,7 @@ export const a0MemoryTargets: A0MemoryTarget[] = [
   { id: 'a0c0041', lessonId: 'l002', czech: 'kartu', mongolian: 'карт', priority: 'support', requiredCoverage: supportCoverage },
   { id: 'a0c0042', lessonId: 'l002', czech: 'Nemám kartu.', mongolian: 'Надад карт байхгүй.', priority: 'active', requiredCoverage: activeCoverage },
   { id: 'a0c0043', lessonId: 'l002', czech: 'Co potřebujete?', mongolian: 'Танд юу хэрэгтэй вэ?', priority: 'active', requiredCoverage: activeCoverage },
-  { id: 'a0c0044', lessonId: 'l002', czech: 'Potřebuji pomoc, prosím.', mongolian: 'Надад туслаач, гуйя.', priority: 'active', aliases: ['Potřebuji pomoc.'], requiredCoverage: activeCoverage },
+  { id: 'a0c0044', lessonId: 'l002', czech: 'Potřebuji pomoc, prosím.', mongolian: 'Надад туслаач, гуйя.', priority: 'active', requiredCoverage: activeCoverage },
 
   { id: 'a0c0045', lessonId: 'l003', czech: 'kde', mongolian: 'хаана', priority: 'support', requiredCoverage: supportCoverage },
   { id: 'a0c0046', lessonId: 'l003', czech: 'toaleta', mongolian: 'ариун цэврийн өрөө', priority: 'support', requiredCoverage: supportCoverage },
