@@ -9,7 +9,7 @@ export const a0ReferenceLessons: Record<'l001' | 'l002' | 'l003', A0LessonDefini
   l001: defineA0Lesson({
     lessonId: 'l001',
     titleMn: 'A0.1 — Анхны харилцаа',
-    durationMinutes: 34,
+    durationMinutes: 38,
     cards: a0FirstContactCards,
     microLessons: a0FirstContactMicroLessons,
     getCard: getA0FirstContactCard,
@@ -23,7 +23,7 @@ export const a0ReferenceLessons: Record<'l001' | 'l002' | 'l003', A0LessonDefini
   l002: defineA0Lesson({
     lessonId: 'l002',
     titleMn: 'A0.2 — Надад хэрэгтэй',
-    durationMinutes: 32,
+    durationMinutes: 38,
     cards: a0NeedsCards,
     microLessons: a0NeedsMicroLessons,
     getCard: getA0NeedsCard,
