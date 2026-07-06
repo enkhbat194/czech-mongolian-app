@@ -1,92 +1,91 @@
-# A0.1–A0.3 Reference Audit v1
+# A0.1–A0.3 Reference Audit v2
 
 ## Audit scope
 
-Энэ audit нь A0.1, A0.2, A0.3 дээр дараах зүйлийг шалгав:
+Энэ audit нь A0.1, A0.2, A0.3 дээр дараах зүйлийг шалгаж, боломжтойг нь код болон lesson data дээр зассан.
 
-1. Нэг хичээл нэг бодит чадварт төвлөрч байгаа эсэх
-2. Карт → таних → сэргээх → нөхцөл → богино яриа → төгсгөлийн яриа гэсэн урсгал байгаа эсэх
-3. Phrase memory болон carryover review-д гол хэллэг орж байгаа эсэх
-4. Дасгал, яриа, route, course map, Home, memory target хоорондоо холбогдсон эсэх
-5. Дараагийн микро хэсгийн шинэ хэллэг өмнөх микро хэсэгт урьдчилж ороогүй эсэх
+1. Карт → дасгал → богино яриа → reward → төгсгөлийн яриа → review урсгал
+2. Шинэ хэллэг дараагийн микро хэсгээс өмнө staff text, option, distractor хэлбэрээр орж байгаа эсэх
+3. Exercise, match, dialogue-ийн phrase memory mapping
+4. SRS оноолт нэг оролдлогод ганц удаа бичигдэж байгаа эсэх
+5. Lesson completion нь бодит recall гэж андуурагдаж байгаа эсэх
+6. Daily review нь сураагүй дараагийн хичээлийн phrase-ийг option болгож гаргаж байгаа эсэх
+7. Lesson data contract, card coverage, dialogue contract
 
 ## Reference lesson matrix
 
 | Хичээл | Бодит чадвар | Карт | Микро | Дасгал | Богино яриа | Төгсгөлийн яриа |
 |---|---|---:|---:|---:|---:|---:|
-| A0.1 | Мэндлэх, нэрээ хэлэх, ойлгохгүй үед удаашруулах хүсэлт тавих | 25 | 3 | 15 | 8 алхам | 5 алхам |
+| A0.1 | Мэндлэх, нэрээ хэлэх, ойлгохгүй үед удаашруулах хүсэлт тавих | 25 | 3 | 15 | 9 алхам | 6 алхам |
 | A0.2 | Тусламж, ус, утас, хоол хүсэх; мөнгө/карт байхгүйгээ хэлэх | 22 | 3 | 15 | 9 алхам | 7 алхам |
-| A0.3 | Хэрэгтэй газар асууж, `энд / тэнд` гэсэн хариуг тодруулах | 13 | 3 | 12 | 10 алхам | 8 алхам |
+| A0.3 | Хэрэгтэй газар асууж, `энд / тэнд` гэсэн хариуг тодруулах | 13 | 3 | 12 | 8 алхам | 7 алхам |
 
-Эдгээр тоо `a0ReferenceLessons.ts` дахь computed audit-тай уялдана.
+Эдгээр тоо `a0ReferenceLessons.ts` дахь `auditA0Lesson()`-оор тооцогдоно.
 
-## Pass болсон шалгуур
+## Засагдсан зүйл
 
-- A0.1–A0.3 нь бүгд 3 микро хэсэгтэй.
-- Микро бүр карт, дор хаяж нэг дасгал, дор хаяж нэг богино яриатай.
-- Бүх хичээл төгсгөлийн бодит сценаритай.
-- Match дасгал нь lesson data дотор `type: 'match'` хэлбэрээр шууд хадгалагдана.
-- Match дээр Чех талыг дарахад аудио сонсогдож, pair бүр зөв/буруугаараа phrase memory-д орно.
-- A0.2, A0.3 эхлэхэд carryover review ажиллана.
-- Ажилтан/ресепшний ярианы audio дууссаны дараа л хариулт идэвхжинэ.
-- Reward дэлгэц автоматаар алгасахгүй; `Үргэлжлүүлэх` товчтой.
-- Хичээл дууссан гэдэг нь бүх карт баттай гэсэн үг биш; санах ой нь spaced review-ээр тусад нь батлагдана.
+### 1. Урьдчилж гардаг хэллэг
 
-## Audit-аар засагдсан зүйл
+A0.1–A0.3-ийн micro dialogue, final dialogue, exercise option, coverage option-уудыг дахин шалгав.
 
-### Daily review queue
+- A0.1-ийн эхний микро хэсгээс `Jak se máte?`, `Dobře`, `Jsem z Mongolska.`, `Nerozumím.` зэрэг дараагийн микро хэллэгүүдийг хасав.
+- A0.2-ийн эхний хоёр микро хэсгээс `Nemám …`, `Co potřebujete?`, `Chci kartu.`, `Potřebuji kartu.` зэрэг дараа заах хэллэгийг distractor болгон гаргахыг зогсоов.
+- A0.3-ийн дэлгүүр/эмийн сангийн хэсгээс `Potřebuji lékárnu.` гэх заагаагүй хэлбэрийг хасав.
+- Staff prompt болон option дээр боломжтой газарт зөвхөн тухайн микро эсвэл өмнөх хичээлд үзсэн хэллэгийг ашиглав.
 
-Өмнө нь `Өнөөдөр давтах` хэсэг хугацаа нь болоогүй идэвхтэй хэллэгүүдийг ч харуулж байв. Одоо зөвхөн `nextReview <= now` болсон хэллэг queue-д орно.
+Энэ нь сурагч шинэ үгийг “буруу option” хэлбэрээр урьдчилж хараад, дараа нь жинхэнэ хичээл дээр дахин таарах асуудлыг бууруулна.
 
-Үүний үр дүнд 1 → 3 → 7 → 14 → 30 хоногийн зай бодитоор мөрдөгдөнө.
+### 2. Memory mapping
 
-### Match data
+- 38 non-match exercise бүгд `a0ExerciseMemoryMap.ts` дээр тодорхой memory target-той.
+- 4 match exercise pair бүр Чех текстээрээ memory target руу resolve хийгдэнэ.
+- `defineA0Lesson()` одоо non-match exercise бүр mapping-тэй, match pair бүр resolve хийх target-тэй эсэхийг шалгана.
+- `Potřebuji pomoc.` болон `Potřebuji pomoc, prosím.` хоёр phrase target-ийн alias давхардлыг салгав. Ингэснээр эхний тусламжийн phrase болон дараа заах эелдэг хувилбар тусдаа SRS target болно.
 
-Өмнө нь match дасгалын хосууд тусдаа map-д, бусад дасгал тухайн lesson data-д байсан. Одоо A0.1–A0.3-ын бүх match pair нь тухайн lesson data дотор байна.
+### 3. SRS ба review queue
 
-### A0.3-ийн урьдчилсан үг
+- `recordAttempt()` phrase memory болон card SRS-д нэг удаа зэрэг бичдэг болсон.
+- Carryover review болон Today Review-ийн давхар `updateSRSCard()` дуудлагыг авсан.
+- Lesson completion үед engine бүх картыг quality 4 гэж оноодог legacy үйлдлийг bridge хамгаалалтаар блоклов. Хичээл дууссан нь “танилцсан” гэсэн үг; зөв recall хийсэн гэсэн үг биш.
+- Daily review option pool нь одоо тухайн target-ийн lesson болон түүнээс өмнөх lesson-оор хязгаарлагдана. A0.1 review дээр A0.2/A0.3-ын үг option болж гарахгүй.
+- Due queue нь зөвхөн `nextReview <= now` болсон phrase-уудыг авна.
 
-A0.3-ийн 2-р микро хэсгийн match болон dialogue сонголтоос 3-р микро хэсэгт заах `Kde je nádraží?` хэллэгийг хассан. Өмнө нь заагаагүй хэллэгийг хуурамч сонголт болгож үзүүлэхгүй.
+## Structural contract
 
-## Stable authoring contract
-
-Шинэ A0.x хичээл дараах data contract-аар заавал орно:
-
-```text
-A0LessonDefinition
-  ├─ lesson metadata
-  ├─ cards
-  ├─ microLessons[]
-  │   ├─ cardIds[]
-  │   ├─ instruction бүр
-  │   └─ exercises[] including match
-  ├─ microDialogues
-  ├─ finalDialogue
-  └─ completion data
-```
-
-`defineA0Lesson()` автоматаар дараах алдааг блоклоно:
+`defineA0Lesson()` одоо дараах алдааг runtime-д блоклоно:
 
 - картгүй lesson
 - микрогүй lesson
-- dialogue-гүй micro
-- картын id буруу байх
-- картын тайлбар дутуу байх
-- давхардсан exercise id
-- сонголтын зөв хариулт байхгүй байх
-- хоосон match pair
+- картын id буруу эсвэл давхардсан байх
+- карт нэгээс олон микро дээр давтагдах, эсвэл огт орохгүй байх
+- картын instruction дутуу байх
+- micro dialogue дутуу эсвэл orphan dialogue байх
+- давхардсан exercise id / dialogue step id
+- зөв option байхгүй, duplicate option id
+- хоосон эсвэл duplicate match pair
+- non-match exercise memory target-гүй байх
+- match Czech text memory target руу resolve хийхгүй байх
 
-## Дараагийн хичээлүүдэд заавал дагах дүрэм
+## Бодит хэрэглэгчийн шалгалтаар батлах зүйл
 
-1. Нэг микро хэсэгт 3–5 шинэ картын цөмийг барина. Дэмжих үг нэмэгдэж болно, гэхдээ идэвхтэй хэллэгийг хэт олшруулахгүй.
-2. Шинэ хэллэгийг өмнөх микро хэсгийн distractor болгон оруулахгүй.
-3. Идэвхтэй хэллэг бүр дор хаяж карт, нэг сэргээх дасгал, нэг богино яриа, нэг төгсгөлийн яриа, дараагийн хичээлийн carryover review-д орно.
-4. Үг өөрөө биш, бодит хэллэгийг memory target болгоно.
-5. Browser speech recognition-ийг transcript гэж үзнэ; жинхэнэ pronunciation assessment гэж тооцохгүй.
+Кодын static audit нь logic болон data contract-ийг шалгана. Дараах нь localhost дээр заавал бодитоор харах шалгалт хэвээр байна:
 
-## Үлдсэн хязгаар
+- TTS дуусах хүртэл dialogue option disabled хэвээр байгаа эсэх
+- Буруу хариулсны дараа retry нь зөв phrase дээр SRS-г ганц удаа шинэчилж байгаа эсэх
+- A0.1 → A0.2, A0.2 → A0.3 carryover review дээр зөвхөн өмнөх phrase-ууд гарч байгаа эсэх
+- iPhone дээр match, reward, completion, review UI тасралтгүй ажиллаж байгаа эсэх
 
-- Native Czech audio asset хараахан ороогүй; browser TTS fallback ашиглаж байна.
-- Browser speech recognition нь дуудлага чанарыг үнэлэхгүй.
-- SRS нь local device storage дээр; cloud sync, backup, олон төхөөрөмжийн merge хараахан байхгүй.
-- Legacy renderer дотор compatibility lookup үлдсэн ч A0.1–A0.3 reference data түүнээс хамаарахгүй; engine-ийн public input нь `A0LessonDefinition` болсон.
+## Үлдсэн аудитын өр
+
+### Micro density
+
+A0.1-ийн микро хэсгүүд 7 / 8 / 10 card, A0.2-ийнх 7 / 8 / 7 card байна. Эдгээрийн дотор support word болон бүтэн phrase холилдсон ч strict “3–5 core phrase” зарчмаас их байна.
+
+Одоогийн audit нь correctness, SRS, pre-teach leak-ийг эхэлж түгжсэн. Дараагийн content refactor дээр A0.1, A0.2-ийг 5–6 жижиг микро хэсэг болгон задлах эсэхийг тусад нь шийднэ. Энэ нь UI урсгал, dialogue, completion time-г өөрчилдөг учраас silent өөрчлөлт хийгээгүй.
+
+### Техникийн үлдэгдэл
+
+- Native Czech audio asset байхгүй; browser TTS fallback ашиглаж байна.
+- Browser speech recognition нь transcript; жинхэнэ pronunciation assessment биш.
+- SRS нь local device storage дээр; cloud sync, backup, олон төхөөрөмжийн merge байхгүй.
+- `A0LessonEngineV5` дотор legacy compatibility adapter үлдсэн. Reference lesson data нь inline match болон shared schema ашиглаж байгаа ч renderer type cleanup-ийг A0.4-өөс өмнө тусад нь хийж болно.
