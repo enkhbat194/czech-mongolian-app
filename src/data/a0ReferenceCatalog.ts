@@ -1,6 +1,3 @@
-import './a0DirectionsMemory';
-import './a0TimeMemory';
-import './a0WorkMemory';
 import { a0ReferenceLessons } from './a0ReferenceLessons';
 import { a0ReferenceNewLessons } from './a0ReferenceNewLessons';
 
