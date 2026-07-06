@@ -5,8 +5,6 @@ import { useAppStore } from '../stores/useAppStore';
 import { lessons as courseLessons } from '../data/lessons';
 import { ProgressBar } from '../components/UI/SharedComponents';
 
-const pageForLesson: Record<string, string> = { l001: 'a0FirstContact', l002: 'a0Needs', l003: 'a0Location' };
-
 const LearningPathPage: React.FC = () => {
   const { setCurrentLesson, setPage, getLessonProgress, progress } = useAppStore();
   const total = courseLessons.filter((lesson) => lesson.status === 'ready').reduce((sum, lesson) => sum + lesson.wordCount, 0);
@@ -14,7 +12,7 @@ const LearningPathPage: React.FC = () => {
 
   const openLesson = (lessonId: string) => {
     setCurrentLesson(lessonId);
-    setPage(pageForLesson[lessonId] || 'flashcard');
+    setPage('a0Lesson');
   };
 
   return (
