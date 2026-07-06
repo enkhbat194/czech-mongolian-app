@@ -1,4 +1,3 @@
-import './data/a0ReleaseAudit';
 import Layout from './components/Layout/Layout';
 import './index.css';
 
