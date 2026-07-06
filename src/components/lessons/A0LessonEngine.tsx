@@ -64,6 +64,10 @@ function restoreTransitionLabel(label: HTMLElement) {
   delete label.dataset.a0TransitionLabel;
 }
 
+const findAnswerLabel = (root: HTMLElement) => Array.from(root.querySelectorAll<HTMLElement>('p')).find(
+  (node) => node.textContent?.trim() === 'Таны хариу' || node.dataset.a0TransitionLabel === 'Таны хариу',
+);
+
 /**
  * The legacy dialogue renderer commits a staff bubble into history before its active bubble
  * has fully disappeared. This guard keeps exactly one staff bubble on screen and removes the
@@ -81,7 +85,7 @@ const DialogueTransitionGuard: React.FC<{ rootRef: React.RefObject<HTMLDivElemen
     };
 
     const sync = () => {
-      const answerLabel = Array.from(root.querySelectorAll<HTMLElement>('p')).find((node) => node.textContent?.trim() === 'Таны хариу' || node.dataset.a0TransitionLabel === 'Таны хариу');
+      const answerLabel = findAnswerLabel(root);
       if (!answerLabel) {
         restoreAll();
         return;
@@ -132,6 +136,85 @@ const DialogueTransitionGuard: React.FC<{ rootRef: React.RefObject<HTMLDivElemen
   return null;
 };
 
+/** Mobile compaction: one scene, one compact control row, and only the last dialogue turn. */
+const DialogueLayoutCompactor: React.FC<{ rootRef: React.RefObject<HTMLDivElement | null> }> = ({ rootRef }) => {
+  useEffect(() => {
+    const root = rootRef.current;
+    if (!root) return;
+    let frame = 0;
+
+    const sync = () => {
+      const answerLabel = findAnswerLabel(root);
+      const main = root.querySelector('main') as HTMLElement | null;
+      if (!answerLabel || !main) return;
+
+      const answerSection = answerLabel.parentElement as HTMLElement | null;
+      const dialoguePanel = answerSection?.parentElement as HTMLElement | null;
+      const log = dialoguePanel?.firstElementChild as HTMLElement | null;
+      if (!answerSection || !dialoguePanel || !log) return;
+
+      dialoguePanel.style.padding = '13px';
+      dialoguePanel.style.borderRadius = '18px';
+      log.style.maxHeight = 'none';
+      log.style.overflowY = 'visible';
+      log.style.paddingRight = '0';
+      log.style.marginBottom = '10px';
+      log.style.gap = '7px';
+
+      const rows = Array.from(log.children) as HTMLElement[];
+      rows.forEach((row, index) => {
+        if (index < rows.length - 3) {
+          row.dataset.a0HistoryCollapsed = 'true';
+          row.style.display = 'none';
+        }
+      });
+
+      const header = dialoguePanel.previousElementSibling as HTMLElement | null;
+      if (!header || header.dataset.a0DialogueScene === 'true') return;
+      const headerAutoButton = Array.from(header.querySelectorAll('button')).find((button) => button.textContent?.includes('Авто') || button.textContent?.includes('Дуугүй'));
+      if (!headerAutoButton) return;
+
+      header.style.padding = '8px 10px';
+      header.style.marginBottom = '8px';
+      header.style.borderRadius = '15px';
+      header.style.minHeight = '42px';
+      header.style.gap = '8px';
+
+      const avatar = header.firstElementChild as HTMLElement | null;
+      if (avatar) avatar.style.display = 'none';
+      const copy = header.children[1] as HTMLElement | undefined;
+      if (copy) {
+        copy.style.minWidth = '0';
+        const textRows = Array.from(copy.querySelectorAll<HTMLElement>('p'));
+        if (textRows[0]) {
+          textRows[0].style.fontSize = '12px';
+          textRows[0].style.whiteSpace = 'nowrap';
+          textRows[0].style.overflow = 'hidden';
+          textRows[0].style.textOverflow = 'ellipsis';
+        }
+        if (textRows[1]) textRows[1].style.display = 'none';
+      }
+      (headerAutoButton as HTMLElement).style.padding = '6px 8px';
+    };
+
+    const scheduleSync = () => {
+      window.cancelAnimationFrame(frame);
+      frame = window.requestAnimationFrame(sync);
+    };
+
+    const observer = new MutationObserver(scheduleSync);
+    observer.observe(root, { childList: true, subtree: true, characterData: true });
+    scheduleSync();
+
+    return () => {
+      window.cancelAnimationFrame(frame);
+      observer.disconnect();
+    };
+  }, [rootRef]);
+
+  return null;
+};
+
 const DialogueSceneInjector: React.FC<{ lessonId: string; rootRef: React.RefObject<HTMLDivElement | null> }> = ({ lessonId, rootRef }) => {
   const [host, setHost] = useState<HTMLElement | null>(null);
   const hostRef = useRef<HTMLElement | null>(null);
@@ -149,7 +232,7 @@ const DialogueSceneInjector: React.FC<{ lessonId: string; rootRef: React.RefObje
 
     const sync = () => {
       const main = root.querySelector('main');
-      const isDialogueStage = Array.from(root.querySelectorAll<HTMLElement>('p')).some((node) => node.textContent?.trim() === 'Таны хариу' || node.dataset.a0TransitionLabel === 'Таны хариу');
+      const isDialogueStage = Boolean(findAnswerLabel(root));
       if (!main || !isDialogueStage) {
         removeHost();
         return;
@@ -194,6 +277,7 @@ const A0LessonEngine: React.FC<{ config: A0LessonDefinition }> = ({ config }) =>
       <LegacyA0LessonEngine config={preparedConfig as unknown as LegacyA0LessonEngineConfig} />
       <DialogueSceneInjector lessonId={config.lessonId} rootRef={rootRef} />
       <DialogueTransitionGuard rootRef={rootRef} />
+      <DialogueLayoutCompactor rootRef={rootRef} />
       <button onClick={() => setPage('a0DialoguePreview')} style={{ position: 'fixed', right: 14, bottom: 14, zIndex: 30, padding: '10px 12px', borderRadius: 14, border: '1px solid rgba(200,149,42,.55)', background: '#1C1C1F', color: '#F5C842', boxShadow: '0 8px 22px rgba(0,0,0,.38)', fontSize: 12, fontWeight: 900, cursor: 'pointer' }}>
         💬 Яриаг шууд шалгах
       </button>
