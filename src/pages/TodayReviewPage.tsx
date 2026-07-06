@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { a0MemoryTargets, getA0MemoryTarget } from '../data/a0MemoryPlan';
 import { useAppStore } from '../stores/useAppStore';
 import { usePhraseMemoryStore } from '../stores/usePhraseMemoryStore';
+import { speakCzech } from '../components/lessons/dialogueAudio';
 
 type Feedback = 'correct' | 'wrong' | null;
 
@@ -19,15 +20,6 @@ function stableShuffle<T>(items: T[], seedText: string): T[] {
     [result[index], result[swapIndex]] = [result[swapIndex], result[index]];
   }
   return result;
-}
-
-function speakCzech(text: string) {
-  if (!('speechSynthesis' in window)) return;
-  window.speechSynthesis.cancel();
-  const utterance = new SpeechSynthesisUtterance(text);
-  utterance.lang = 'cs-CZ';
-  utterance.rate = 0.84;
-  window.speechSynthesis.speak(utterance);
 }
 
 const reviewPanel: React.CSSProperties = {
