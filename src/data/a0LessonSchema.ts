@@ -1,5 +1,7 @@
 import type { CzechWord } from './czechWords';
 import type { DialogueScenario } from './a0Dialogues';
+import { getA0ExerciseMemoryTargetId } from './a0ExerciseMemoryMap';
+import { getA0MemoryTarget, getA0MemoryTargetByCzech } from './a0MemoryPlan';
 
 export type A0Choice = {
   id: string;
@@ -114,6 +116,19 @@ function assertDialogue(scenario: DialogueScenario, label: string, seenStepIds: 
   });
 }
 
+function assertExerciseMemoryTarget(exercise: A0Exercise) {
+  if (exercise.type === 'match') {
+    exercise.pairs.forEach((pair) => {
+      assertA0(Boolean(getA0MemoryTargetByCzech(pair.czech)), `${exercise.id} match pair has no memory target: ${pair.czech}`);
+    });
+    return;
+  }
+
+  const targetId = getA0ExerciseMemoryTargetId(exercise.id);
+  assertA0(Boolean(targetId), `${exercise.id} has no exercise memory target`);
+  assertA0(Boolean(getA0MemoryTarget(targetId as string)), `${exercise.id} maps to unknown memory target ${targetId}`);
+}
+
 export function defineA0Lesson(definition: A0LessonDefinition): A0LessonDefinition {
   const cardIds = new Set(definition.cards.map((card) => card.id));
   const microIds = new Set<string>();
@@ -147,6 +162,7 @@ export function defineA0Lesson(definition: A0LessonDefinition): A0LessonDefiniti
       assertA0(!exerciseIds.has(exercise.id), `${definition.lessonId} has duplicate exercise id ${exercise.id}`);
       exerciseIds.add(exercise.id);
       assertA0(Boolean(exercise.titleMn && exercise.promptMn && exercise.feedbackMn), `${exercise.id} has incomplete labels`);
+      assertExerciseMemoryTarget(exercise);
 
       if (exercise.type === 'choice' || exercise.type === 'fillBlank') {
         assertA0(exercise.choices.length >= 2, `${exercise.id} needs at least two choices`);
