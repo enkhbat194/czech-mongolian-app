@@ -47,7 +47,7 @@ export const a0NeedsMicroLessons: A0MicroLesson[] = [
       },
       {
         id: 'a0-2-a-2', type: 'choice', titleMn: 'Нөхцөлд хэрэглэх', promptMn: 'Та ус авах хэрэгтэй байна. Аль өгүүлбэр зөв бэ?',
-        choices: [{ id: 'a', text: 'Nemám vodu.' }, { id: 'b', text: 'Potřebuji vodu.' }, { id: 'c', text: 'Chci telefon.' }], correctId: 'b',
+        choices: [{ id: 'a', text: 'Potřebuji pomoc.' }, { id: 'b', text: 'Potřebuji vodu.' }, { id: 'c', text: 'Potřebuji telefon.' }], correctId: 'b',
         feedbackMn: 'Potřebuji vodu. = Надад ус хэрэгтэй.',
       },
       {
@@ -61,7 +61,7 @@ export const a0NeedsMicroLessons: A0MicroLesson[] = [
       },
       {
         id: 'a0-2-a-5', type: 'choice', titleMn: 'Нөхцөлд хариулах', promptMn: 'Та ресепшнд очоод тусламж хүсэх хэрэгтэй байна. Аль өгүүлбэрийг хэлэх вэ?',
-        choices: [{ id: 'a', text: 'Nemám kartu.' }, { id: 'b', text: 'Potřebuji pomoc, prosím.' }, { id: 'c', text: 'Na shledanou.' }], correctId: 'b',
+        choices: [{ id: 'a', text: 'Potřebuji telefon.' }, { id: 'b', text: 'Potřebuji pomoc, prosím.' }, { id: 'c', text: 'Na shledanou.' }], correctId: 'b',
         feedbackMn: 'Эелдэг тусламж хүсэхдээ Potřebuji pomoc, prosím. гэж хэлнэ.',
       },
     ],
@@ -84,7 +84,7 @@ export const a0NeedsMicroLessons: A0MicroLesson[] = [
     exercises: [
       {
         id: 'a0-2-b-1', type: 'choice', titleMn: 'Утгын ялгаа', promptMn: '“Би ус хүсэж байна” гэсэн хамгийн тохирох өгүүлбэр аль нь вэ?',
-        choices: [{ id: 'a', text: 'Nemám vodu.' }, { id: 'b', text: 'Co potřebujete?' }, { id: 'c', text: 'Chci vodu.' }], correctId: 'c',
+        choices: [{ id: 'a', text: 'Potřebuji pomoc.' }, { id: 'b', text: 'Potřebuji telefon.' }, { id: 'c', text: 'Chci vodu.' }], correctId: 'c',
         feedbackMn: 'Chci vodu. нь хүсэлт, сонголтоо илэрхийлж байна.',
       },
       {
@@ -98,12 +98,12 @@ export const a0NeedsMicroLessons: A0MicroLesson[] = [
       },
       {
         id: 'a0-2-b-4', type: 'choice', titleMn: 'Нөхцөлд сонгох', promptMn: 'Та дэлгүүрт заасан сэндвичээ авахыг хүсэж байна. Аль нь зөв бэ?',
-        choices: [{ id: 'a', text: 'Chci tohle.' }, { id: 'b', text: 'Nemám tohle.' }, { id: 'c', text: 'Potřebuji kartu.' }], correctId: 'a',
+        choices: [{ id: 'a', text: 'Chci tohle.' }, { id: 'b', text: 'Chci jídlo.' }, { id: 'c', text: 'Potřebuji telefon.' }], correctId: 'a',
         feedbackMn: 'Chci tohle. = Би үүнийг хүсэж байна.',
       },
       {
         id: 'a0-2-b-5', type: 'choice', titleMn: 'Хэллэг ялгах', promptMn: 'Аль өгүүлбэр “Би хоол хүсэж байна” гэсэн утгатай вэ?',
-        choices: [{ id: 'a', text: 'Potřebuji pomoc.' }, { id: 'b', text: 'Chci jídlo.' }, { id: 'c', text: 'Nemám peníze.' }], correctId: 'b',
+        choices: [{ id: 'a', text: 'Potřebuji pomoc.' }, { id: 'b', text: 'Chci jídlo.' }, { id: 'c', text: 'Potřebuji telefon.' }], correctId: 'b',
         feedbackMn: 'Chci jídlo. = Би хоол хүсэж байна.',
       },
     ],
@@ -161,13 +161,13 @@ export const a0NeedsMission: A0DialogueStep[] = [
   {
     id: 'a0-2-m2', speaker: 'Ресепшний ажилтан', staffCzech: 'Voda?', staffMn: 'Ус?',
     promptMn: 'Танд ус хэрэгтэй байна. Аль хариулт тохирох вэ?',
-    choices: [{ id: 'a', text: 'Ano, prosím.' }, { id: 'b', text: 'Nemám vodu.' }, { id: 'c', text: 'Nerozumím.' }], correctId: 'a',
+    choices: [{ id: 'a', text: 'Ano, prosím.' }, { id: 'b', text: 'Potřebuji telefon.' }, { id: 'c', text: 'Nerozumím.' }], correctId: 'a',
     feedbackMn: 'Ano, prosím. = Тийм, гуйя.',
   },
   {
     id: 'a0-2-m3', speaker: 'Ресепшний ажилтан', staffCzech: 'Jídlo?', staffMn: 'Хоол?',
     promptMn: 'Та идэх юм хүсэж байгаагаа хэлэх хэрэгтэй. Аль хариулт тохирох вэ?',
-    choices: [{ id: 'a', text: 'Nemám kartu.' }, { id: 'b', text: 'Ano, chci něco k jídlu.' }, { id: 'c', text: 'Potřebuji telefon.' }], correctId: 'b',
+    choices: [{ id: 'a', text: 'Potřebuji vodu.' }, { id: 'b', text: 'Ano, chci něco k jídlu.' }, { id: 'c', text: 'Potřebuji telefon.' }], correctId: 'b',
     feedbackMn: 'Chci něco k jídlu. = Би идэх юм хүсэж байна.',
   },
   {
