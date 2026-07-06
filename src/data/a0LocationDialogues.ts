@@ -7,25 +7,16 @@ export const a0LocationMicroDialogues: Record<string, DialogueScenario> = {
     contextMn: 'Та танихгүй газарт ороод ариун цэврийн өрөө асууж байна.',
     steps: [
       {
-        id: 'a03a-d1', speaker: 'Ажилтан', staffCzech: 'Dobrý den. Potřebujete pomoc?', staffMn: 'Сайн байна уу. Танд тусламж хэрэгтэй юу?',
-        promptMn: 'Тусламж хэрэгтэй байгаагаа эелдгээр хэлээрэй.',
+        id: 'a03a-d1', speaker: 'Ажилтан', staffCzech: 'Dobrý den.', staffMn: 'Сайн байна уу.',
+        promptMn: 'Ариун цэврийн өрөө хаана байгааг эелдгээр асуугаарай.',
         choices: [
-          { id: 'a', text: 'Potřebuji pomoc, prosím.', mongolian: 'Надад туслаач, гуйя.' },
+          { id: 'a', text: 'Prosím, kde je toaleta?', mongolian: 'Уучлаарай, ариун цэврийн өрөө хаана байна?' },
           { id: 'b', text: 'Nemám kartu.', mongolian: 'Надад карт байхгүй.' },
           { id: 'c', text: 'Na shledanou.', mongolian: 'Баяртай.' },
-        ], correctId: 'a', feedbackMn: 'Эхлээд тусламж хүсэх нь яриаг аюулгүй, эелдэг эхлүүлнэ.'
+        ], correctId: 'a', feedbackMn: 'Prosím, kde je toaleta? = Уучлаарай, ариун цэврийн өрөө хаана байна?'
       },
       {
-        id: 'a03a-d2', speaker: 'Ажилтан', staffCzech: 'Co hledáte?', staffMn: 'Та юу хайж байна вэ?',
-        promptMn: 'Ариун цэврийн өрөө хаана байгааг асуугаарай.',
-        choices: [
-          { id: 'a', text: 'Děkuji.', mongolian: 'Баярлалаа.' },
-          { id: 'b', text: 'Prosím, kde je toaleta?', mongolian: 'Уучлаарай, ариун цэврийн өрөө хаана байна?' },
-          { id: 'c', text: 'Tam.', mongolian: 'Тэнд.' },
-        ], correctId: 'b', feedbackMn: 'Prosím, kde je toaleta? = Уучлаарай, ариун цэврийн өрөө хаана байна?'
-      },
-      {
-        id: 'a03a-d3', speaker: 'Ажилтан', staffCzech: 'Toaleta je tady.', staffMn: 'Ариун цэврийн өрөө энд байна.',
+        id: 'a03a-d2', speaker: 'Ажилтан', staffCzech: 'Toaleta je tady.', staffMn: 'Ариун цэврийн өрөө энд байна.',
         promptMn: 'Эелдгээр баярлалаа гэж хэлээрэй.',
         choices: [
           { id: 'a', text: 'Děkuji.', mongolian: 'Баярлалаа.' },
@@ -41,7 +32,7 @@ export const a0LocationMicroDialogues: Record<string, DialogueScenario> = {
     contextMn: 'Та ойр хавийн дэлгүүр болон эмийн санг асууж байна.',
     steps: [
       {
-        id: 'a03b-d1', speaker: 'Ажилтан', staffCzech: 'Co hledáte?', staffMn: 'Та юу хайж байна вэ?',
+        id: 'a03b-d1', speaker: 'Ажилтан', staffCzech: 'Dobrý den.', staffMn: 'Сайн байна уу.',
         promptMn: 'Дэлгүүр хаана байгааг асуугаарай.',
         choices: [
           { id: 'a', text: 'Kde je obchod?', mongolian: 'Дэлгүүр хаана байна?' },
@@ -50,25 +41,16 @@ export const a0LocationMicroDialogues: Record<string, DialogueScenario> = {
         ], correctId: 'a', feedbackMn: 'Kde je obchod? = Дэлгүүр хаана байна?'
       },
       {
-        id: 'a03b-d2', speaker: 'Ажилтан', staffCzech: 'Obchod je tam. Potřebujete ještě něco?', staffMn: 'Дэлгүүр тэнд байна. Танд өөр зүйл хэрэгтэй юу?',
-        promptMn: 'Танд өөр зүйл хэрэгтэй байгааг хэлээрэй.',
+        id: 'a03b-d2', speaker: 'Ажилтан', staffCzech: 'Obchod je tam.', staffMn: 'Дэлгүүр тэнд байна.',
+        promptMn: 'Та эмийн сан бас асуух хэрэгтэй байна.',
         choices: [
-          { id: 'a', text: 'Ano, prosím.', mongolian: 'Тийм, гуйя.' },
+          { id: 'a', text: 'Kde je lékárna?', mongolian: 'Эмийн сан хаана байна?' },
           { id: 'b', text: 'Ne, děkuji.', mongolian: 'Үгүй, баярлалаа.' },
           { id: 'c', text: 'Tam.', mongolian: 'Тэнд.' },
-        ], correctId: 'a', feedbackMn: 'Ano, prosím. = Тийм, гуйя.'
+        ], correctId: 'a', feedbackMn: 'Kde je lékárna? = Эмийн сан хаана байна?'
       },
       {
-        id: 'a03b-d3', speaker: 'Ажилтан', staffCzech: 'Co hledáte?', staffMn: 'Та юу хайж байна вэ?',
-        promptMn: 'Эмийн сан хаана байгааг асуугаарай.',
-        choices: [
-          { id: 'a', text: 'Kde je obchod?', mongolian: 'Дэлгүүр хаана байна?' },
-          { id: 'b', text: 'Kde je lékárna?', mongolian: 'Эмийн сан хаана байна?' },
-          { id: 'c', text: 'Prosím, kde je toaleta?', mongolian: 'Уучлаарай, ариун цэврийн өрөө хаана байна?' },
-        ], correctId: 'b', feedbackMn: 'Kde je lékárna? = Эмийн сан хаана байна?'
-      },
-      {
-        id: 'a03b-d4', speaker: 'Ажилтан', staffCzech: 'Lékárna je tady.', staffMn: 'Эмийн сан энд байна.',
+        id: 'a03b-d3', speaker: 'Ажилтан', staffCzech: 'Lékárna je tady.', staffMn: 'Эмийн сан энд байна.',
         promptMn: 'Яриаг эелдгээр дуусгаарай.',
         choices: [
           { id: 'a', text: 'Děkuji.', mongolian: 'Баярлалаа.' },
@@ -84,7 +66,7 @@ export const a0LocationMicroDialogues: Record<string, DialogueScenario> = {
     contextMn: 'Та газрын зураг дээр галт тэрэгний буудлыг олж, заасан чиглэлийг тодруулж байна.',
     steps: [
       {
-        id: 'a03c-d1', speaker: 'Ажилтан', staffCzech: 'Co hledáte?', staffMn: 'Та юу хайж байна вэ?',
+        id: 'a03c-d1', speaker: 'Ажилтан', staffCzech: 'Dobrý den.', staffMn: 'Сайн байна уу.',
         promptMn: 'Галт тэрэгний буудал хаана байгааг асуугаарай.',
         choices: [
           { id: 'a', text: 'Kde je nádraží?', mongolian: 'Галт тэрэгний буудал хаана байна?' },
@@ -93,7 +75,7 @@ export const a0LocationMicroDialogues: Record<string, DialogueScenario> = {
         ], correctId: 'a', feedbackMn: 'Kde je nádraží? = Галт тэрэгний буудал хаана байна?'
       },
       {
-        id: 'a03c-d2', speaker: 'Ажилтан', staffCzech: 'Vidíte mapu?', staffMn: 'Та газрын зургийг харж байна уу?',
+        id: 'a03c-d2', speaker: 'Ажилтан', staffCzech: 'Nádraží je tam.', staffMn: 'Галт тэрэгний буудал тэнд байна.',
         promptMn: 'Заасан байрлалыг “энд үү, тэнд үү?” гэж тодруулаарай.',
         choices: [
           { id: 'a', text: 'Tady, nebo tam?', mongolian: 'Энд үү, тэнд үү?' },
@@ -102,8 +84,8 @@ export const a0LocationMicroDialogues: Record<string, DialogueScenario> = {
         ], correctId: 'a', feedbackMn: 'Tady, nebo tam? = Энд үү, тэнд үү?'
       },
       {
-        id: 'a03c-d3', speaker: 'Ажилтан', staffCzech: 'Tam.', staffMn: 'Тэнд.',
-        promptMn: 'Заасан байрлалыг ойлгоогүй бол удаан ярихыг хүсээрэй.',
+        id: 'a03c-d3', speaker: 'Ажилтан', staffCzech: 'Prosím?', staffMn: 'Уучлаарай? Дахин хэлнэ үү?',
+        promptMn: 'Та ойлгохгүй байвал удаан ярихыг хүсээрэй.',
         choices: [
           { id: 'a', text: 'Nerozumím. Mluvte prosím pomalu.', mongolian: 'Би ойлгохгүй байна. Удаан ярьж өгнө үү.' },
           { id: 'b', text: 'Tady.', mongolian: 'Энд.' },
@@ -120,25 +102,16 @@ export const a0LocationFinalDialogue: DialogueScenario = {
   contextMn: 'Та танихгүй барилгад орж, хэрэгтэй газруудаа асууж байна.',
   steps: [
     {
-      id: 'a03f-1', speaker: 'Ресепшний ажилтан', staffCzech: 'Dobrý den. Co potřebujete?', staffMn: 'Сайн байна уу. Танд юу хэрэгтэй вэ?',
-      promptMn: 'Эелдгээр тусламж хүсээрэй.',
-      choices: [
-        { id: 'a', text: 'Potřebuji pomoc, prosím.', mongolian: 'Надад туслаач, гуйя.' },
-        { id: 'b', text: 'Chci jídlo.', mongolian: 'Би хоол хүсэж байна.' },
-        { id: 'c', text: 'Na shledanou.', mongolian: 'Баяртай.' },
-      ], correctId: 'a', feedbackMn: 'Тусламж хүсээд дараа нь байршлаа асууж болно.'
-    },
-    {
-      id: 'a03f-2', speaker: 'Ресепшний ажилтан', staffCzech: 'Co hledáte?', staffMn: 'Та юу хайж байна вэ?',
-      promptMn: 'Ариун цэврийн өрөө хаана байгааг асуугаарай.',
+      id: 'a03f-1', speaker: 'Ресепшний ажилтан', staffCzech: 'Dobrý den.', staffMn: 'Сайн байна уу.',
+      promptMn: 'Ариун цэврийн өрөө хаана байгааг эелдгээр асуугаарай.',
       choices: [
         { id: 'a', text: 'Prosím, kde je toaleta?', mongolian: 'Уучлаарай, ариун цэврийн өрөө хаана байна?' },
-        { id: 'b', text: 'Kde je nádraží?', mongolian: 'Галт тэрэгний буудал хаана байна?' },
-        { id: 'c', text: 'Kde je lékárna?', mongolian: 'Эмийн сан хаана байна?' },
+        { id: 'b', text: 'Chci jídlo.', mongolian: 'Би хоол хүсэж байна.' },
+        { id: 'c', text: 'Na shledanou.', mongolian: 'Баяртай.' },
       ], correctId: 'a', feedbackMn: 'Эелдэгээр асуухдаа Prosím, kde je …? гэж эхэлж болно.'
     },
     {
-      id: 'a03f-3', speaker: 'Ресепшний ажилтан', staffCzech: 'Toaleta je tady. Potřebujete ještě něco?', staffMn: 'Ариун цэврийн өрөө энд байна. Танд өөр зүйл хэрэгтэй юу?',
+      id: 'a03f-2', speaker: 'Ресепшний ажилтан', staffCzech: 'Toaleta je tady.', staffMn: 'Ариун цэврийн өрөө энд байна.',
       promptMn: 'Дэлгүүр хаана байгааг асуугаарай.',
       choices: [
         { id: 'a', text: 'Kde je obchod?', mongolian: 'Дэлгүүр хаана байна?' },
@@ -147,7 +120,7 @@ export const a0LocationFinalDialogue: DialogueScenario = {
       ], correctId: 'a', feedbackMn: 'Kde je obchod? = Дэлгүүр хаана байна?'
     },
     {
-      id: 'a03f-4', speaker: 'Ресепшний ажилтан', staffCzech: 'Obchod je tam.', staffMn: 'Дэлгүүр тэнд байна.',
+      id: 'a03f-3', speaker: 'Ресепшний ажилтан', staffCzech: 'Obchod je tam.', staffMn: 'Дэлгүүр тэнд байна.',
       promptMn: 'Эмийн сан хаана байгааг асуугаарай.',
       choices: [
         { id: 'a', text: 'Kde je lékárna?', mongolian: 'Эмийн сан хаана байна?' },
@@ -156,7 +129,7 @@ export const a0LocationFinalDialogue: DialogueScenario = {
       ], correctId: 'a', feedbackMn: 'Kde je lékárna? = Эмийн сан хаана байна?'
     },
     {
-      id: 'a03f-5', speaker: 'Ресепшний ажилтан', staffCzech: 'Lékárna je tady. Potřebujete ještě něco?', staffMn: 'Эмийн сан энд байна. Танд өөр зүйл хэрэгтэй юу?',
+      id: 'a03f-4', speaker: 'Ресепшний ажилтан', staffCzech: 'Lékárna je tady.', staffMn: 'Эмийн сан энд байна.',
       promptMn: 'Галт тэрэгний буудал хаана байгааг асуугаарай.',
       choices: [
         { id: 'a', text: 'Kde je nádraží?', mongolian: 'Галт тэрэгний буудал хаана байна?' },
@@ -165,7 +138,7 @@ export const a0LocationFinalDialogue: DialogueScenario = {
       ], correctId: 'a', feedbackMn: 'Kde je nádraží? = Галт тэрэгний буудал хаана байна?'
     },
     {
-      id: 'a03f-6', speaker: 'Ресепшний ажилтан', staffCzech: 'Nádraží je tam.', staffMn: 'Галт тэрэгний буудал тэнд байна.',
+      id: 'a03f-5', speaker: 'Ресепшний ажилтан', staffCzech: 'Prosím?', staffMn: 'Уучлаарай? Дахин хэлнэ үү?',
       promptMn: 'Заасан чиглэлийг ойлгохгүй бол хамгаалах хэллэгээ хэрэглээрэй.',
       choices: [
         { id: 'a', text: 'Nerozumím. Mluvte prosím pomalu.', mongolian: 'Би ойлгохгүй байна. Удаан ярьж өгнө үү.' },
@@ -174,7 +147,7 @@ export const a0LocationFinalDialogue: DialogueScenario = {
       ], correctId: 'a', feedbackMn: 'Ойлгохгүй бол эхлээд удаан ярихыг хүснэ.'
     },
     {
-      id: 'a03f-7', speaker: 'Ресепшний ажилтан', staffCzech: 'Nádraží je tam.', staffMn: 'Галт тэрэгний буудал тэнд байна.',
+      id: 'a03f-6', speaker: 'Ресепшний ажилтан', staffCzech: 'Nádraží je tam.', staffMn: 'Галт тэрэгний буудал тэнд байна.',
       promptMn: 'Тодруулж асуугаарай: энд үү, тэнд үү?',
       choices: [
         { id: 'a', text: 'Tady, nebo tam?', mongolian: 'Энд үү, тэнд үү?' },
@@ -183,7 +156,7 @@ export const a0LocationFinalDialogue: DialogueScenario = {
       ], correctId: 'a', feedbackMn: 'Tady, nebo tam? нь заасан байрлалыг тодруулах богино асуулт.'
     },
     {
-      id: 'a03f-8', speaker: 'Ресепшний ажилтан', staffCzech: 'Tam. Na shledanou.', staffMn: 'Тэнд. Баяртай.',
+      id: 'a03f-7', speaker: 'Ресепшний ажилтан', staffCzech: 'Tam.', staffMn: 'Тэнд.',
       promptMn: 'Яриаг эелдгээр дуусгаарай.',
       choices: [
         { id: 'a', text: 'Děkuji. Na shledanou.', mongolian: 'Баярлалаа. Баяртай.' },
