@@ -13,6 +13,9 @@ export interface SRSCard {
   nextReview: string;
   lastReview: string;
   quality: 0 | 1 | 2 | 3 | 4 | 5;
+  exposures: number;
+  correctAttempts: number;
+  incorrectAttempts: number;
 }
 
 export interface UserProgress {
@@ -51,8 +54,6 @@ export interface AppState {
   updateStreak: () => void;
   updateSRSCard: (wordId: string, quality: 0 | 1 | 2 | 3 | 4 | 5) => void;
   getDueReviewCards: () => SRSCard[];
-  srsCards: SRSCard[];
-  dailyGoalMinutes: number;
   getWordsForLesson: (lessonId: string) => CzechWord[];
   getLessonProgress: (lessonId: string) => number;
   toggleDarkMode: () => void;
@@ -85,13 +86,25 @@ function createReviewCard(wordId: string): SRSCard {
   const now = new Date().toISOString();
   return {
     wordId,
-    // The first lesson exposure schedules tomorrow's review. It is not mastery.
     repetitions: 1,
     interval: 1,
     easeFactor: 2.5,
     nextReview: tomorrowIso(),
     lastReview: now,
     quality: 3,
+    exposures: 0,
+    correctAttempts: 0,
+    incorrectAttempts: 0,
+  };
+}
+
+function normalizeCard(card: Partial<SRSCard> & Pick<SRSCard, 'wordId'>): SRSCard {
+  return {
+    ...createReviewCard(card.wordId),
+    ...card,
+    exposures: card.exposures ?? 0,
+    correctAttempts: card.correctAttempts ?? 0,
+    incorrectAttempts: card.incorrectAttempts ?? 0,
   };
 }
 
@@ -123,8 +136,7 @@ function sm2(card: SRSCard, quality: 0 | 1 | 2 | 3 | 4 | 5): SRSCard {
 }
 
 function withIntroducedWord(progress: UserProgress, wordId: string) {
-  const introduced = progress.introducedWords || [];
-  return introduced.includes(wordId) ? introduced : [...introduced, wordId];
+  return progress.introducedWords.includes(wordId) ? progress.introducedWords : [...progress.introducedWords, wordId];
 }
 
 function isDue(card: SRSCard) {
@@ -143,8 +155,6 @@ export const useAppStore = create<AppState>()(
       progress: initialProgress,
       isDarkMode: true,
       isAudioPlaying: false,
-      srsCards: [],
-      dailyGoalMinutes: 15,
 
       setPage: (page) => set({ currentPage: page }),
       setCurrentLesson: (lessonId) => set({ currentLessonId: lessonId, currentWordIndex: 0 }),
@@ -154,22 +164,18 @@ export const useAppStore = create<AppState>()(
       activateWordForReview: (wordId) => {
         const { progress } = get();
         const existing = progress.srsCards[wordId];
-        const newCards = existing ? progress.srsCards : { ...progress.srsCards, [wordId]: createReviewCard(wordId) };
+        const card = existing ? normalizeCard(existing) : createReviewCard(wordId);
+        const nextCard = { ...card, exposures: card.exposures + 1, lastReview: new Date().toISOString() };
         set({
           progress: {
             ...progress,
             introducedWords: withIntroducedWord(progress, wordId),
-            srsCards: newCards,
+            srsCards: { ...progress.srsCards, [wordId]: nextCard },
           },
-          srsCards: Object.values(newCards),
         });
       },
 
-      markWordLearned: (wordId) => {
-        // Legacy callers use this after a card is introduced. Mastery is only
-        // granted through successful scheduled recall in updateSRSCard().
-        get().activateWordForReview(wordId);
-      },
+      markWordLearned: (wordId) => get().activateWordForReview(wordId),
 
       completeLesson: (lessonId) => {
         const { progress } = get();
@@ -188,7 +194,7 @@ export const useAppStore = create<AppState>()(
 
       addMinutes: (minutes) => {
         const { progress } = get();
-        set({ progress: { ...progress, todayMinutes: progress.todayMinutes + minutes, totalMinutes: (progress.totalMinutes || 0) + minutes } });
+        set({ progress: { ...progress, todayMinutes: progress.todayMinutes + minutes, totalMinutes: progress.totalMinutes + minutes } });
       },
 
       updateStreak: () => {
@@ -202,53 +208,51 @@ export const useAppStore = create<AppState>()(
 
       updateSRSCard: (wordId, quality) => {
         const { progress } = get();
-        const existing = progress.srsCards[wordId] || createReviewCard(wordId);
-        // Learning exercises may repeat a phrase several times in one sitting.
-        // Only a due review is allowed to advance 1 → 3 → 7 → 14 → 30 days.
-        // A wrong answer always resets it to the same-day queue.
-        const updated = quality < 3
-          ? sm2(existing, quality)
-          : isDue(existing)
-            ? sm2(existing, quality)
-            : { ...existing, quality: Math.max(existing.quality, quality) as SRSCard['quality'] };
-        const newCards = { ...progress.srsCards, [wordId]: updated };
-        const currentMastered = progress.learnedWords || [];
+        const current = normalizeCard(progress.srsCards[wordId] || createReviewCard(wordId));
+        const scheduled = quality < 3
+          ? sm2(current, quality)
+          : isDue(current)
+            ? sm2(current, quality)
+            : { ...current, quality: Math.max(current.quality, quality) as SRSCard['quality'] };
+        const updated = {
+          ...scheduled,
+          exposures: current.exposures + 1,
+          correctAttempts: current.correctAttempts + (quality >= 3 ? 1 : 0),
+          incorrectAttempts: current.incorrectAttempts + (quality < 3 ? 1 : 0),
+          lastReview: new Date().toISOString(),
+        };
+        const cards = { ...progress.srsCards, [wordId]: updated };
         const learnedWords = quality < 3
-          ? currentMastered.filter((id) => id !== wordId)
-          : updated.repetitions >= 3 && updated.quality >= 4 && !currentMastered.includes(wordId)
-            ? [...currentMastered, wordId]
-            : currentMastered;
-
+          ? progress.learnedWords.filter((id) => id !== wordId)
+          : updated.repetitions >= 3 && updated.quality >= 4 && !progress.learnedWords.includes(wordId)
+            ? [...progress.learnedWords, wordId]
+            : progress.learnedWords;
         set({
           progress: {
             ...progress,
             introducedWords: withIntroducedWord(progress, wordId),
             learnedWords,
-            srsCards: newCards,
+            srsCards: cards,
           },
-          srsCards: Object.values(newCards),
         });
       },
 
-      getDueReviewCards: () => Object.values(get().progress.srsCards).filter(isDue),
+      getDueReviewCards: () => Object.values(get().progress.srsCards).map(normalizeCard).filter(isDue),
       getWordsForLesson: (lessonId) => get().words.filter((word) => word.lessonId === lessonId),
-
       getLessonProgress: (lessonId) => {
         const { progress, words } = get();
         const lessonWords = words.filter((word) => word.lessonId === lessonId);
         if (lessonWords.length === 0) return 0;
-        const introduced = progress.introducedWords || progress.learnedWords || [];
-        const count = lessonWords.filter((word) => introduced.includes(word.id)).length;
+        const count = lessonWords.filter((word) => progress.introducedWords.includes(word.id)).length;
         return Math.round((count / lessonWords.length) * 100);
       },
 
       toggleDarkMode: () => set((state) => ({ isDarkMode: !state.isDarkMode })),
       setDailyGoal: (minutes) => {
         const { progress } = get();
-        set({ progress: { ...progress, dailyGoalMinutes: minutes }, dailyGoalMinutes: minutes });
+        set({ progress: { ...progress, dailyGoalMinutes: minutes } });
       },
-      resetProgress: () => set({ progress: initialProgress, lessons, currentWordIndex: 0, currentLessonId: null, srsCards: [] }),
-
+      resetProgress: () => set({ progress: initialProgress, lessons, currentWordIndex: 0, currentLessonId: null }),
       unlockNextLesson: (currentLessonId) => {
         const { lessons: currentLessons } = get();
         const currentIndex = currentLessons.findIndex((lesson) => lesson.id === currentLessonId);
@@ -258,8 +262,25 @@ export const useAppStore = create<AppState>()(
       },
     }),
     {
-      name: 'czech-mn-a0-storage-v2',
+      name: 'czech-mn-a0-storage-v3',
       partialize: (state) => ({ userName: state.userName, progress: state.progress, isDarkMode: state.isDarkMode }),
+      merge: (persisted, current) => {
+        const saved = persisted as Partial<AppState>;
+        const savedProgress = saved.progress as Partial<UserProgress> | undefined;
+        const rawCards = savedProgress?.srsCards || {};
+        const normalizedCards = Object.fromEntries(Object.entries(rawCards).map(([id, card]) => [id, normalizeCard({ ...(card as SRSCard), wordId: id })]));
+        return {
+          ...current,
+          ...saved,
+          lessons: current.lessons,
+          words: current.words,
+          progress: {
+            ...initialProgress,
+            ...savedProgress,
+            srsCards: normalizedCards,
+          },
+        };
+      },
     },
   ),
 );
