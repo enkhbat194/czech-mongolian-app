@@ -6,7 +6,9 @@ import { useAppStore } from '../stores/useAppStore';
 const A0ReferenceLessonPage: React.FC = () => {
   const currentLessonId = useAppStore((state) => state.currentLessonId);
   const setPage = useAppStore((state) => state.setPage);
-  const lesson = currentLessonId ? a0ReferenceLessons[currentLessonId] : undefined;
+  const lesson = currentLessonId
+    ? a0ReferenceLessons[currentLessonId as keyof typeof a0ReferenceLessons]
+    : undefined;
 
   if (!lesson) {
     return (
