@@ -42,7 +42,6 @@ const TodayReviewPage: React.FC = () => {
   const addXP = useAppStore((state) => state.addXP);
   const addMinutes = useAppStore((state) => state.addMinutes);
   const updateStreak = useAppStore((state) => state.updateStreak);
-  const updateSRSCard = useAppStore((state) => state.updateSRSCard);
   const phrases = usePhraseMemoryStore((state) => state.phrases);
   const recordAttempt = usePhraseMemoryStore((state) => state.recordAttempt);
 
@@ -57,7 +56,12 @@ const TodayReviewPage: React.FC = () => {
     [targetIds],
   );
   const current = targets[index];
-  const activePool = useMemo(() => a0MemoryTargets.filter((target) => target.priority === 'active'), []);
+  const activePool = useMemo(() => {
+    if (!current) return [];
+    return a0MemoryTargets.filter(
+      (target) => target.priority === 'active' && target.lessonId <= current.lessonId,
+    );
+  }, [current?.lessonId]);
   const choices = useMemo(() => {
     if (!current) return [];
     const distractors = stableShuffle(activePool.filter((target) => target.id !== current.id), `${current.id}-today-options`).slice(0, 3);
@@ -78,7 +82,6 @@ const TodayReviewPage: React.FC = () => {
     if (chosen) speakCzech(chosen.czech);
 
     recordAttempt(current.id, correct);
-    updateSRSCard(current.id, correct ? 4 : 1);
     setPickedId(targetId);
     setFeedback(correct ? 'correct' : 'wrong');
   };
