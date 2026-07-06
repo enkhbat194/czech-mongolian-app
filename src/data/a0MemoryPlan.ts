@@ -20,8 +20,23 @@ export interface A0MemoryTarget {
 
 const activeCoverage = { card: 1, recognition: 2, retrieval: 2, dialogue: 2, carryover: 2 };
 const supportCoverage = { card: 1, recognition: 1, retrieval: 1, dialogue: 1, carryover: 0 };
-const activeCategories = new Set(['pattern', 'survival', 'direction-pattern', 'transport-pattern', 'time-pattern', 'work-pattern']);
-const explicitActiveIds = new Set(['a0c0001', 'a0c0003', 'a0c0005', 'a0c0006', 'a0c0012', 'a0c0013', 'a0c0016', 'a0c0017', 'a0c0019', 'a0c0021', 'a0c0326', 'a0c0327', 'a0c0048', 'a0c0049']);
+
+const activeCategories = new Set([
+  'pattern',
+  'survival',
+  'direction-pattern',
+  'transport-pattern',
+  'time-pattern',
+  'meeting-pattern',
+  'job-pattern',
+  'job-question',
+  'job-survival',
+]);
+
+const explicitActiveIds = new Set([
+  'a0c0001', 'a0c0003', 'a0c0005', 'a0c0006', 'a0c0012', 'a0c0013', 'a0c0016', 'a0c0017', 'a0c0019', 'a0c0021', 'a0c0326', 'a0c0327',
+  'a0c0048', 'a0c0049',
+]);
 
 const aliasMap: Record<string, string[]> = {
   a0c0001: ['Dobrý den.'],
@@ -45,7 +60,13 @@ const aliasMap: Record<string, string[]> = {
 };
 
 function normalizeCzech(text: string) {
-  return text.toLocaleLowerCase('cs-CZ').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[.,!?—-]/g, '').replace(/\s+/g, ' ').trim();
+  return text
+    .toLocaleLowerCase('cs-CZ')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[.,!?—-]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
 }
 
 export const a0MemoryTargets: A0MemoryTarget[] = czechWords.map((word) => {
@@ -78,5 +99,7 @@ export function getA0MemoryTargetByCzech(text: string) {
 export function getPriorActiveTargetIds(lessonId: string) {
   const lessonIndex = lessonOrder.indexOf(lessonId);
   if (lessonIndex <= 0) return [];
-  return a0MemoryTargets.filter((target) => target.priority === 'active' && lessonOrder.indexOf(target.lessonId) < lessonIndex).map((target) => target.id);
+  return a0MemoryTargets
+    .filter((target) => target.priority === 'active' && lessonOrder.indexOf(target.lessonId) < lessonIndex)
+    .map((target) => target.id);
 }
