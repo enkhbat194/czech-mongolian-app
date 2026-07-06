@@ -37,7 +37,7 @@ export const a0ReferenceLessons: Record<'l001' | 'l002' | 'l003', A0LessonDefini
   l003: defineA0Lesson({
     lessonId: 'l003',
     titleMn: 'A0.3 — Хаана байна?',
-    durationMinutes: 28,
+    durationMinutes: 32,
     cards: a0LocationCards,
     microLessons: a0LocationMicroLessons,
     getCard: getA0LocationCard,
@@ -46,7 +46,7 @@ export const a0ReferenceLessons: Record<'l001' | 'l002' | 'l003', A0LessonDefini
     xpReward: 170,
     completionIcon: '📍',
     completionSummaryMn: 'Та танихгүй газарт ариун цэврийн өрөө, дэлгүүр, эмийн сан, галт тэрэгний буудал хаана байгааг асууж, “энд / тэнд” гэсэн хариуг тодруулж чадна.',
-    completionPhrases: ['Prosím, kde je toaleta?', 'Kde je obchod?', 'Kde je lékárna?', 'Kde je nádraží?', 'Tady, nebo tam?'],
+    completionPhrases: ['Prosím, kde je toaleta?', 'Tady.', 'Tam.', 'Kde je lékárna?', 'Tady, nebo tam?'],
   }),
 };
 
