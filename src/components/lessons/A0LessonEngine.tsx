@@ -1,10 +1,8 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { createPortal } from 'react-dom';
 import LegacyA0LessonEngine from './A0LessonEngineV5';
 import type { A0LessonEngineConfig as LegacyA0LessonEngineConfig } from './A0LessonEngineV5';
 import type { A0LessonDefinition } from '../../data/a0LessonSchema';
 import type { DialogueChoice, DialogueScenario } from '../../data/a0Dialogues';
-import A0DialogueScene from './A0DialogueScene';
 import { useAppStore } from '../../stores/useAppStore';
 
 function hashText(value: string) {
@@ -68,11 +66,7 @@ const findAnswerLabel = (root: HTMLElement) => Array.from(root.querySelectorAll<
   (node) => node.textContent?.trim() === 'Таны хариу' || node.dataset.a0TransitionLabel === 'Таны хариу',
 );
 
-/**
- * The legacy dialogue renderer commits a staff bubble into history before its active bubble
- * has fully disappeared. This guard keeps exactly one staff bubble on screen and removes the
- * stale answer card while the learner's chosen answer is being read aloud.
- */
+/** Keeps one active staff bubble on screen and hides stale answer cards during an audio transition. */
 const DialogueTransitionGuard: React.FC<{ rootRef: React.RefObject<HTMLDivElement | null> }> = ({ rootRef }) => {
   useEffect(() => {
     const root = rootRef.current;
@@ -136,7 +130,7 @@ const DialogueTransitionGuard: React.FC<{ rootRef: React.RefObject<HTMLDivElemen
   return null;
 };
 
-/** Mobile compaction: one scene, one compact control row, and only the last dialogue turn. */
+/** Mobile compaction: one compact control row and only the latest dialogue turns. */
 const DialogueLayoutCompactor: React.FC<{ rootRef: React.RefObject<HTMLDivElement | null> }> = ({ rootRef }) => {
   useEffect(() => {
     const root = rootRef.current;
@@ -145,8 +139,7 @@ const DialogueLayoutCompactor: React.FC<{ rootRef: React.RefObject<HTMLDivElemen
 
     const sync = () => {
       const answerLabel = findAnswerLabel(root);
-      const main = root.querySelector('main') as HTMLElement | null;
-      if (!answerLabel || !main) return;
+      if (!answerLabel) return;
 
       const answerSection = answerLabel.parentElement as HTMLElement | null;
       const dialoguePanel = answerSection?.parentElement as HTMLElement | null;
@@ -170,7 +163,7 @@ const DialogueLayoutCompactor: React.FC<{ rootRef: React.RefObject<HTMLDivElemen
       });
 
       const header = dialoguePanel.previousElementSibling as HTMLElement | null;
-      if (!header || header.dataset.a0DialogueScene === 'true') return;
+      if (!header) return;
       const headerAutoButton = Array.from(header.querySelectorAll('button')).find((button) => button.textContent?.includes('Авто') || button.textContent?.includes('Дуугүй'));
       if (!headerAutoButton) return;
 
@@ -194,7 +187,7 @@ const DialogueLayoutCompactor: React.FC<{ rootRef: React.RefObject<HTMLDivElemen
         }
         if (textRows[1]) textRows[1].style.display = 'none';
       }
-      (headerAutoButton as HTMLElement).style.padding = '6px 8px';
+      headerAutoButton.style.padding = '6px 8px';
     };
 
     const scheduleSync = () => {
@@ -215,50 +208,6 @@ const DialogueLayoutCompactor: React.FC<{ rootRef: React.RefObject<HTMLDivElemen
   return null;
 };
 
-const DialogueSceneInjector: React.FC<{ lessonId: string; rootRef: React.RefObject<HTMLDivElement | null> }> = ({ lessonId, rootRef }) => {
-  const [host, setHost] = useState<HTMLElement | null>(null);
-  const hostRef = useRef<HTMLElement | null>(null);
-
-  useEffect(() => {
-    const root = rootRef.current;
-    if (!root) return;
-
-    const removeHost = () => {
-      if (!hostRef.current) return;
-      hostRef.current.remove();
-      hostRef.current = null;
-      setHost(null);
-    };
-
-    const sync = () => {
-      const main = root.querySelector('main');
-      const isDialogueStage = Boolean(findAnswerLabel(root));
-      if (!main || !isDialogueStage) {
-        removeHost();
-        return;
-      }
-      if (hostRef.current?.isConnected && hostRef.current.parentElement === main) return;
-      removeHost();
-      const node = document.createElement('div');
-      node.dataset.a0DialogueScene = 'true';
-      main.prepend(node);
-      hostRef.current = node;
-      setHost(node);
-    };
-
-    const observer = new MutationObserver(sync);
-    observer.observe(root, { childList: true, subtree: true, characterData: true });
-    sync();
-    return () => {
-      observer.disconnect();
-      hostRef.current?.remove();
-      hostRef.current = null;
-    };
-  }, [rootRef]);
-
-  return host ? createPortal(<A0DialogueScene lessonId={lessonId} />, host) : null;
-};
-
 const A0LessonEngine: React.FC<{ config: A0LessonDefinition }> = ({ config }) => {
   const rootRef = useRef<HTMLDivElement | null>(null);
   const setPage = useAppStore((state) => state.setPage);
@@ -275,7 +224,6 @@ const A0LessonEngine: React.FC<{ config: A0LessonDefinition }> = ({ config }) =>
   return (
     <div ref={rootRef}>
       <LegacyA0LessonEngine config={preparedConfig as unknown as LegacyA0LessonEngineConfig} />
-      <DialogueSceneInjector lessonId={config.lessonId} rootRef={rootRef} />
       <DialogueTransitionGuard rootRef={rootRef} />
       <DialogueLayoutCompactor rootRef={rootRef} />
       <button onClick={() => setPage('a0DialoguePreview')} style={{ position: 'fixed', right: 14, bottom: 14, zIndex: 30, padding: '10px 12px', borderRadius: 14, border: '1px solid rgba(200,149,42,.55)', background: '#1C1C1F', color: '#F5C842', boxShadow: '0 8px 22px rgba(0,0,0,.38)', fontSize: 12, fontWeight: 900, cursor: 'pointer' }}>
