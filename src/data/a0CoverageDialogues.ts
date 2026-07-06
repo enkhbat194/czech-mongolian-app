@@ -55,8 +55,8 @@ export const a0NeedsCoveredMicroDialogues: Record<string, DialogueScenario> = {
       {
         id: 'a02a-d3-coverage',
         speaker: 'Ресепшний ажилтан',
-        staffCzech: 'Potřebujete telefon?',
-        staffMn: 'Танд утас хэрэгтэй юу?',
+        staffCzech: 'Telefon?',
+        staffMn: 'Утас?',
         promptMn: 'Танд утас хэрэгтэйгээ хэлээрэй.',
         choices: [
           { id: 'a', text: 'Potřebuji telefon.', mongolian: 'Надад утас хэрэгтэй.' },
@@ -75,8 +75,8 @@ export const a0NeedsCoveredMicroDialogues: Record<string, DialogueScenario> = {
       {
         id: 'a02b-d3-coverage',
         speaker: 'Ресепшний ажилтан',
-        staffCzech: 'Chcete vodu?',
-        staffMn: 'Та ус хүсэж байна уу?',
+        staffCzech: 'Voda?',
+        staffMn: 'Ус?',
         promptMn: 'Та ус хүсэж байгаагаа хэлээрэй.',
         choices: [
           { id: 'a', text: 'Chci vodu.', mongolian: 'Би ус хүсэж байна.' },
@@ -89,8 +89,8 @@ export const a0NeedsCoveredMicroDialogues: Record<string, DialogueScenario> = {
       {
         id: 'a02b-d4-coverage',
         speaker: 'Ресепшний ажилтан',
-        staffCzech: 'Které jídlo chcete?',
-        staffMn: 'Та аль хоолыг хүсэж байна вэ?',
+        staffCzech: 'Tohle?',
+        staffMn: 'Энэ юу?',
         promptMn: 'Зааж байгаа хоолоо хүсээрэй.',
         choices: [
           { id: 'a', text: 'Chci tohle.', mongolian: 'Би үүнийг хүсэж байна.' },
@@ -112,8 +112,8 @@ export const a0NeedsCoveredFinalDialogue: DialogueScenario = {
     {
       id: 'a02f-2b-coverage',
       speaker: 'Ресепшний ажилтан',
-      staffCzech: 'Potřebujete telefon?',
-      staffMn: 'Танд утас хэрэгтэй юу?',
+      staffCzech: 'Telefon?',
+      staffMn: 'Утас?',
       promptMn: 'Танд утас хэрэгтэйгээ хэлээрэй.',
       choices: [
         { id: 'a', text: 'Potřebuji telefon.', mongolian: 'Надад утас хэрэгтэй.' },
@@ -127,8 +127,8 @@ export const a0NeedsCoveredFinalDialogue: DialogueScenario = {
     {
       id: 'a02f-3b-coverage',
       speaker: 'Ресепшний ажилтан',
-      staffCzech: 'Máte peníze?',
-      staffMn: 'Танд мөнгө байна уу?',
+      staffCzech: 'Peníze?',
+      staffMn: 'Мөнгө?',
       promptMn: 'Мөнгө байхгүйгээ хэлээрэй.',
       choices: [
         { id: 'a', text: 'Nemám peníze.', mongolian: 'Надад мөнгө байхгүй.' },
