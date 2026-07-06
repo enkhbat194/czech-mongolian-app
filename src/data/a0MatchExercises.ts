@@ -1,8 +1,4 @@
-export interface A0MatchPair {
-  id: string;
-  czech: string;
-  mongolian: string;
-}
+import type { A0MatchPair } from './a0LessonSchema';
 
 export interface A0MatchExercise {
   id: string;
@@ -13,31 +9,12 @@ export interface A0MatchExercise {
   feedbackMn: string;
 }
 
+/**
+ * Түр adapter: A0.3 raw source дараагийн content cleanup хүртэл энэ map-аас
+ * direct match exercise рүү normalise хийнэ. Шинэ A0.x хичээл match-ээ
+ * тухайн lesson data дотроо шууд `type: 'match'` хэлбэрээр бичнэ.
+ */
 export const a0MatchExercisesBySourceId: Record<string, A0MatchExercise> = {
-  'a0-1-b-4': {
-    id: 'a0-1-b-4-match',
-    type: 'match',
-    titleMn: 'Утга тааруулах',
-    promptMn: 'Чех хэллэг ба Монгол утгыг зөв хослуул.',
-    pairs: [
-      { id: 'name', czech: 'Jmenuji se Eba.', mongolian: 'Миний нэр Эба.' },
-      { id: 'ask-name', czech: 'Jak se jmenujete?', mongolian: 'Таны нэр хэн бэ?' },
-      { id: 'who', czech: 'Kdo jste?', mongolian: 'Та хэн бэ?' },
-    ],
-    feedbackMn: 'Нэрээ хэлэх болон нэр асуух хэллэгүүдийг зөв таарууллаа.',
-  },
-  'a0-1-c-5': {
-    id: 'a0-1-c-5-match',
-    type: 'match',
-    titleMn: 'Утга тааруулах',
-    promptMn: 'Чехийн хамгаалах хэллэг ба Монгол утгыг зөв хослуул.',
-    pairs: [
-      { id: 'from-mongolia', czech: 'Jsem z Mongolska.', mongolian: 'Би Монголоос ирсэн.' },
-      { id: 'dont-understand', czech: 'Nerozumím.', mongolian: 'Би ойлгохгүй байна.' },
-      { id: 'slowly', czech: 'Mluvte prosím pomalu.', mongolian: 'Удаан ярьж өгнө үү.' },
-    ],
-    feedbackMn: 'Өөрийгөө танилцуулах болон ойлгохгүй үед хэрэглэх хэллэгүүдийг зөв таарууллаа.',
-  },
   'a0-3-a-4': {
     id: 'a0-3-a-4-match',
     type: 'match',
