@@ -1,5 +1,8 @@
 import React from 'react';
 import '../stores/a0WordBridge';
+import '../data/a0DirectionsMemory';
+import '../data/a0TimeMemory';
+import '../data/a0WorkMemory';
 import A0LessonEngine from '../components/lessons/A0LessonEngine';
 import { a0ReferenceLessons } from '../data/a0ReferenceLessons';
 import { useAppStore } from '../stores/useAppStore';
