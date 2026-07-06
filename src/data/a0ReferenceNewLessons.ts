@@ -14,15 +14,15 @@ export const a0ReferenceNewLessons: Record<'l004' | 'l005' | 'l006', A0LessonDef
     completionPhrases:['Kde je zastávka?','Jděte rovně.','Jeďte autobusem.','Vystupte tady.','Jdu na nádraží.'],
   }),
   l005: defineA0Lesson({
-    lessonId:'l005', titleMn:'A0.5 — Цаг, өдөр, уулзалт', durationMinutes:32, cards:a0TimeCards, microLessons:a0TimeMicroLessons, getCard:getA0TimeCard,
+    lessonId:'l005', titleMn:'A0.5 — Цаг, өдөр, уулзалт', durationMinutes:36, cards:a0TimeCards, microLessons:a0TimeMicroLessons, getCard:getA0TimeCard,
     microDialogues:a0TimeMicroDialogues, finalDialogue:a0TimeFinalDialogue, xpReward:190, completionIcon:'⏰',
-    completionSummaryMn:'Та цаг асууж, өнөөдөр эсвэл маргаашийг тодруулж, завтай эсэхээ хэлж, уулзалтын цагийг ойлгож чадна.',
-    completionPhrases:['Kolik je hodin?','zítra','Kdy máte čas?','Nemám čas.','Máme schůzku v osm.'],
+    completionSummaryMn:'Та цаг асууж, өнөөдөр эсвэл маргаашийг тодруулж, завтай эсэхээ хэлж, найман, таван, арван хоёр цагийн мэдээллийг ойлгож чадна.',
+    completionPhrases:['Kolik je hodin?','zítra','Kdy máte čas?','v pět','ve dvanáct','Máme schůzku v osm.'],
   }),
   l006: defineA0Lesson({
-    lessonId:'l006', titleMn:'A0.6 — Ажил дээр', durationMinutes:35, cards:a0WorkCards, microLessons:a0WorkMicroLessons, getCard:getA0WorkCard,
+    lessonId:'l006', titleMn:'A0.6 — Ажил дээр', durationMinutes:38, cards:a0WorkCards, microLessons:a0WorkMicroLessons, getCard:getA0WorkCard,
     microDialogues:a0WorkMicroDialogues, finalDialogue:a0WorkFinalDialogue, xpReward:200, completionIcon:'🦺',
-    completionSummaryMn:'Та ажилладаг газраа хэлж, эхлэх болон тарах цаг, ээлж, завсарлагаа асууж, даалгавар ойлгомжгүй үед тусламж хүсэж чадна.',
-    completionPhrases:['Pracuji tady.','Začínáme v osm.','Kdy je přestávka?','Co mám dělat?','Potřebuji pomoc.'],
+    completionSummaryMn:'Та ажилладаг газраа хэлж, эхлэх болон тарах цаг, ээлж, завсарлагаа асууж, шинэ даалгавар дээр юу хийхээ асууж, үзүүлж өгөхийг хүсэж чадна.',
+    completionPhrases:['Pracuji tady.','Začínáme v osm.','Kdy je přestávka?','Co mám dělat?','Ukažte mi, prosím.'],
   }),
 };
