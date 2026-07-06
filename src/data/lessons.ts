@@ -32,5 +32,5 @@ export const lessons: Lesson[] = [
   { id:'l012', title:'A0.12 People', titleMn:'A0.12 — Хүмүүс, гэр бүл', description:'Хүн, гэр бүл, суурь тодорхойлолт', wordCount:0, estimatedMinutes:0, icon:'👨‍👩‍👧‍👦', order:12, isLocked:true, status:'planned' },
   { id:'l013', title:'A0.13 Weather', titleMn:'A0.13 — Цаг агаар, хувцас', description:'Цаг агаар ба өдөр тутмын сонголт', wordCount:0, estimatedMinutes:0, icon:'🌦️', order:13, isLocked:true, status:'planned' },
   { id:'l014', title:'A0.14 Safety', titleMn:'A0.14 — Асуудал, аюулгүй байдал', description:'Тусламж хүсэх, яаралтай нөхцөл', wordCount:0, estimatedMinutes:0, icon:'🆘', order:14, isLocked:true, status:'planned' },
-  { id:'l015', title:'A0.15 First week', titleMn:'A0.15 — Чехэд эхний долоо хоног', description:'Бүх суурь чадварыг нэг сценарid ашиглах', wordCount:0, estimatedMinutes:0, icon:'🇨🇿', order:15, isLocked:true, status:'planned' },
+  { id:'l015', title:'A0.15 First week', titleMn:'A0.15 — Чехэд эхний долоо хоног', description:'Бүх суурь чадварыг нэг сценарид ашиглах', wordCount:0, estimatedMinutes:0, icon:'🇨🇿', order:15, isLocked:true, status:'planned' },
 ];
