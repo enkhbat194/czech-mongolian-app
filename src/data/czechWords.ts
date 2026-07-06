@@ -12,7 +12,7 @@ export interface CzechWord {
 }
 
 /**
- * A0.1–A0.2 сургалтын нэгжүүд.
+ * A0.1–A0.3 сургалтын нэгжүүд.
  * Аудио файл байхгүй үед интерфэйс нь төхөөрөмжийн Чех TTS (яриа синтез)-д шилжинэ.
  * Native speaker (төрөлх хэлтэй хүн)-ийн аудио орох үед audioFile талбарыг л бөглөнө.
  */
@@ -65,4 +65,18 @@ export const czechWords: CzechWord[] = [
   { id:'a0c0042', czech:'Nemám kartu.', ipa:'', mongolian:'Надад карт байхгүй.', example:'Nemám kartu.', exampleTranslation:'Надад карт байхгүй.', category:'pattern', lessonId:'l002', difficulty:'medium' },
   { id:'a0c0043', czech:'Co potřebujete?', ipa:'', mongolian:'Танд юу хэрэгтэй вэ?', example:'Co potřebujete?', exampleTranslation:'Танд юу хэрэгтэй вэ?', category:'question', lessonId:'l002', difficulty:'hard' },
   { id:'a0c0044', czech:'Potřebuji pomoc, prosím.', ipa:'', mongolian:'Надад туслаач, гуйя.', example:'Potřebuji pomoc, prosím.', exampleTranslation:'Надад туслаач, гуйя.', category:'survival', lessonId:'l002', difficulty:'medium' },
+
+  { id:'a0c0045', czech:'kde', ipa:'', mongolian:'хаана', example:'Kde je toaleta?', exampleTranslation:'Ариун цэврийн өрөө хаана байна?', category:'question', lessonId:'l003', difficulty:'easy' },
+  { id:'a0c0046', czech:'toaleta', ipa:'', mongolian:'ариун цэврийн өрөө', example:'Prosím, kde je toaleta?', exampleTranslation:'Уучлаарай, ариун цэврийн өрөө хаана байна?', category:'place', lessonId:'l003', difficulty:'easy' },
+  { id:'a0c0047', czech:'Prosím, kde je toaleta?', ipa:'', mongolian:'Уучлаарай, ариун цэврийн өрөө хаана байна?', example:'Prosím, kde je toaleta?', exampleTranslation:'Уучлаарай, ариун цэврийн өрөө хаана байна?', category:'survival', lessonId:'l003', difficulty:'medium' },
+  { id:'a0c0048', czech:'Tady.', ipa:'', mongolian:'Энд.', example:'Toaleta je tady.', exampleTranslation:'Ариун цэврийн өрөө энд байна.', category:'location', lessonId:'l003', difficulty:'easy' },
+  { id:'a0c0049', czech:'Tam.', ipa:'', mongolian:'Тэнд.', example:'Obchod je tam.', exampleTranslation:'Дэлгүүр тэнд байна.', category:'location', lessonId:'l003', difficulty:'easy' },
+  { id:'a0c0050', czech:'obchod', ipa:'', mongolian:'дэлгүүр', example:'Kde je obchod?', exampleTranslation:'Дэлгүүр хаана байна?', category:'place', lessonId:'l003', difficulty:'easy' },
+  { id:'a0c0051', czech:'Kde je obchod?', ipa:'', mongolian:'Дэлгүүр хаана байна?', example:'Prosím, kde je obchod?', exampleTranslation:'Уучлаарай, дэлгүүр хаана байна?', category:'pattern', lessonId:'l003', difficulty:'medium' },
+  { id:'a0c0052', czech:'lékárna', ipa:'', mongolian:'эмийн сан', example:'Kde je lékárna?', exampleTranslation:'Эмийн сан хаана байна?', category:'place', lessonId:'l003', difficulty:'medium' },
+  { id:'a0c0053', czech:'Kde je lékárna?', ipa:'', mongolian:'Эмийн сан хаана байна?', example:'Prosím, kde je lékárna?', exampleTranslation:'Уучлаарай, эмийн сан хаана байна?', category:'pattern', lessonId:'l003', difficulty:'medium' },
+  { id:'a0c0054', czech:'nádraží', ipa:'', mongolian:'галт тэрэгний буудал', example:'Kde je nádraží?', exampleTranslation:'Галт тэрэгний буудал хаана байна?', category:'place', lessonId:'l003', difficulty:'medium' },
+  { id:'a0c0055', czech:'Kde je nádraží?', ipa:'', mongolian:'Галт тэрэгний буудал хаана байна?', example:'Prosím, kde je nádraží?', exampleTranslation:'Уучлаарай, галт тэрэгний буудал хаана байна?', category:'pattern', lessonId:'l003', difficulty:'medium' },
+  { id:'a0c0056', czech:'nebo', ipa:'', mongolian:'эсвэл', example:'Tady, nebo tam?', exampleTranslation:'Энд үү, тэнд үү?', category:'connector', lessonId:'l003', difficulty:'easy' },
+  { id:'a0c0057', czech:'Tady, nebo tam?', ipa:'', mongolian:'Энд үү, тэнд үү?', example:'Nádraží — tady, nebo tam?', exampleTranslation:'Буудал — энд үү, тэнд үү?', category:'pattern', lessonId:'l003', difficulty:'medium' },
 ];
