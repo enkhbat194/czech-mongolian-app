@@ -11,7 +11,13 @@ export interface CzechWord {
   difficulty: 'easy' | 'medium' | 'hard';
 }
 
+/**
+ * A0.1–A0.6-ийн цорын ганц canonical vocabulary bank.
+ * Нэг normalized Czech card нь зөвхөн нэг lessonId-д анхлан орно.
+ * Дараагийн хичээлд тухайн phrase зөвхөн review/dialogue reuse болж орно.
+ */
 export const czechWords: CzechWord[] = [
+  // A0.1 — Анхны харилцаа
   { id:'a0c0001', czech:'Dobrý den', ipa:'', mongolian:'Сайн байна уу', example:'Dobrý den.', exampleTranslation:'Сайн байна уу.', category:'greeting', lessonId:'l001', difficulty:'easy' },
   { id:'a0c0002', czech:'Ahoj', ipa:'', mongolian:'Сайн уу', example:'Ahoj!', exampleTranslation:'Сайн уу!', category:'greeting', lessonId:'l001', difficulty:'easy' },
   { id:'a0c0003', czech:'Na shledanou', ipa:'', mongolian:'Баяртай', example:'Na shledanou.', exampleTranslation:'Баяртай.', category:'greeting', lessonId:'l001', difficulty:'easy' },
@@ -37,7 +43,9 @@ export const czechWords: CzechWord[] = [
   { id:'a0c0141', czech:'pomalu', ipa:'', mongolian:'удаанаар', example:'Mluvte pomalu.', exampleTranslation:'Удаан ярьж өгнө үү.', category:'adverb', lessonId:'l001', difficulty:'easy' },
   { id:'a0c0326', czech:'Nerozumím.', ipa:'', mongolian:'Би ойлгохгүй байна.', example:'Promiňte, nerozumím.', exampleTranslation:'Уучлаарай, би ойлгохгүй байна.', category:'survival', lessonId:'l001', difficulty:'medium' },
   { id:'a0c0327', czech:'Mluvte prosím pomalu.', ipa:'', mongolian:'Удаан ярьж өгнө үү.', example:'Mluvte prosím pomalu.', exampleTranslation:'Удаан ярьж өгнө үү.', category:'survival', lessonId:'l001', difficulty:'medium' },
+  { id:'a0c0100', czech:'Mluvím moc rychle?', ipa:'', mongolian:'Би хэт хурдан ярьж байна уу?', example:'Mluvím moc rychle?', exampleTranslation:'Би хэт хурдан ярьж байна уу?', category:'listening-pattern', lessonId:'l001', difficulty:'medium' },
 
+  // A0.2 — Надад хэрэгтэй
   { id:'a0c0023', czech:'potřebuji', ipa:'', mongolian:'надад хэрэгтэй', example:'Potřebuji pomoc.', exampleTranslation:'Надад тусламж хэрэгтэй.', category:'verb-pattern', lessonId:'l002', difficulty:'medium' },
   { id:'a0c0024', czech:'pomoc', ipa:'', mongolian:'тусламж', example:'Potřebuji pomoc.', exampleTranslation:'Надад тусламж хэрэгтэй.', category:'survival', lessonId:'l002', difficulty:'easy' },
   { id:'a0c0025', czech:'Potřebuji pomoc.', ipa:'', mongolian:'Надад тусламж хэрэгтэй.', example:'Potřebuji pomoc, prosím.', exampleTranslation:'Надад туслаач, гуйя.', category:'pattern', lessonId:'l002', difficulty:'medium' },
@@ -61,6 +69,7 @@ export const czechWords: CzechWord[] = [
   { id:'a0c0043', czech:'Co potřebujete?', ipa:'', mongolian:'Танд юу хэрэгтэй вэ?', example:'Co potřebujete?', exampleTranslation:'Танд юу хэрэгтэй вэ?', category:'question', lessonId:'l002', difficulty:'hard' },
   { id:'a0c0044', czech:'Potřebuji pomoc, prosím.', ipa:'', mongolian:'Надад туслаач, гуйя.', example:'Potřebuji pomoc, prosím.', exampleTranslation:'Надад туслаач, гуйя.', category:'survival', lessonId:'l002', difficulty:'medium' },
 
+  // A0.3 — Хаана байна?
   { id:'a0c0045', czech:'kde', ipa:'', mongolian:'хаана', example:'Kde je toaleta?', exampleTranslation:'Ариун цэврийн өрөө хаана байна?', category:'question', lessonId:'l003', difficulty:'easy' },
   { id:'a0c0046', czech:'toaleta', ipa:'', mongolian:'ариун цэврийн өрөө', example:'Prosím, kde je toaleta?', exampleTranslation:'Уучлаарай, ариун цэврийн өрөө хаана байна?', category:'place', lessonId:'l003', difficulty:'easy' },
   { id:'a0c0047', czech:'Prosím, kde je toaleta?', ipa:'', mongolian:'Уучлаарай, ариун цэврийн өрөө хаана байна?', example:'Prosím, kde je toaleta?', exampleTranslation:'Уучлаарай, ариун цэврийн өрөө хаана байна?', category:'survival', lessonId:'l003', difficulty:'medium' },
@@ -75,6 +84,7 @@ export const czechWords: CzechWord[] = [
   { id:'a0c0056', czech:'nebo', ipa:'', mongolian:'эсвэл', example:'Tady, nebo tam?', exampleTranslation:'Энд үү, тэнд үү?', category:'connector', lessonId:'l003', difficulty:'easy' },
   { id:'a0c0057', czech:'Tady, nebo tam?', ipa:'', mongolian:'Энд үү, тэнд үү?', example:'Nádraží — tady, nebo tam?', exampleTranslation:'Буудал — энд үү, тэнд үү?', category:'pattern', lessonId:'l003', difficulty:'medium' },
 
+  // A0.4 — Яаж очих вэ?
   { id:'a0c0058', czech:'rovně', ipa:'', mongolian:'шулуун', example:'Jděte rovně.', exampleTranslation:'Шулуун яваарай.', category:'direction', lessonId:'l004', difficulty:'easy' },
   { id:'a0c0059', czech:'doleva', ipa:'', mongolian:'зүүн тийш', example:'Doleva.', exampleTranslation:'Зүүн тийш.', category:'direction', lessonId:'l004', difficulty:'easy' },
   { id:'a0c0060', czech:'doprava', ipa:'', mongolian:'баруун тийш', example:'Doprava.', exampleTranslation:'Баруун тийш.', category:'direction', lessonId:'l004', difficulty:'easy' },
@@ -90,6 +100,7 @@ export const czechWords: CzechWord[] = [
   { id:'a0c0070', czech:'Kam jedete?', ipa:'', mongolian:'Та хаашаа явж байна?', example:'Kam jedete?', exampleTranslation:'Та хаашаа явж байна?', category:'question', lessonId:'l004', difficulty:'medium' },
   { id:'a0c0071', czech:'Jdu na nádraží.', ipa:'', mongolian:'Би галт тэрэгний буудал руу явж байна.', example:'Jdu na nádraží.', exampleTranslation:'Би галт тэрэгний буудал руу явж байна.', category:'transport-pattern', lessonId:'l004', difficulty:'medium' },
 
+  // A0.5 — Цаг, өдөр, уулзалт
   { id:'a0c0072', czech:'kolik', ipa:'', mongolian:'хэд', example:'Kolik je hodin?', exampleTranslation:'Цаг хэд болж байна?', category:'question', lessonId:'l005', difficulty:'easy' },
   { id:'a0c0073', czech:'Kolik je hodin?', ipa:'', mongolian:'Цаг хэд болж байна?', example:'Promiňte, kolik je hodin?', exampleTranslation:'Уучлаарай, цаг хэд болж байна?', category:'time-pattern', lessonId:'l005', difficulty:'medium' },
   { id:'a0c0074', czech:'teď', ipa:'', mongolian:'одоо', example:'Teď?', exampleTranslation:'Одоо юу?', category:'time', lessonId:'l005', difficulty:'easy' },
@@ -104,10 +115,13 @@ export const czechWords: CzechWord[] = [
   { id:'a0c0083', czech:'v osm', ipa:'', mongolian:'найман цагт', example:'V osm.', exampleTranslation:'Найман цагт.', category:'time', lessonId:'l005', difficulty:'medium' },
   { id:'a0c0084', czech:'schůzka', ipa:'', mongolian:'уулзалт', example:'Máme schůzku.', exampleTranslation:'Бид уулзалттай.', category:'meeting', lessonId:'l005', difficulty:'medium' },
   { id:'a0c0085', czech:'Máme schůzku v osm.', ipa:'', mongolian:'Бид найман цагт уулзалттай.', example:'Máme schůzku v osm.', exampleTranslation:'Бид найман цагт уулзалттай.', category:'meeting-pattern', lessonId:'l005', difficulty:'hard' },
+  { id:'a0c0101', czech:'v pět', ipa:'', mongolian:'таван цагт', example:'Končíme v pět.', exampleTranslation:'Бид таван цагт тарна.', category:'time', lessonId:'l005', difficulty:'medium' },
+  { id:'a0c0102', czech:'ve dvanáct', ipa:'', mongolian:'арван хоёр цагт', example:'Přestávka je ve dvanáct.', exampleTranslation:'Завсарлага арван хоёр цагт.', category:'time', lessonId:'l005', difficulty:'medium' },
 
+  // A0.6 — Ажил дээр
   { id:'a0c0086', czech:'práce', ipa:'', mongolian:'ажил', example:'Práce.', exampleTranslation:'Ажил.', category:'job', lessonId:'l006', difficulty:'easy' },
   { id:'a0c0087', czech:'Pracuji tady.', ipa:'', mongolian:'Би энд ажилладаг.', example:'Pracuji tady.', exampleTranslation:'Би энд ажилладаг.', category:'job-pattern', lessonId:'l006', difficulty:'medium' },
-  { id:'a0c0088', czech:'Kde pracujete?', ipa:'', mongolian:'Та хаана ажилладаг вэ?', example:'Kde pracujete?', exampleTranslation:'Та хаана ажилладаг вэ?', category:'job-question', lessonId:'l006', difficulty:'medium' },
+  { id:'a0c0088', czech:'Pracujete tady?', ipa:'', mongolian:'Та энд ажилладаг уу?', example:'Pracujete tady?', exampleTranslation:'Та энд ажилладаг уу?', category:'job-question', lessonId:'l006', difficulty:'medium' },
   { id:'a0c0089', czech:'začínáme', ipa:'', mongolian:'бид эхэлнэ', example:'Začínáme v osm.', exampleTranslation:'Бид найман цагт эхэлнэ.', category:'job-time', lessonId:'l006', difficulty:'medium' },
   { id:'a0c0090', czech:'Začínáme v osm.', ipa:'', mongolian:'Бид найман цагт эхэлнэ.', example:'Začínáme v osm.', exampleTranslation:'Бид найман цагт эхэлнэ.', category:'job-pattern', lessonId:'l006', difficulty:'medium' },
   { id:'a0c0091', czech:'Kdy končíme?', ipa:'', mongolian:'Бид хэзээ тарах вэ?', example:'Kdy končíme?', exampleTranslation:'Бид хэзээ тарах вэ?', category:'job-question', lessonId:'l006', difficulty:'medium' },
@@ -118,5 +132,7 @@ export const czechWords: CzechWord[] = [
   { id:'a0c0096', czech:'Co mám dělat?', ipa:'', mongolian:'Би юу хийх вэ?', example:'Co mám dělat?', exampleTranslation:'Би юу хийх вэ?', category:'job-question', lessonId:'l006', difficulty:'hard' },
   { id:'a0c0097', czech:'hotovo', ipa:'', mongolian:'дууссан', example:'Je hotovo?', exampleTranslation:'Дууссан уу?', category:'job', lessonId:'l006', difficulty:'easy' },
   { id:'a0c0098', czech:'Je hotovo?', ipa:'', mongolian:'Дууссан уу?', example:'Je hotovo?', exampleTranslation:'Дууссан уу?', category:'job-question', lessonId:'l006', difficulty:'medium' },
-  { id:'a0c0099', czech:'Potřebuji pomoc.', ipa:'', mongolian:'Надад тусламж хэрэгтэй.', example:'Potřebuji pomoc.', exampleTranslation:'Надад тусламж хэрэгтэй.', category:'job-survival', lessonId:'l006', difficulty:'medium' },
+  { id:'a0c0099', czech:'Ukažte mi, prosím.', ipa:'', mongolian:'Надад үзүүлж өгнө үү.', example:'Nerozumím. Ukažte mi, prosím.', exampleTranslation:'Би ойлгохгүй байна. Надад үзүүлж өгнө үү.', category:'job-survival', lessonId:'l006', difficulty:'medium' },
+  { id:'a0c0103', czech:'Nový úkol.', ipa:'', mongolian:'Шинэ даалгавар.', example:'Nový úkol.', exampleTranslation:'Шинэ даалгавар.', category:'job', lessonId:'l006', difficulty:'medium' },
+  { id:'a0c0104', czech:'Ukážu vám.', ipa:'', mongolian:'Би танд үзүүлж өгнө.', example:'Ukážu vám.', exampleTranslation:'Би танд үзүүлж өгнө.', category:'job-response', lessonId:'l006', difficulty:'medium' },
 ];
