@@ -5,7 +5,7 @@ import { useAppStore } from '../stores/useAppStore';
 import { lessons as courseLessons } from '../data/lessons';
 import { ProgressBar } from '../components/UI/SharedComponents';
 
-const pageForLesson: Record<string, string> = { l001: 'a0FirstContact', l002: 'a0Needs' };
+const pageForLesson: Record<string, string> = { l001: 'a0FirstContact', l002: 'a0Needs', l003: 'a0Location' };
 
 const LearningPathPage: React.FC = () => {
   const { setCurrentLesson, setPage, getLessonProgress, progress } = useAppStore();
