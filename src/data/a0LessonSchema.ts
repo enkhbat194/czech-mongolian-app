@@ -99,26 +99,48 @@ function assertA0(condition: unknown, message: string): asserts condition {
   if (!condition) throw new Error(`A0 lesson schema error: ${message}`);
 }
 
+function assertDialogue(scenario: DialogueScenario, label: string, seenStepIds: Set<string>) {
+  assertA0(Boolean(scenario.id && scenario.titleMn && scenario.contextMn), `${label} has incomplete dialogue labels`);
+  assertA0(scenario.steps.length > 0, `${label} has no dialogue steps`);
+
+  scenario.steps.forEach((step) => {
+    assertA0(!seenStepIds.has(step.id), `${label} has duplicate dialogue step id ${step.id}`);
+    seenStepIds.add(step.id);
+    assertA0(Boolean(step.speaker && step.staffCzech && step.staffMn && step.promptMn && step.feedbackMn), `${step.id} has incomplete dialogue text`);
+    assertA0(step.choices.length >= 2, `${step.id} needs at least two dialogue choices`);
+    assertA0(step.choices.some((choice) => choice.id === step.correctId), `${step.id} correctId is missing`);
+    assertA0(new Set(step.choices.map((choice) => choice.id)).size === step.choices.length, `${step.id} has duplicate choice ids`);
+    step.choices.forEach((choice) => assertA0(Boolean(choice.text && choice.mongolian), `${step.id} has an incomplete dialogue choice`));
+  });
+}
+
 export function defineA0Lesson(definition: A0LessonDefinition): A0LessonDefinition {
   const cardIds = new Set(definition.cards.map((card) => card.id));
   const microIds = new Set<string>();
   const exerciseIds = new Set<string>();
+  const dialogueStepIds = new Set<string>();
+  const cardUseCounts = new Map<string, number>();
 
+  assertA0(Boolean(definition.lessonId && definition.titleMn), 'lesson identity is incomplete');
+  assertA0(definition.durationMinutes > 0, `${definition.lessonId} has an invalid duration`);
   assertA0(definition.cards.length > 0, `${definition.lessonId} has no cards`);
+  assertA0(cardIds.size === definition.cards.length, `${definition.lessonId} has duplicate card ids`);
   assertA0(definition.microLessons.length > 0, `${definition.lessonId} has no micro lessons`);
-  assertA0(definition.finalDialogue.steps.length > 0, `${definition.lessonId} has no final dialogue`);
+  assertA0(definition.completionPhrases.length > 0, `${definition.lessonId} has no completion phrases`);
 
   definition.microLessons.forEach((micro) => {
     assertA0(!microIds.has(micro.id), `${definition.lessonId} has duplicate micro id ${micro.id}`);
     microIds.add(micro.id);
+    assertA0(Boolean(micro.titleMn && micro.canDoMn), `${micro.id} has incomplete labels`);
     assertA0(micro.cardIds.length > 0, `${micro.id} has no cards`);
+    assertA0(new Set(micro.cardIds).size === micro.cardIds.length, `${micro.id} repeats a card`);
     assertA0(micro.exercises.length > 0, `${micro.id} has no exercises`);
     assertA0(definition.microDialogues[micro.id], `${micro.id} has no micro dialogue`);
-    assertA0(definition.microDialogues[micro.id].steps.length > 0, `${micro.id} dialogue has no steps`);
 
     micro.cardIds.forEach((cardId) => {
       assertA0(cardIds.has(cardId), `${micro.id} references unknown card ${cardId}`);
       assertA0(Boolean(micro.instructions[cardId]), `${micro.id} has no instruction for ${cardId}`);
+      cardUseCounts.set(cardId, (cardUseCounts.get(cardId) || 0) + 1);
     });
 
     micro.exercises.forEach((exercise) => {
@@ -129,17 +151,33 @@ export function defineA0Lesson(definition: A0LessonDefinition): A0LessonDefiniti
       if (exercise.type === 'choice' || exercise.type === 'fillBlank') {
         assertA0(exercise.choices.length >= 2, `${exercise.id} needs at least two choices`);
         assertA0(exercise.choices.some((choice) => choice.id === exercise.correctId), `${exercise.id} correctId is missing`);
+        assertA0(new Set(exercise.choices.map((choice) => choice.id)).size === exercise.choices.length, `${exercise.id} has duplicate choice ids`);
+        exercise.choices.forEach((choice) => assertA0(Boolean(choice.text), `${exercise.id} has an empty choice`));
       }
       if (exercise.type === 'order') {
         assertA0(exercise.tokens.length >= 2, `${exercise.id} needs at least two tokens`);
+        assertA0(Boolean(exercise.expectedText), `${exercise.id} has no expected text`);
+      }
+      if (exercise.type === 'typing') {
+        assertA0(Boolean(exercise.targetText), `${exercise.id} has no target text`);
       }
       if (exercise.type === 'match') {
         assertA0(exercise.pairs.length >= 2, `${exercise.id} needs at least two pairs`);
-        const pairIds = new Set(exercise.pairs.map((pair) => pair.id));
-        assertA0(pairIds.size === exercise.pairs.length, `${exercise.id} has duplicate match pair ids`);
+        assertA0(new Set(exercise.pairs.map((pair) => pair.id)).size === exercise.pairs.length, `${exercise.id} has duplicate match pair ids`);
+        assertA0(new Set(exercise.pairs.map((pair) => pair.czech)).size === exercise.pairs.length, `${exercise.id} has duplicate Czech match text`);
+        assertA0(new Set(exercise.pairs.map((pair) => pair.mongolian)).size === exercise.pairs.length, `${exercise.id} has duplicate Mongolian match text`);
+        exercise.pairs.forEach((pair) => assertA0(Boolean(pair.czech && pair.mongolian), `${exercise.id} has an incomplete match pair`));
       }
     });
+
+    assertDialogue(definition.microDialogues[micro.id], micro.id, dialogueStepIds);
   });
+
+  Object.keys(definition.microDialogues).forEach((microId) => {
+    assertA0(microIds.has(microId), `${definition.lessonId} has an orphan micro dialogue ${microId}`);
+  });
+  definition.cards.forEach((card) => assertA0(cardUseCounts.get(card.id) === 1, `${definition.lessonId} must introduce ${card.id} exactly once`));
+  assertDialogue(definition.finalDialogue, `${definition.lessonId} final dialogue`, dialogueStepIds);
 
   return definition;
 }
