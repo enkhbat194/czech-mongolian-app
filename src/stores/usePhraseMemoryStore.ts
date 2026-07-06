@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import './a0SrsBridge';
 import { a0MemoryTargets, getPriorActiveTargetIds } from '../data/a0MemoryPlan';
 import { getA0CarryoverSeedRank } from '../data/a0CarryoverSeeds';
 import { useAppStore } from './useAppStore';
