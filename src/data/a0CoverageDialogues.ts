@@ -21,7 +21,7 @@ export const a0FirstContactCoveredMicroDialogues: Record<string, DialogueScenari
         choices: [
           { id: 'a', text: 'Ano, děkuji.', mongolian: 'Тийм, баярлалаа.' },
           { id: 'b', text: 'Ne, děkuji.', mongolian: 'Үгүй, баярлалаа.' },
-          { id: 'c', text: 'Kdo jste?', mongolian: 'Та хэн бэ?' },
+          { id: 'c', text: 'Na shledanou.', mongolian: 'Баяртай.' },
         ],
         correctId: 'a',
         feedbackMn: 'Ano, děkuji. = Тийм, баярлалаа.',
@@ -60,8 +60,8 @@ export const a0NeedsCoveredMicroDialogues: Record<string, DialogueScenario> = {
         promptMn: 'Танд утас хэрэгтэйгээ хэлээрэй.',
         choices: [
           { id: 'a', text: 'Potřebuji telefon.', mongolian: 'Надад утас хэрэгтэй.' },
-          { id: 'b', text: 'Nemám telefon.', mongolian: 'Надад утас байхгүй.' },
-          { id: 'c', text: 'Chci kartu.', mongolian: 'Би карт хүсэж байна.' },
+          { id: 'b', text: 'Potřebuji vodu.', mongolian: 'Надад ус хэрэгтэй.' },
+          { id: 'c', text: 'Potřebuji pomoc.', mongolian: 'Надад тусламж хэрэгтэй.' },
         ],
         correctId: 'a',
         feedbackMn: 'Potřebuji telefon. = Надад утас хэрэгтэй.',
@@ -80,8 +80,8 @@ export const a0NeedsCoveredMicroDialogues: Record<string, DialogueScenario> = {
         promptMn: 'Та ус хүсэж байгаагаа хэлээрэй.',
         choices: [
           { id: 'a', text: 'Chci vodu.', mongolian: 'Би ус хүсэж байна.' },
-          { id: 'b', text: 'Nemám vodu.', mongolian: 'Надад ус байхгүй.' },
-          { id: 'c', text: 'Chci kartu.', mongolian: 'Би карт хүсэж байна.' },
+          { id: 'b', text: 'Potřebuji vodu.', mongolian: 'Надад ус хэрэгтэй.' },
+          { id: 'c', text: 'Potřebuji telefon.', mongolian: 'Надад утас хэрэгтэй.' },
         ],
         correctId: 'a',
         feedbackMn: 'Chci vodu. = Би ус хүсэж байна.',
@@ -94,8 +94,8 @@ export const a0NeedsCoveredMicroDialogues: Record<string, DialogueScenario> = {
         promptMn: 'Зааж байгаа хоолоо хүсээрэй.',
         choices: [
           { id: 'a', text: 'Chci tohle.', mongolian: 'Би үүнийг хүсэж байна.' },
-          { id: 'b', text: 'Nemám tohle.', mongolian: 'Надад энэ байхгүй.' },
-          { id: 'c', text: 'Potřebuji peníze.', mongolian: 'Надад мөнгө хэрэгтэй.' },
+          { id: 'b', text: 'Chci jídlo.', mongolian: 'Би хоол хүсэж байна.' },
+          { id: 'c', text: 'Potřebuji telefon.', mongolian: 'Надад утас хэрэгтэй.' },
         ],
         correctId: 'a',
         feedbackMn: 'Chci tohle. = Би үүнийг хүсэж байна.',
@@ -117,8 +117,8 @@ export const a0NeedsCoveredFinalDialogue: DialogueScenario = {
       promptMn: 'Танд утас хэрэгтэйгээ хэлээрэй.',
       choices: [
         { id: 'a', text: 'Potřebuji telefon.', mongolian: 'Надад утас хэрэгтэй.' },
-        { id: 'b', text: 'Nemám telefon.', mongolian: 'Надад утас байхгүй.' },
-        { id: 'c', text: 'Chci peníze.', mongolian: 'Би мөнгө хүсэж байна.' },
+        { id: 'b', text: 'Potřebuji vodu.', mongolian: 'Надад ус хэрэгтэй.' },
+        { id: 'c', text: 'Potřebuji pomoc.', mongolian: 'Надад тусламж хэрэгтэй.' },
       ],
       correctId: 'a',
       feedbackMn: 'Potřebuji telefon. = Надад утас хэрэгтэй.',
@@ -132,7 +132,7 @@ export const a0NeedsCoveredFinalDialogue: DialogueScenario = {
       promptMn: 'Мөнгө байхгүйгээ хэлээрэй.',
       choices: [
         { id: 'a', text: 'Nemám peníze.', mongolian: 'Надад мөнгө байхгүй.' },
-        { id: 'b', text: 'Chci peníze.', mongolian: 'Би мөнгө хүсэж байна.' },
+        { id: 'b', text: 'Nemám kartu.', mongolian: 'Надад карт байхгүй.' },
         { id: 'c', text: 'Potřebuji vodu.', mongolian: 'Надад ус хэрэгтэй.' },
       ],
       correctId: 'a',
