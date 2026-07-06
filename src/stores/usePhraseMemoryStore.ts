@@ -1,6 +1,5 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import './a0SrsBridge';
 import { a0MemoryTargets, getPriorActiveTargetIds } from '../data/a0MemoryPlan';
 import { getA0CarryoverSeedRank } from '../data/a0CarryoverSeeds';
 import { useAppStore } from './useAppStore';
@@ -31,28 +30,11 @@ function tomorrowIso() {
 
 function createMemory(targetId: string): PhraseMemory {
   const now = new Date().toISOString();
-  return {
-    targetId,
-    exposures: 0,
-    correctAttempts: 0,
-    incorrectAttempts: 0,
-    repetitions: 0,
-    nextReview: tomorrowIso(),
-    lastSeen: now,
-  };
-}
-
-function nextReviewDate(repetitions: number, correct: boolean) {
-  const date = new Date();
-  const days = correct
-    ? repetitions <= 1 ? 1 : repetitions === 2 ? 3 : repetitions === 3 ? 7 : repetitions === 4 ? 14 : 30
-    : 0;
-  date.setDate(date.getDate() + days);
-  return date.toISOString();
+  return { targetId, exposures: 0, correctAttempts: 0, incorrectAttempts: 0, repetitions: 1, nextReview: tomorrowIso(), lastSeen: now };
 }
 
 function weaknessScore(memory: PhraseMemory) {
-  return memory.incorrectAttempts * 4 - memory.correctAttempts + (memory.repetitions === 0 ? 2 : 0);
+  return memory.incorrectAttempts * 4 - memory.correctAttempts + (memory.repetitions <= 1 ? 2 : 0);
 }
 
 export const usePhraseMemoryStore = create<PhraseMemoryState>()(
@@ -60,18 +42,29 @@ export const usePhraseMemoryStore = create<PhraseMemoryState>()(
     (set, get) => ({
       phrases: {},
       recordExposure: (targetId) => {
-        useAppStore.getState().activateWordForReview(targetId);
+        const app = useAppStore.getState();
+        app.activateWordForReview(targetId);
+        const card = useAppStore.getState().progress.srsCards[targetId];
         const { phrases } = get();
         const existing = phrases[targetId] || createMemory(targetId);
-        set({ phrases: { ...phrases, [targetId]: { ...existing, exposures: existing.exposures + 1, lastSeen: new Date().toISOString() } } });
+        set({
+          phrases: {
+            ...phrases,
+            [targetId]: {
+              ...existing,
+              exposures: existing.exposures + 1,
+              repetitions: card?.repetitions ?? existing.repetitions,
+              nextReview: card?.nextReview ?? existing.nextReview,
+              lastSeen: new Date().toISOString(),
+            },
+          },
+        });
       },
       recordAttempt: (targetId, correct) => {
-        // The phrase store owns the recall result. It writes the matching card SRS
-        // exactly once so lesson exercises, carryover, and daily review stay aligned.
         useAppStore.getState().updateSRSCard(targetId, correct ? 4 : 1);
+        const card = useAppStore.getState().progress.srsCards[targetId];
         const { phrases } = get();
         const existing = phrases[targetId] || createMemory(targetId);
-        const repetitions = correct ? existing.repetitions + 1 : 0;
         set({
           phrases: {
             ...phrases,
@@ -80,8 +73,8 @@ export const usePhraseMemoryStore = create<PhraseMemoryState>()(
               exposures: existing.exposures + 1,
               correctAttempts: existing.correctAttempts + (correct ? 1 : 0),
               incorrectAttempts: existing.incorrectAttempts + (correct ? 0 : 1),
-              repetitions,
-              nextReview: nextReviewDate(repetitions, correct),
+              repetitions: card?.repetitions ?? existing.repetitions,
+              nextReview: card?.nextReview ?? existing.nextReview,
               lastSeen: new Date().toISOString(),
             },
           },
