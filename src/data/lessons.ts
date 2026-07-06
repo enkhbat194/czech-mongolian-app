@@ -14,12 +14,12 @@ export interface Lesson {
 }
 
 export const lessons: Lesson[] = [
-  { id:'l001', title:'A0.1 First contact', titleMn:'A0.1 — Анхны харилцаа', description:'Мэндлэх, нэрээ хэлэх, ойлгохгүй үед удаан ярихыг хүсэх', wordCount:25, estimatedMinutes:30, icon:'👋', order:1, isLocked:false, status:'ready' },
-  { id:'l002', title:'A0.2 Needs', titleMn:'A0.2 — Надад хэрэгтэй', description:'Тусламж, ус, хоол хэрэгтэйгээ хэлж, байхгүй зүйлээ тайлбарлах', wordCount:22, estimatedMinutes:25, icon:'🧾', order:2, isLocked:true, status:'ready' },
-  { id:'l003', title:'A0.3 Location', titleMn:'A0.3 — Хаана байна?', description:'Ариун цэврийн өрөө, дэлгүүр, эмийн сан, буудал хаана байгааг асуух', wordCount:13, estimatedMinutes:28, icon:'📍', order:3, isLocked:true, status:'ready' },
-  { id:'l004', title:'A0.4 Directions', titleMn:'A0.4 — Яаж очих вэ?', description:'Чиглэл, буудал, зорчих хөдөлгөөн', wordCount:0, estimatedMinutes:0, icon:'🚌', order:4, isLocked:true, status:'planned' },
-  { id:'l005', title:'A0.5 Time', titleMn:'A0.5 — Цаг, өдөр, уулзалт', description:'Цаг асуух, цагийн хуваарь ойлгох', wordCount:0, estimatedMinutes:0, icon:'⏰', order:5, isLocked:true, status:'planned' },
-  { id:'l006', title:'A0.6 Work', titleMn:'A0.6 — Ажил дээр', description:'Ажил, үүрэг, чадвараа хэлэх', wordCount:0, estimatedMinutes:0, icon:'🦺', order:6, isLocked:true, status:'planned' },
+  { id:'l001', title:'A0.1 First contact', titleMn:'A0.1 — Анхны харилцаа', description:'Мэндлэх, нэрээ хэлэх, ойлгохгүй үед удаан ярихыг хүсэх', wordCount:25, estimatedMinutes:38, icon:'👋', order:1, isLocked:false, status:'ready' },
+  { id:'l002', title:'A0.2 Needs', titleMn:'A0.2 — Надад хэрэгтэй', description:'Тусламж, ус, хоол хэрэгтэйгээ хэлж, байхгүй зүйлээ тайлбарлах', wordCount:22, estimatedMinutes:38, icon:'🧾', order:2, isLocked:true, status:'ready' },
+  { id:'l003', title:'A0.3 Location', titleMn:'A0.3 — Хаана байна?', description:'Ариун цэврийн өрөө, дэлгүүр, эмийн сан, буудал хаана байгааг асуух', wordCount:13, estimatedMinutes:32, icon:'📍', order:3, isLocked:true, status:'ready' },
+  { id:'l004', title:'A0.4 Directions', titleMn:'A0.4 — Яаж очих вэ?', description:'Чиглэл, буудал, автобус, трамвай, буух заавар', wordCount:14, estimatedMinutes:34, icon:'🚌', order:4, isLocked:true, status:'ready' },
+  { id:'l005', title:'A0.5 Time', titleMn:'A0.5 — Цаг, өдөр, уулзалт', description:'Цаг асуух, өдөр болон уулзалтын цагийг тодруулах', wordCount:14, estimatedMinutes:32, icon:'⏰', order:5, isLocked:true, status:'ready' },
+  { id:'l006', title:'A0.6 Work', titleMn:'A0.6 — Ажил дээр', description:'Ажлын цаг, ээлж, завсарлага, даалгавар, тусламж', wordCount:14, estimatedMinutes:35, icon:'🦺', order:6, isLocked:true, status:'ready' },
   { id:'l007', title:'A0.7 Food', titleMn:'A0.7 — Хоол, кафе, ресторан', description:'Захиалга өгөх, төлбөр хийх', wordCount:0, estimatedMinutes:0, icon:'🍽️', order:7, isLocked:true, status:'planned' },
   { id:'l008', title:'A0.8 Shop', titleMn:'A0.8 — Дэлгүүр, мөнгө', description:'Үнэ асуух, бараа авах', wordCount:0, estimatedMinutes:0, icon:'🛒', order:8, isLocked:true, status:'planned' },
   { id:'l009', title:'A0.9 Home', titleMn:'A0.9 — Гэр, байр, хэрэгцээ', description:'Байр, өрөө, засварын асуудал', wordCount:0, estimatedMinutes:0, icon:'🏠', order:9, isLocked:true, status:'planned' },
