@@ -19,9 +19,9 @@ export const a0LocationMicroDialogues: Record<string, DialogueScenario> = {
         id: 'a03a-d2', speaker: 'Ажилтан', staffCzech: 'Co hledáte?', staffMn: 'Та юу хайж байна вэ?',
         promptMn: 'Ариун цэврийн өрөө хаана байгааг асуугаарай.',
         choices: [
-          { id: 'a', text: 'Kde je obchod?', mongolian: 'Дэлгүүр хаана байна?' },
+          { id: 'a', text: 'Děkuji.', mongolian: 'Баярлалаа.' },
           { id: 'b', text: 'Prosím, kde je toaleta?', mongolian: 'Уучлаарай, ариун цэврийн өрөө хаана байна?' },
-          { id: 'c', text: 'Kde je nádraží?', mongolian: 'Галт тэрэгний буудал хаана байна?' },
+          { id: 'c', text: 'Tam.', mongolian: 'Тэнд.' },
         ], correctId: 'b', feedbackMn: 'Prosím, kde je toaleta? = Уучлаарай, ариун цэврийн өрөө хаана байна?'
       },
       {
@@ -46,7 +46,7 @@ export const a0LocationMicroDialogues: Record<string, DialogueScenario> = {
         choices: [
           { id: 'a', text: 'Kde je obchod?', mongolian: 'Дэлгүүр хаана байна?' },
           { id: 'b', text: 'Kde je lékárna?', mongolian: 'Эмийн сан хаана байна?' },
-          { id: 'c', text: 'Tady, nebo tam?', mongolian: 'Энд үү, тэнд үү?' },
+          { id: 'c', text: 'Prosím, kde je toaleta?', mongolian: 'Уучлаарай, ариун цэврийн өрөө хаана байна?' },
         ], correctId: 'a', feedbackMn: 'Kde je obchod? = Дэлгүүр хаана байна?'
       },
       {
@@ -62,7 +62,7 @@ export const a0LocationMicroDialogues: Record<string, DialogueScenario> = {
         id: 'a03b-d3', speaker: 'Ажилтан', staffCzech: 'Co hledáte?', staffMn: 'Та юу хайж байна вэ?',
         promptMn: 'Эмийн сан хаана байгааг асуугаарай.',
         choices: [
-          { id: 'a', text: 'Kde je nádraží?', mongolian: 'Галт тэрэгний буудал хаана байна?' },
+          { id: 'a', text: 'Kde je obchod?', mongolian: 'Дэлгүүр хаана байна?' },
           { id: 'b', text: 'Kde je lékárna?', mongolian: 'Эмийн сан хаана байна?' },
           { id: 'c', text: 'Prosím, kde je toaleta?', mongolian: 'Уучлаарай, ариун цэврийн өрөө хаана байна?' },
         ], correctId: 'b', feedbackMn: 'Kde je lékárna? = Эмийн сан хаана байна?'
@@ -89,7 +89,7 @@ export const a0LocationMicroDialogues: Record<string, DialogueScenario> = {
         choices: [
           { id: 'a', text: 'Kde je nádraží?', mongolian: 'Галт тэрэгний буудал хаана байна?' },
           { id: 'b', text: 'Kde je obchod?', mongolian: 'Дэлгүүр хаана байна?' },
-          { id: 'c', text: 'Kde je toaleta?', mongolian: 'Ариун цэврийн өрөө хаана байна?' },
+          { id: 'c', text: 'Prosím, kde je toaleta?', mongolian: 'Уучлаарай, ариун цэврийн өрөө хаана байна?' },
         ], correctId: 'a', feedbackMn: 'Kde je nádraží? = Галт тэрэгний буудал хаана байна?'
       },
       {
