@@ -15,6 +15,11 @@ const LearningPathPage: React.FC = () => {
     setPage('a0Lesson');
   };
 
+  const openDialoguePreview = (lessonId: string) => {
+    setCurrentLesson(lessonId);
+    setPage('a0DialoguePreview');
+  };
+
   return (
     <div style={{ background: '#0C0C0E', minHeight: '100vh', fontFamily: 'Inter,sans-serif' }}>
       <div style={{ background: '#141416', padding: '20px 20px 16px', borderBottom: '1px solid #2A2A2F' }}>
@@ -39,22 +44,25 @@ const LearningPathPage: React.FC = () => {
           return (
             <div key={lesson.id}>
               {index > 0 && <div style={{ display: 'flex', justifyContent: 'center', margin: '2px 0' }}><div style={{ width: 2, height: 12, borderRadius: 2, background: done ? '#C8952A' : '#2A2A2F' }} /></div>}
-              <motion.button whileTap={locked ? {} : { scale: 0.98 }} onClick={() => !locked && openLesson(lesson.id)} style={{ width: '100%', textAlign: 'left', cursor: locked ? 'default' : 'pointer', background: done ? 'rgba(200,149,42,.08)' : '#1C1C1F', border: `1.5px solid ${done ? 'rgba(200,149,42,.3)' : '#2A2A2F'}`, borderRadius: 18, padding: 14, opacity: locked ? 0.58 : 1, display: 'flex', alignItems: 'center', gap: 12 }}>
-                <div style={{ position: 'relative', flexShrink: 0 }}>
-                  <div style={{ width: 52, height: 52, borderRadius: 16, background: done ? 'rgba(200,149,42,.15)' : '#242428', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 26 }}>{locked ? '🔒' : lesson.icon}</div>
-                  {done && <div style={{ position: 'absolute', bottom: -4, right: -4, width: 20, height: 20, borderRadius: 10, background: '#C8952A', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><CheckCircle size={12} color="#000" strokeWidth={3} /></div>}
-                </div>
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', gap: 8, marginBottom: 4 }}>
-                    <div><span style={{ fontSize: 11, color: '#606068' }}>{lesson.order}-р хичээл</span><p style={{ fontSize: 14, fontWeight: 700, color: '#FFF', margin: 0 }}>{lesson.titleMn}</p></div>
-                    {done ? <span style={{ fontSize: 11, fontWeight: 700, color: '#C8952A', background: 'rgba(200,149,42,.15)', padding: '3px 8px', borderRadius: 99, height: 'fit-content' }}>✓ Дууссан</span> : ready ? <span style={{ fontSize: 13, fontWeight: 700, color: '#C8952A' }}>{progressPercent}%</span> : <span style={{ fontSize: 11, color: '#888', whiteSpace: 'nowrap' }}>Төлөвлөгдсөн</span>}
+              <motion.div whileTap={locked ? {} : { scale: 0.98 }} style={{ width: '100%', textAlign: 'left', background: done ? 'rgba(200,149,42,.08)' : '#1C1C1F', border: `1.5px solid ${done ? 'rgba(200,149,42,.3)' : '#2A2A2F'}`, borderRadius: 18, padding: 14, opacity: locked ? 0.58 : 1 }}>
+                <button onClick={() => !locked && openLesson(lesson.id)} style={{ width: '100%', textAlign: 'left', cursor: locked ? 'default' : 'pointer', background: 'transparent', border: 0, padding: 0, display: 'flex', alignItems: 'center', gap: 12 }}>
+                  <div style={{ position: 'relative', flexShrink: 0 }}>
+                    <div style={{ width: 52, height: 52, borderRadius: 16, background: done ? 'rgba(200,149,42,.15)' : '#242428', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 26 }}>{locked ? '🔒' : lesson.icon}</div>
+                    {done && <div style={{ position: 'absolute', bottom: -4, right: -4, width: 20, height: 20, borderRadius: 10, background: '#C8952A', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><CheckCircle size={12} color="#000" strokeWidth={3} /></div>}
                   </div>
-                  <p style={{ fontSize: 11, color: '#A0A0A8', margin: '0 0 7px', lineHeight: 1.35 }}>{lesson.description}</p>
-                  {ready && <ProgressBar value={progressPercent} height={5} />}
-                  <div style={{ display: 'flex', gap: 12, marginTop: 7 }}>{ready ? <><span style={{ fontSize: 11, color: '#606068' }}>📖 {lesson.wordCount} карт</span><span style={{ fontSize: 11, color: '#606068' }}>⏱ {lesson.estimatedMinutes} мин</span></> : <span style={{ fontSize: 11, color: '#606068' }}>Аппын өгөгдөлд хараахан ороогүй</span>}</div>
-                </div>
-                {!locked && <ChevronRight size={16} color="#606068" style={{ flexShrink: 0 }} />}
-              </motion.button>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', gap: 8, marginBottom: 4 }}>
+                      <div><span style={{ fontSize: 11, color: '#606068' }}>{lesson.order}-р хичээл</span><p style={{ fontSize: 14, fontWeight: 700, color: '#FFF', margin: 0 }}>{lesson.titleMn}</p></div>
+                      {done ? <span style={{ fontSize: 11, fontWeight: 700, color: '#C8952A', background: 'rgba(200,149,42,.15)', padding: '3px 8px', borderRadius: 99, height: 'fit-content' }}>✓ Дууссан</span> : ready ? <span style={{ fontSize: 13, fontWeight: 700, color: '#C8952A' }}>{progressPercent}%</span> : <span style={{ fontSize: 11, color: '#888', whiteSpace: 'nowrap' }}>Төлөвлөгдсөн</span>}
+                    </div>
+                    <p style={{ fontSize: 11, color: '#A0A0A8', margin: '0 0 7px', lineHeight: 1.35 }}>{lesson.description}</p>
+                    {ready && <ProgressBar value={progressPercent} height={5} />}
+                    <div style={{ display: 'flex', gap: 12, marginTop: 7 }}>{ready ? <><span style={{ fontSize: 11, color: '#606068' }}>📖 {lesson.wordCount} карт</span><span style={{ fontSize: 11, color: '#606068' }}>⏱ {lesson.estimatedMinutes} мин</span></> : <span style={{ fontSize: 11, color: '#606068' }}>Аппын өгөгдөлд хараахан ороогүй</span>}</div>
+                  </div>
+                  {!locked && <ChevronRight size={16} color="#606068" style={{ flexShrink: 0 }} />}
+                </button>
+                {ready && <button onClick={() => openDialoguePreview(lesson.id)} style={{ width: '100%', marginTop: 11, padding: '10px 12px', borderRadius: 12, border: '1px solid rgba(200,149,42,.42)', background: 'rgba(200,149,42,.10)', color: '#F5C842', fontSize: 12, fontWeight: 900, cursor: 'pointer' }}>Түр шалгах: яриа шууд харах</button>}
+              </motion.div>
             </div>
           );
         })}
