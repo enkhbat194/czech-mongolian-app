@@ -3,32 +3,7 @@ import { a0NeedsCards, a0NeedsMicroLessons, getA0NeedsCard } from './a0Needs';
 import { a0LocationCards, a0LocationMicroLessons, getA0LocationCard } from './a0Location';
 import { a0FirstContactCoveredFinalDialogue, a0FirstContactCoveredMicroDialogues, a0NeedsCoveredFinalDialogue, a0NeedsCoveredMicroDialogues } from './a0CoverageDialogues';
 import { a0LocationFinalDialogue, a0LocationMicroDialogues } from './a0LocationDialogues';
-import { getA0MatchExercise } from './a0MatchExercises';
-import { defineA0Lesson, type A0Exercise, type A0LessonDefinition, type A0MicroLesson } from './a0LessonSchema';
-
-type LegacyMicroLesson = {
-  id: string;
-  titleMn: string;
-  canDoMn: string;
-  cardIds: string[];
-  instructions: Record<string, string>;
-  exercises: Array<{ id: string }>;
-};
-
-function normalizeExercises(exercises: LegacyMicroLesson['exercises']): A0Exercise[] {
-  return exercises.map((exercise) => getA0MatchExercise(exercise.id) ?? exercise) as A0Exercise[];
-}
-
-function normalizeMicros(micros: LegacyMicroLesson[]): A0MicroLesson[] {
-  return micros.map((micro) => ({
-    id: micro.id,
-    titleMn: micro.titleMn,
-    canDoMn: micro.canDoMn,
-    cardIds: micro.cardIds,
-    instructions: micro.instructions,
-    exercises: normalizeExercises(micro.exercises),
-  }));
-}
+import { defineA0Lesson, type A0LessonDefinition } from './a0LessonSchema';
 
 export const a0ReferenceLessons: Record<'l001' | 'l002' | 'l003', A0LessonDefinition> = {
   l001: defineA0Lesson({
@@ -36,7 +11,7 @@ export const a0ReferenceLessons: Record<'l001' | 'l002' | 'l003', A0LessonDefini
     titleMn: 'A0.1 — Анхны харилцаа',
     durationMinutes: 34,
     cards: a0FirstContactCards,
-    microLessons: normalizeMicros(a0FirstContactMicroLessons),
+    microLessons: a0FirstContactMicroLessons,
     getCard: getA0FirstContactCard,
     microDialogues: a0FirstContactCoveredMicroDialogues,
     finalDialogue: a0FirstContactCoveredFinalDialogue,
@@ -50,7 +25,7 @@ export const a0ReferenceLessons: Record<'l001' | 'l002' | 'l003', A0LessonDefini
     titleMn: 'A0.2 — Надад хэрэгтэй',
     durationMinutes: 32,
     cards: a0NeedsCards,
-    microLessons: normalizeMicros(a0NeedsMicroLessons),
+    microLessons: a0NeedsMicroLessons,
     getCard: getA0NeedsCard,
     microDialogues: a0NeedsCoveredMicroDialogues,
     finalDialogue: a0NeedsCoveredFinalDialogue,
@@ -64,7 +39,7 @@ export const a0ReferenceLessons: Record<'l001' | 'l002' | 'l003', A0LessonDefini
     titleMn: 'A0.3 — Хаана байна?',
     durationMinutes: 28,
     cards: a0LocationCards,
-    microLessons: normalizeMicros(a0LocationMicroLessons),
+    microLessons: a0LocationMicroLessons,
     getCard: getA0LocationCard,
     microDialogues: a0LocationMicroDialogues,
     finalDialogue: a0LocationFinalDialogue,
