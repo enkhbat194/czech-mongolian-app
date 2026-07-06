@@ -65,6 +65,9 @@ export const usePhraseMemoryStore = create<PhraseMemoryState>()(
         set({ phrases: { ...phrases, [targetId]: { ...existing, exposures: existing.exposures + 1, lastSeen: new Date().toISOString() } } });
       },
       recordAttempt: (targetId, correct) => {
+        // The phrase store owns the recall result. It writes the matching card SRS
+        // exactly once so lesson exercises, carryover, and daily review stay aligned.
+        useAppStore.getState().updateSRSCard(targetId, correct ? 4 : 1);
         const { phrases } = get();
         const existing = phrases[targetId] || createMemory(targetId);
         const repetitions = correct ? existing.repetitions + 1 : 0;
