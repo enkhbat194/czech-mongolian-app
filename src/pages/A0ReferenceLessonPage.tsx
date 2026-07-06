@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import '../stores/a0WordBridge';
 import { a0ReferenceCatalog } from '../data/a0ReferenceCatalog';
 import A0LessonEngine from '../components/lessons/A0LessonEngine';
 import A0CarryoverReview from '../components/lessons/A0CarryoverReview';
