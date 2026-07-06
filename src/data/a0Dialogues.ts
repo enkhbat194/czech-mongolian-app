@@ -181,10 +181,10 @@ export const a0NeedsMicroDialogues: Record<string, DialogueScenario> = {
         id: 'a02a-d1', speaker: 'Ресепшний ажилтан', staffCzech: 'Dobrý den.', staffMn: 'Сайн байна уу.',
         promptMn: 'Эелдгээр тусламж хүсээрэй.',
         choices: [
-          { id: 'a', text: 'Potřebuji pomoc, prosím.', mongolian: 'Надад туслаач, гуйя.' },
+          { id: 'a', text: 'Potřebuji pomoc.', mongolian: 'Надад тусламж хэрэгтэй.' },
           { id: 'b', text: 'Potřebuji telefon.', mongolian: 'Надад утас хэрэгтэй.' },
           { id: 'c', text: 'Na shledanou.', mongolian: 'Баяртай.' },
-        ], correctId: 'a', feedbackMn: 'Potřebuji pomoc, prosím. = Надад туслаач, гуйя.'
+        ], correctId: 'a', feedbackMn: 'Potřebuji pomoc. = Надад тусламж хэрэгтэй.'
       },
       {
         id: 'a02a-d2', speaker: 'Ресепшний ажилтан', staffCzech: 'Voda?', staffMn: 'Ус?',
