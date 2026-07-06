@@ -5,55 +5,35 @@ import { a0FirstContactCoveredFinalDialogue, a0FirstContactCoveredMicroDialogues
 import { a0LocationFinalDialogue, a0LocationMicroDialogues } from './a0LocationDialogues';
 import { a0ReferenceNewLessons } from './a0ReferenceNewLessons';
 import { auditA0Lesson, defineA0Lesson, type A0LessonDefinition } from './a0LessonSchema';
+import { a0VocabularyAudit } from './a0VocabularyAudit';
 
 const coreReferenceLessons: Record<'l001' | 'l002' | 'l003', A0LessonDefinition> = {
   l001: defineA0Lesson({
-    lessonId: 'l001',
-    titleMn: 'A0.1 — Анхны харилцаа',
-    durationMinutes: 38,
-    cards: a0FirstContactCards,
-    microLessons: a0FirstContactMicroLessons,
-    getCard: getA0FirstContactCard,
-    microDialogues: a0FirstContactCoveredMicroDialogues,
-    finalDialogue: a0FirstContactCoveredFinalDialogue,
-    xpReward: 150,
-    completionIcon: '🏆',
+    lessonId: 'l001', titleMn: 'A0.1 — Анхны харилцаа', durationMinutes: 38,
+    cards: a0FirstContactCards, microLessons: a0FirstContactMicroLessons, getCard: getA0FirstContactCard,
+    microDialogues: a0FirstContactCoveredMicroDialogues, finalDialogue: a0FirstContactCoveredFinalDialogue,
+    xpReward: 150, completionIcon: '🏆',
     completionSummaryMn: 'Та албан ёсоор мэндэлж, нэрээ болон хаанаас ирснээ хэлж, ойлгохгүй үед яриаг удаашруулах хүсэлт тавьж чадна.',
     completionPhrases: ['Dobrý den.', 'Jmenuji se …', 'Jsem z Mongolska.', 'Nerozumím. Mluvte prosím pomalu.', 'Na shledanou.'],
   }),
   l002: defineA0Lesson({
-    lessonId: 'l002',
-    titleMn: 'A0.2 — Надад хэрэгтэй',
-    durationMinutes: 38,
-    cards: a0NeedsCards,
-    microLessons: a0NeedsMicroLessons,
-    getCard: getA0NeedsCard,
-    microDialogues: a0NeedsCoveredMicroDialogues,
-    finalDialogue: a0NeedsCoveredFinalDialogue,
-    xpReward: 160,
-    completionIcon: '🧾',
-    completionSummaryMn: 'Та одоо тусламж, ус, утас хэрэгтэйгээ хэлж, хүсэлтээ илэрхийлж, мөнгө эсвэл карт байхгүйгээ тайлбарлаж чадна.',
+    lessonId: 'l002', titleMn: 'A0.2 — Надад хэрэгтэй', durationMinutes: 38,
+    cards: a0NeedsCards, microLessons: a0NeedsMicroLessons, getCard: getA0NeedsCard,
+    microDialogues: a0NeedsCoveredMicroDialogues, finalDialogue: a0NeedsCoveredFinalDialogue,
+    xpReward: 160, completionIcon: '🧾',
+    completionSummaryMn: 'Та тусламж, ус, утас хэрэгтэйгээ хэлж, хүсэлтээ илэрхийлж, мөнгө эсвэл карт байхгүйгээ тайлбарлаж чадна.',
     completionPhrases: ['Potřebuji pomoc.', 'Potřebuji vodu.', 'Chci něco k jídlu.', 'Nemám kartu.', 'Potřebuji pomoc, prosím.'],
   }),
   l003: defineA0Lesson({
-    lessonId: 'l003',
-    titleMn: 'A0.3 — Хаана байна?',
-    durationMinutes: 32,
-    cards: a0LocationCards,
-    microLessons: a0LocationMicroLessons,
-    getCard: getA0LocationCard,
-    microDialogues: a0LocationMicroDialogues,
-    finalDialogue: a0LocationFinalDialogue,
-    xpReward: 170,
-    completionIcon: '📍',
+    lessonId: 'l003', titleMn: 'A0.3 — Хаана байна?', durationMinutes: 32,
+    cards: a0LocationCards, microLessons: a0LocationMicroLessons, getCard: getA0LocationCard,
+    microDialogues: a0LocationMicroDialogues, finalDialogue: a0LocationFinalDialogue,
+    xpReward: 170, completionIcon: '📍',
     completionSummaryMn: 'Та танихгүй газарт ариун цэврийн өрөө, дэлгүүр, эмийн сан, галт тэрэгний буудал хаана байгааг асууж, “энд / тэнд” гэсэн хариуг тодруулж чадна.',
     completionPhrases: ['Prosím, kde je toaleta?', 'Tady.', 'Tam.', 'Kde je lékárna?', 'Tady, nebo tam?'],
   }),
 };
 
-export const a0ReferenceLessons: Record<string, A0LessonDefinition> = {
-  ...coreReferenceLessons,
-  ...a0ReferenceNewLessons,
-};
-
+export const a0ReferenceLessons: Record<string, A0LessonDefinition> = { ...coreReferenceLessons, ...a0ReferenceNewLessons };
 export const a0ReferenceAudit = Object.values(a0ReferenceLessons).map(auditA0Lesson);
+export { a0VocabularyAudit };
