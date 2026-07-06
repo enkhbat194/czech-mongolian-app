@@ -20,7 +20,7 @@ function correctDialogueCopy(scenario: DialogueScenario): DialogueScenario {
   };
 }
 
-const DialogueSceneInjector: React.FC<{ lessonId: string; rootRef: React.RefObject<HTMLDivElement> }> = ({ lessonId, rootRef }) => {
+const DialogueSceneInjector: React.FC<{ lessonId: string; rootRef: React.RefObject<HTMLDivElement | null> }> = ({ lessonId, rootRef }) => {
   const [host, setHost] = useState<HTMLElement | null>(null);
   const hostRef = useRef<HTMLElement | null>(null);
 
@@ -68,7 +68,7 @@ const DialogueSceneInjector: React.FC<{ lessonId: string; rootRef: React.RefObje
 };
 
 const A0LessonEngine: React.FC<{ config: A0LessonDefinition }> = ({ config }) => {
-  const rootRef = useRef<HTMLDivElement>(null);
+  const rootRef = useRef<HTMLDivElement | null>(null);
   const correctedConfig = useMemo(() => {
     const microDialogues = Object.keys(config.microDialogues).reduce<Record<string, DialogueScenario>>((result, key) => {
       result[key] = correctDialogueCopy(config.microDialogues[key]);
