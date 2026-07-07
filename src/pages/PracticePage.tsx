@@ -20,6 +20,7 @@ const PracticePage: React.FC = () => {
     { icon: '🃏', label: 'Флашкард', sub: 'Үг цээжлэх', color: 'rgba(200,149,42,.15)', accent: '#C8952A', action: () => { if (firstLesson) setCurrentLesson(firstLesson.id); setPage('flashcard'); } },
     { icon: '📝', label: 'Үг сонгох', sub: 'Чех → Монгол', color: 'rgba(56,189,248,.1)', accent: '#38BDF8', action: () => setPage('wordQuiz') },
     { icon: '🔄', label: 'Урвуу сонгох', sub: 'Монгол → Чех', color: 'rgba(168,85,247,.1)', accent: '#A855F7', action: () => setPage('reverseQuiz') },
+    { icon: '🧩', label: 'Өгүүлбэр бүтээх', sub: 'Үгсийг зөв дараалуулах', color: 'rgba(20,184,166,.12)', accent: '#2DD4BF', action: () => setPage('sentenceBuilder') },
     { icon: '✍️', label: 'Бичих дасгал', sub: 'Зөв бичих', color: 'rgba(245,158,11,.1)', accent: '#F59E0B', action: () => setPage('writing') },
     { icon: '🎧', label: 'Сонсоод бичих', sub: 'Чээж бичиг', color: 'rgba(236,72,153,.1)', accent: '#EC4899', action: () => setPage('dictation') },
     { icon: '📝', label: 'Хоосон үг нөхөх', sub: 'Дүрэм, үгсийн сан', color: 'rgba(99,102,241,.1)', accent: '#6366F1', action: () => setPage('fillBlank') },
