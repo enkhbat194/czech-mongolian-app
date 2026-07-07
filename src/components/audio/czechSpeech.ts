@@ -1,41 +1,62 @@
-export interface SpeakCzechOptions {
+export interface SpeakTextOptions {
+  lang?: string;
   rate?: number;
+  onStarted?: () => void;
   onFinished?: () => void;
 }
 
-export function cancelCzechSpeech() {
+export interface SpeakCzechOptions {
+  rate?: number;
+  onStarted?: () => void;
+  onFinished?: () => void;
+}
+
+export function cancelSpeech() {
   if (typeof window === 'undefined' || !('speechSynthesis' in window)) return;
   window.speechSynthesis.cancel();
 }
 
-function findCzechVoice() {
+export function cancelCzechSpeech() {
+  cancelSpeech();
+}
+
+function findVoice(language: string) {
   if (typeof window === 'undefined' || !('speechSynthesis' in window)) return null;
 
+  const normalizedLanguage = language.toLowerCase();
+  const languagePrefix = normalizedLanguage.split('-')[0];
   const voices = window.speechSynthesis.getVoices();
-  return voices.find((voice) => voice.lang.toLowerCase() === 'cs-cz')
-    ?? voices.find((voice) => voice.lang.toLowerCase().startsWith('cs'))
+
+  return voices.find((voice) => voice.lang.toLowerCase() === normalizedLanguage)
+    ?? voices.find((voice) => voice.lang.toLowerCase().startsWith(languagePrefix))
     ?? null;
 }
 
 /**
- * Temporary browser TTS fallback. Azure-generated MP3 playback will replace this
- * in the audio production phase. The API is shared by lessons, dialogues, and review.
+ * Shared temporary browser TTS fallback. Azure-generated MP3 playback will
+ * replace this in the audio production phase. Lessons and practice pages use
+ * this single implementation while production audio is being generated.
  */
-export function speakCzech(text: string, options: SpeakCzechOptions = {}) {
-  const { rate = 0.84, onFinished } = options;
+export function speakText(text: string, options: SpeakTextOptions = {}) {
+  const {
+    lang = 'cs-CZ',
+    rate = 0.84,
+    onStarted,
+    onFinished,
+  } = options;
 
   if (typeof window === 'undefined' || !('speechSynthesis' in window)) {
     onFinished?.();
     return;
   }
 
-  cancelCzechSpeech();
+  cancelSpeech();
   const utterance = new SpeechSynthesisUtterance(text);
-  utterance.lang = 'cs-CZ';
+  utterance.lang = lang;
   utterance.rate = rate;
 
-  const czechVoice = findCzechVoice();
-  if (czechVoice) utterance.voice = czechVoice;
+  const matchingVoice = findVoice(lang);
+  if (matchingVoice) utterance.voice = matchingVoice;
 
   let settled = false;
   const finish = () => {
@@ -44,6 +65,7 @@ export function speakCzech(text: string, options: SpeakCzechOptions = {}) {
     onFinished?.();
   };
 
+  utterance.onstart = () => onStarted?.();
   utterance.onend = finish;
   utterance.onerror = finish;
 
@@ -52,4 +74,8 @@ export function speakCzech(text: string, options: SpeakCzechOptions = {}) {
   } catch {
     finish();
   }
+}
+
+export function speakCzech(text: string, options: SpeakCzechOptions = {}) {
+  speakText(text, { ...options, lang: 'cs-CZ' });
 }
