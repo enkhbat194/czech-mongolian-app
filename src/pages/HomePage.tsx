@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { ChevronRight } from 'lucide-react';
 import { useAppStore } from '../stores/useAppStore';
@@ -15,7 +15,7 @@ const HomePage: React.FC = () => {
   const getTodayReviewTargetIds = usePhraseMemoryStore((state) => state.getTodayReviewTargetIds);
   useEffect(() => { updateStreak(); }, [updateStreak]);
 
-  const duePhraseIds = useMemo(() => getTodayReviewTargetIds(5), [getTodayReviewTargetIds]);
+  const duePhraseIds = getTodayReviewTargetIds(5);
   const weekData = DAYS.map((day, index) => ({ d: day, xp: progress.weeklyXP[index] || 0 }));
   const goalPct = Math.min(100, Math.round((progress.todayMinutes / Math.max(progress.dailyGoalMinutes, 1)) * 100));
   const introducedWords = progress.introducedWords || progress.learnedWords || [];
