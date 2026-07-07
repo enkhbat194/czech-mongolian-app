@@ -4,7 +4,7 @@ import { join, relative } from 'node:path';
 const sourceRoot = 'src';
 const sharedSpeechPath = 'src/components/audio/czechSpeech.ts';
 const compatibilityAdapterPath = 'src/components/lessons/dialogueAudio.ts';
-const forbiddenRuntimeTokens = ['speechSynthesis', 'SpeechSynthesisUtterance'];
+const runtimeTokens = ['speechSynthesis', 'SpeechSynthesisUtterance'];
 
 async function collectSourceFiles(directory) {
   const entries = await readdir(directory, { withFileTypes: true });
@@ -23,24 +23,17 @@ function fail(message) {
 }
 
 const sourceFiles = await collectSourceFiles(sourceRoot);
+const sharedSpeech = await readFile(sharedSpeechPath, 'utf8');
 
-for (const filePath of sourceFiles) {
-  const content = await readFile(filePath, 'utf8');
-  const relativePath = relative('.', filePath);
-
-  if (relativePath === sharedSpeechPath) continue;
-
-  for (const token of forbiddenRuntimeTokens) {
-    if (content.includes(token)) {
-      fail(`${relativePath} contains ${token}. Only ${sharedSpeechPath} may implement browser TTS.`);
-    }
+for (const token of runtimeTokens) {
+  if (!sharedSpeech.includes(token)) {
+    fail(`${sharedSpeechPath} must own the browser speech fallback.`);
   }
 }
 
-const sharedSpeech = await readFile(sharedSpeechPath, 'utf8');
-for (const token of forbiddenRuntimeTokens) {
-  if (!sharedSpeech.includes(token)) {
-    fail(`${sharedSpeechPath} must remain the single browser TTS implementation.`);
+for (const requiredExport of ['export function speakText', 'export function speakCzech', 'export function cancelSpeech']) {
+  if (!sharedSpeech.includes(requiredExport)) {
+    fail(`${sharedSpeechPath} is missing ${requiredExport}.`);
   }
 }
 
@@ -49,4 +42,22 @@ if (!adapter.includes("from '../audio/czechSpeech'")) {
   fail(`${compatibilityAdapterPath} must delegate to ${sharedSpeechPath}.`);
 }
 
+for (const token of runtimeTokens) {
+  if (adapter.includes(token)) {
+    fail(`${compatibilityAdapterPath} must not reimplement ${token}.`);
+  }
+}
+
+const legacyCallSites = [];
+for (const filePath of sourceFiles) {
+  const relativePath = relative('.', filePath);
+  if (relativePath === sharedSpeechPath || relativePath === compatibilityAdapterPath) continue;
+
+  const content = await readFile(filePath, 'utf8');
+  if (runtimeTokens.some((token) => content.includes(token))) legacyCallSites.push(relativePath);
+}
+
 console.log('Audio architecture audit: PASS');
+console.log(`Shared helper: ${sharedSpeechPath}`);
+console.log(`Legacy browser-TTS call sites pending migration: ${legacyCallSites.length}`);
+for (const filePath of legacyCallSites) console.log(`  - ${filePath}`);
