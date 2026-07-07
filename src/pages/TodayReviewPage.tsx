@@ -48,18 +48,15 @@ const TodayReviewPage: React.FC = () => {
     [targetIds],
   );
   const current = targets[index];
-  const currentLessonId = current?.lessonId;
-  const activePool = useMemo(() => {
-    if (!currentLessonId) return [];
-    return a0MemoryTargets.filter(
-      (target) => target.priority === 'active' && target.lessonId <= currentLessonId,
-    );
-  }, [currentLessonId]);
-  const choices = useMemo(() => {
-    if (!current) return [];
-    const distractors = stableShuffle(activePool.filter((target) => target.id !== current.id), `${current.id}-today-options`).slice(0, 3);
-    return stableShuffle([current, ...distractors], `${current.id}-today-final`);
-  }, [activePool, current]);
+  const activePool = current
+    ? a0MemoryTargets.filter((target) => target.priority === 'active' && target.lessonId <= current.lessonId)
+    : [];
+  const choices = current
+    ? stableShuffle([
+      current,
+      ...stableShuffle(activePool.filter((target) => target.id !== current.id), `${current.id}-today-options`).slice(0, 3),
+    ], `${current.id}-today-final`)
+    : [];
 
   const finish = () => {
     addXP(targets.length * 4);
