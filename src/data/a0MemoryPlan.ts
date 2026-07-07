@@ -72,6 +72,16 @@ function normalizeCzech(text: string) {
     .trim();
 }
 
+function containsTokenSequence(text: string, candidate: string) {
+  const textTokens = normalizeCzech(text).split(' ').filter(Boolean);
+  const candidateTokens = normalizeCzech(candidate).split(' ').filter(Boolean);
+  if (!candidateTokens.length || candidateTokens.length > textTokens.length) return false;
+
+  return textTokens.some((_, startIndex) => candidateTokens.every(
+    (token, offset) => textTokens[startIndex + offset] === token,
+  ));
+}
+
 export const a0MemoryTargets: A0MemoryTarget[] = czechWords.map((word) => {
   const priority: MemoryPriority = explicitActiveIds.has(word.id) || activeCategories.has(word.category) ? 'active' : 'support';
   return { id: word.id, lessonId: word.lessonId, czech: word.czech, mongolian: word.mongolian, priority, aliases: aliasMap[word.id], requiredCoverage: priority === 'active' ? activeCoverage : supportCoverage };
@@ -83,12 +93,37 @@ export function getA0MemoryTarget(id: string) {
   return a0MemoryTargets.find((target) => target.id === id);
 }
 
-export function getA0MemoryTargetByCzech(text: string) {
+/**
+ * Returns every memory target evidenced by a Czech reply. A direct card or alias
+ * match comes first; longer composed replies can additionally credit each exact
+ * card-sized phrase they contain. Token matching prevents false positives such
+ * as matching "Ano" inside "Na shledanou".
+ */
+export function getA0MemoryTargetsByCzech(text: string) {
   const normalized = normalizeCzech(text);
-  return a0MemoryTargets.find((target) => {
+  if (!normalized) return [];
+
+  const directMatches = a0MemoryTargets.filter((target) => {
     const candidates = [target.czech, ...(target.aliases || [])];
     return candidates.some((candidate) => normalizeCzech(candidate) === normalized);
   });
+  const containedMatches = a0MemoryTargets.filter((target) => {
+    const candidates = [target.czech, ...(target.aliases || [])];
+    return candidates.some((candidate) => containsTokenSequence(text, candidate));
+  });
+
+  return [...directMatches, ...containedMatches]
+    .filter((target, index, list) => list.findIndex((item) => item.id === target.id) === index)
+    .sort((left, right) => {
+      const leftDirect = directMatches.some((target) => target.id === left.id) ? 1 : 0;
+      const rightDirect = directMatches.some((target) => target.id === right.id) ? 1 : 0;
+      if (leftDirect !== rightDirect) return rightDirect - leftDirect;
+      return right.czech.length - left.czech.length;
+    });
+}
+
+export function getA0MemoryTargetByCzech(text: string) {
+  return getA0MemoryTargetsByCzech(text)[0];
 }
 
 export function getPriorActiveTargetIds(lessonId: string) {
