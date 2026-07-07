@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
 import { ChevronRight } from 'lucide-react';
 import { useAppStore } from '../stores/useAppStore';
@@ -8,12 +8,10 @@ import { CircularProgress, ProgressBar } from '../components/UI/SharedComponents
 import { AreaChart, Area, XAxis, Tooltip, ResponsiveContainer } from 'recharts';
 
 const DAYS = ['Да', 'Мя', 'Лх', 'Пү', 'Ба', 'Бя', 'Ня'];
-const lessonPage: Record<string, string> = { l001: 'a0FirstContact', l002: 'a0Needs', l003: 'a0Location' };
 
 const HomePage: React.FC = () => {
-  const { userName, progress, updateStreak, setPage, setCurrentLesson, getLessonProgress } = useAppStore();
+  const { userName, progress, setPage, setCurrentLesson, getLessonProgress } = useAppStore();
   const getTodayReviewTargetIds = usePhraseMemoryStore((state) => state.getTodayReviewTargetIds);
-  useEffect(() => { updateStreak(); }, [updateStreak]);
 
   const duePhraseIds = getTodayReviewTargetIds(5);
   const weekData = DAYS.map((day, index) => ({ d: day, xp: progress.weeklyXP[index] || 0 }));
@@ -25,7 +23,7 @@ const HomePage: React.FC = () => {
 
   const openLesson = (lessonId: string) => {
     setCurrentLesson(lessonId);
-    setPage(lessonPage[lessonId] || 'flashcard');
+    setPage('a0Lesson');
   };
 
   return (
