@@ -4,6 +4,7 @@ import { czechWords } from '../data/czechWords';
 import type { CzechWord } from '../data/czechWords';
 import { lessons } from '../data/lessons';
 import type { Lesson } from '../data/lessons';
+import { getLocalDateKey, getMondayIndex, getWeekStartKey } from '../utils/studyCalendar';
 
 export interface SRSCard {
   wordId: string;
@@ -27,8 +28,10 @@ export interface UserProgress {
   learnedWords: string[];
   srsCards: Record<string, SRSCard>;
   dailyGoalMinutes: number;
+  studyDate: string;
   todayMinutes: number;
   totalMinutes: number;
+  weeklyXPWeekStart: string;
   weeklyXP: number[];
 }
 
@@ -52,6 +55,7 @@ export interface AppState {
   addXP: (amount: number) => void;
   addMinutes: (minutes: number) => void;
   updateStreak: () => void;
+  refreshCalendar: () => void;
   updateSRSCard: (wordId: string, quality: 0 | 1 | 2 | 3 | 4 | 5) => void;
   getDueReviewCards: () => SRSCard[];
   getWordsForLesson: (lessonId: string) => CzechWord[];
@@ -62,19 +66,25 @@ export interface AppState {
   resetProgress: () => void;
 }
 
-const initialProgress: UserProgress = {
-  totalXP: 0,
-  streak: 0,
-  lastStudyDate: '',
-  completedLessons: [],
-  introducedWords: [],
-  learnedWords: [],
-  srsCards: {},
-  dailyGoalMinutes: 15,
-  todayMinutes: 0,
-  totalMinutes: 0,
-  weeklyXP: [0, 0, 0, 0, 0, 0, 0],
-};
+function createInitialProgress(): UserProgress {
+  return {
+    totalXP: 0,
+    streak: 0,
+    lastStudyDate: '',
+    completedLessons: [],
+    introducedWords: [],
+    learnedWords: [],
+    srsCards: {},
+    dailyGoalMinutes: 15,
+    studyDate: getLocalDateKey(),
+    todayMinutes: 0,
+    totalMinutes: 0,
+    weeklyXPWeekStart: getWeekStartKey(),
+    weeklyXP: [0, 0, 0, 0, 0, 0, 0],
+  };
+}
+
+const initialProgress = createInitialProgress();
 
 function tomorrowIso() {
   const date = new Date();
@@ -89,6 +99,29 @@ function createReviewCard(wordId: string): SRSCard {
 
 function normalizeCard(card: Partial<SRSCard> & Pick<SRSCard, 'wordId'>): SRSCard {
   return { ...createReviewCard(card.wordId), ...card, exposures: card.exposures ?? 0, correctAttempts: card.correctAttempts ?? 0, incorrectAttempts: card.incorrectAttempts ?? 0 };
+}
+
+function normalizeCalendar(progress: UserProgress, now = new Date()): UserProgress {
+  const studyDate = getLocalDateKey(now);
+  const weeklyXPWeekStart = getWeekStartKey(now);
+  const weeklyXP = progress.weeklyXPWeekStart === weeklyXPWeekStart
+    ? [...progress.weeklyXP, 0, 0, 0, 0, 0, 0].slice(0, 7)
+    : [0, 0, 0, 0, 0, 0, 0];
+
+  return {
+    ...progress,
+    studyDate,
+    todayMinutes: progress.studyDate === studyDate ? progress.todayMinutes : 0,
+    weeklyXPWeekStart,
+    weeklyXP,
+  };
+}
+
+function hasCalendarChanged(previous: UserProgress, next: UserProgress) {
+  return previous.studyDate !== next.studyDate
+    || previous.todayMinutes !== next.todayMinutes
+    || previous.weeklyXPWeekStart !== next.weeklyXPWeekStart
+    || previous.weeklyXP.some((value, index) => value !== next.weeklyXP[index]);
 }
 
 function sm2(card: SRSCard, quality: 0 | 1 | 2 | 3 | 4 | 5): SRSCard {
@@ -142,22 +175,29 @@ export const useAppStore = create<AppState>()(
         if (!progress.completedLessons.includes(lessonId)) set({ progress: { ...progress, completedLessons: [...progress.completedLessons, lessonId] } });
       },
       addXP: (amount) => {
-        const { progress } = get();
-        const weekly = [...progress.weeklyXP];
-        const dayIndex = new Date().getDay();
-        weekly[dayIndex] = (weekly[dayIndex] || 0) + amount;
-        set({ progress: { ...progress, totalXP: progress.totalXP + amount, weeklyXP: weekly } });
+        const progress = normalizeCalendar(get().progress);
+        const weeklyXP = [...progress.weeklyXP];
+        const dayIndex = getMondayIndex();
+        weeklyXP[dayIndex] = (weeklyXP[dayIndex] || 0) + amount;
+        set({ progress: { ...progress, totalXP: progress.totalXP + amount, weeklyXP } });
       },
       addMinutes: (minutes) => {
-        const { progress } = get();
+        const progress = normalizeCalendar(get().progress);
         set({ progress: { ...progress, todayMinutes: progress.todayMinutes + minutes, totalMinutes: progress.totalMinutes + minutes } });
       },
       updateStreak: () => {
-        const { progress } = get();
-        const today = new Date().toDateString();
-        const yesterday = new Date(Date.now() - 86400000).toDateString();
+        const progress = normalizeCalendar(get().progress);
+        const today = getLocalDateKey();
+        const yesterday = new Date();
+        yesterday.setDate(yesterday.getDate() - 1);
+        const yesterdayKey = getLocalDateKey(yesterday);
         if (progress.lastStudyDate === today) return;
-        set({ progress: { ...progress, streak: progress.lastStudyDate === yesterday ? progress.streak + 1 : 1, lastStudyDate: today } });
+        set({ progress: { ...progress, streak: progress.lastStudyDate === yesterdayKey ? progress.streak + 1 : 1, lastStudyDate: today } });
+      },
+      refreshCalendar: () => {
+        const progress = get().progress;
+        const normalized = normalizeCalendar(progress);
+        if (hasCalendarChanged(progress, normalized)) set({ progress: normalized });
       },
       updateSRSCard: (wordId, quality) => {
         const { progress } = get();
@@ -180,7 +220,7 @@ export const useAppStore = create<AppState>()(
         const { progress } = get();
         set({ progress: { ...progress, dailyGoalMinutes: minutes } });
       },
-      resetProgress: () => set({ progress: initialProgress, lessons, currentWordIndex: 0, currentLessonId: null }),
+      resetProgress: () => set({ progress: createInitialProgress(), lessons, currentWordIndex: 0, currentLessonId: null }),
       unlockNextLesson: (currentLessonId) => {
         const { lessons: currentLessons } = get();
         const currentIndex = currentLessons.findIndex((lesson) => lesson.id === currentLessonId);
@@ -196,7 +236,8 @@ export const useAppStore = create<AppState>()(
         const savedProgress = saved.progress as Partial<UserProgress> | undefined;
         const rawCards = savedProgress?.srsCards || {};
         const normalizedCards = Object.fromEntries(Object.entries(rawCards).map(([id, card]) => [id, normalizeCard({ ...(card as SRSCard), wordId: id })]));
-        return { ...current, ...saved, lessons: current.lessons, words: current.words, progress: { ...initialProgress, ...savedProgress, srsCards: normalizedCards } };
+        const restoredProgress = { ...createInitialProgress(), ...savedProgress, srsCards: normalizedCards } as UserProgress;
+        return { ...current, ...saved, lessons: current.lessons, words: current.words, progress: normalizeCalendar(restoredProgress) };
       },
     },
   ),
