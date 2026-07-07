@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, Volume2, Check, X } from 'lucide-react';
 import { useAppStore } from '../stores/useAppStore';
 import { ProgressBar, XPToast } from '../components/UI/SharedComponents';
+import { speakCzech } from '../components/audio/czechSpeech';
 
 interface MCQ {
   id: string;
@@ -40,11 +41,7 @@ const WordQuizPage: React.FC = () => {
 
   const playAudio = () => {
     if (!q) return;
-    const u = new SpeechSynthesisUtterance(q.cz);
-    u.lang = 'cs-CZ';
-    u.rate = 0.8;
-    window.speechSynthesis.cancel();
-    window.speechSynthesis.speak(u);
+    speakCzech(q.cz, { rate: 0.8 });
   };
 
   const handleSelect = (opt: string) => {
@@ -100,8 +97,6 @@ const WordQuizPage: React.FC = () => {
 
   return (
     <div style={{ background: '#0C0C0E', minHeight: '100vh', display: 'flex', flexDirection: 'column', fontFamily: 'Inter,sans-serif' }}>
-      
-      {/* Header */}
       <div style={{ padding: '16px 20px', display: 'flex', alignItems: 'center', gap: 16 }}>
         <button onClick={() => setPage('practice')}
           style={{ width: 34, height: 34, borderRadius: 10, background: 'transparent', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -111,7 +106,7 @@ const WordQuizPage: React.FC = () => {
           <span style={{ fontSize: 13, fontWeight: 700, color: '#A0A0A8' }}>{idx + 1} / {qs.length}</span>
           <ProgressBar value={idx + (phase === 'result' ? 1 : 0)} max={qs.length} height={4} color="#C8952A" />
         </div>
-        <div style={{ width: 34 }} /> {/* Spacer */}
+        <div style={{ width: 34 }} />
       </div>
 
       <AnimatePresence>
@@ -123,20 +118,16 @@ const WordQuizPage: React.FC = () => {
         )}
       </AnimatePresence>
 
-      {/* Main Content Area */}
       <div style={{ flex: 1, padding: '24px 24px 40px', display: 'flex', flexDirection: 'column', position: 'relative' }}>
-        
         <AnimatePresence mode="wait">
           {phase === 'question' ? (
             <motion.div key="question" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}
               style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-              
               <div style={{ textAlign: 'center', marginBottom: 40, marginTop: 20 }}>
                 <div style={{ fontSize: 24, marginBottom: 16 }}>🇨🇿</div>
                 <h1 style={{ fontSize: 36, fontWeight: 800, color: '#FFF', marginBottom: 8 }}>{q.cz}</h1>
                 <p style={{ fontSize: 14, color: '#A0A0A8', fontFamily: 'monospace', marginBottom: 24 }}>{q.ipa}</p>
                 <p style={{ fontSize: 13, color: '#C8952A', marginBottom: 24 }}>Зөв утгыг сонгоно уу</p>
-                
                 <button onClick={playAudio}
                   style={{ width: 64, height: 64, borderRadius: 32, background: 'rgba(200,149,42,0.1)', border: '1.5px solid rgba(200,149,42,0.3)', color: '#C8952A', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto', cursor: 'pointer' }}>
                   <Volume2 size={28} />
@@ -163,28 +154,20 @@ const WordQuizPage: React.FC = () => {
                 })}
               </div>
 
-              <button 
-                onClick={handleCheck}
-                disabled={!sel}
-                className="btn-gold" 
-                style={{ width: '100%', padding: 18, fontSize: 16, marginTop: 24, opacity: sel ? 1 : 0.5 }}>
+              <button onClick={handleCheck} disabled={!sel} className="btn-gold" style={{ width: '100%', padding: 18, fontSize: 16, marginTop: 24, opacity: sel ? 1 : 0.5 }}>
                 Дараах
               </button>
             </motion.div>
           ) : (
             <motion.div key="result" initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}
               style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center' }}>
-              
               <div style={{ width: 120, height: 120, borderRadius: 60, border: `4px solid ${isCorrect ? '#22C55E' : '#EF4444'}`, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 32 }}>
                 {isCorrect ? <Check size={64} color="#22C55E" /> : <X size={64} color="#EF4444" />}
               </div>
-              
               <h2 style={{ fontSize: 24, fontWeight: 800, color: isCorrect ? '#22C55E' : '#EF4444', marginBottom: 16 }}>
                 {isCorrect ? 'Зөв байна!' : 'Буруу байна!'}
               </h2>
-              
               <p style={{ fontSize: 20, color: '#FFF' }}>{q.mn}</p>
-              
               <div style={{ marginTop: 'auto', width: '100%', paddingTop: 40 }}>
                 <button onClick={next} className="btn-gold" style={{ width: '100%', padding: 18, fontSize: 16 }}>
                   Дараах
