@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
 import { useAppStore } from '../stores/useAppStore';
 import { usePhraseMemoryStore } from '../stores/usePhraseMemoryStore';
@@ -7,8 +7,8 @@ const PracticePage: React.FC = () => {
   const { setPage, setCurrentLesson, lessons, progress } = useAppStore();
   const phrases = usePhraseMemoryStore((state) => state.phrases);
   const firstLesson = lessons.find((lesson) => !lesson.isLocked);
-  const duePhraseIds = useMemo(() => usePhraseMemoryStore.getState().getTodayReviewTargetIds(5), [phrases]);
-  const introducedWords = progress.introducedWords || progress.learnedWords || [];
+  const duePhraseIds = usePhraseMemoryStore((state) => state.getTodayReviewTargetIds(5));
+  const introducedWords = progress.introducedWords;
 
   const options = [
     { icon: '🌟', label: 'Шинэ үг үзэх', sub: 'Дэлгэрэнгүй танилцах', color: 'rgba(234,179,8,.15)', accent: '#EAB308', action: () => setPage('interactiveLearning') },
@@ -30,7 +30,6 @@ const PracticePage: React.FC = () => {
         <p style={{ fontSize: 12, color: '#A0A0A8', marginBottom: 2 }}>ДАСГАЛ</p>
         <h1 style={{ fontSize: 20, fontWeight: 900, color: '#FFF' }}>Юу хийх вэ? 💪</h1>
       </div>
-
       <div style={{ padding: 16, display: 'flex', flexDirection: 'column', gap: 12 }}>
         {options.map((option) => (
           <motion.button key={option.label} whileTap={{ scale: 0.97 }} onClick={option.action} style={{ background: '#1C1C1F', borderRadius: 20, padding: 18, display: 'flex', alignItems: 'center', gap: 16, border: '1px solid #2A2A2F', cursor: 'pointer', textAlign: 'left' }}>
@@ -40,7 +39,6 @@ const PracticePage: React.FC = () => {
           </motion.button>
         ))}
       </div>
-
       <div style={{ margin: '0 16px 16px' }}>
         <p style={{ fontSize: 13, fontWeight: 700, color: '#FFF', marginBottom: 10 }}>Өнөөдрийн ахиц</p>
         <div style={{ background: '#1C1C1F', borderRadius: 18, padding: 16, border: '1px solid #2A2A2F' }}>
