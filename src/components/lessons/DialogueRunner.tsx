@@ -1,6 +1,8 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Volume2 } from 'lucide-react';
 import type { DialogueChoice, DialogueScenario } from '../../data/a0Dialogues';
+import { getA0MemoryTargetsByCzech } from '../../data/a0MemoryPlan';
+import { usePhraseMemoryStore } from '../../stores/usePhraseMemoryStore';
 import { cancelCzechSpeech, speakCzech } from '../audio/czechSpeech';
 
 type DialogueStatus = 'playingQuestion' | 'awaitingAnswer' | 'correct' | 'wrong' | 'complete';
@@ -41,6 +43,23 @@ function stableShuffle<T>(items: T[], seedText: string): T[] {
 
 function createSessionSeed() {
   return `${Date.now()}-${Math.random()}`;
+}
+
+/**
+ * The engine callback records the first canonical match for backwards
+ * compatibility. Composed replies can contain several target phrases, so this
+ * records every additional exact token-level match without duplicating the first.
+ */
+function recordAdditionalDialogueExposure(text: string) {
+  const targets = getA0MemoryTargetsByCzech(text).slice(1);
+  const memory = usePhraseMemoryStore.getState();
+  targets.forEach((target) => memory.recordExposure(target.id));
+}
+
+function recordAdditionalDialogueAttempt(text: string, correct: boolean) {
+  const targets = getA0MemoryTargetsByCzech(text).slice(1);
+  const memory = usePhraseMemoryStore.getState();
+  targets.forEach((target) => memory.recordAttempt(target.id, correct));
 }
 
 const DialogueRunner: React.FC<DialogueRunnerProps> = ({
@@ -86,6 +105,7 @@ const DialogueRunner: React.FC<DialogueRunnerProps> = ({
 
     onProgress?.(index);
     onExposure?.(step.staffCzech);
+    recordAdditionalDialogueExposure(step.staffCzech);
     setPickedId(null);
 
     const frame = window.requestAnimationFrame(() => {
@@ -150,7 +170,10 @@ const DialogueRunner: React.FC<DialogueRunnerProps> = ({
 
     const correct = choiceId === step.correctId;
     const correctChoice = step.choices.find((choice) => choice.id === step.correctId);
-    if (correctChoice) onAttempt?.(correctChoice.text, correct);
+    if (correctChoice) {
+      onAttempt?.(correctChoice.text, correct);
+      recordAdditionalDialogueAttempt(correctChoice.text, correct);
+    }
 
     setPickedId(choiceId);
     if (!correct) {
@@ -163,6 +186,7 @@ const DialogueRunner: React.FC<DialogueRunnerProps> = ({
     if (!reply) return;
 
     onExposure?.(reply.text);
+    recordAdditionalDialogueExposure(reply.text);
     setStatus('correct');
     setHistory((turns) => [
       ...turns,
