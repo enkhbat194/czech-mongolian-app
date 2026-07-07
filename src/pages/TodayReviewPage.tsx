@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { a0MemoryTargets, getA0MemoryTarget } from '../data/a0MemoryPlan';
 import { useAppStore } from '../stores/useAppStore';
 import { usePhraseMemoryStore } from '../stores/usePhraseMemoryStore';
-import { speakCzech } from '../components/lessons/dialogueAudio';
+import { speakCzech } from '../components/audio/czechSpeech';
 
 type Feedback = 'correct' | 'wrong' | null;
 
