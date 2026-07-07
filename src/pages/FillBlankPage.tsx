@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { Check, ChevronLeft, Volume2, X } from 'lucide-react';
+import { ChevronLeft, Volume2 } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { speakCzech } from '../components/audio/czechSpeech';
 import { ProgressBar, XPToast } from '../components/UI/SharedComponents';
