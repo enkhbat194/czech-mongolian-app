@@ -12,10 +12,10 @@ const lessonPage: Record<string, string> = { l001: 'a0FirstContact', l002: 'a0Ne
 
 const HomePage: React.FC = () => {
   const { userName, progress, updateStreak, setPage, setCurrentLesson, getLessonProgress } = useAppStore();
-  const phrases = usePhraseMemoryStore((state) => state.phrases);
+  const getTodayReviewTargetIds = usePhraseMemoryStore((state) => state.getTodayReviewTargetIds);
   useEffect(() => { updateStreak(); }, [updateStreak]);
 
-  const duePhraseIds = useMemo(() => usePhraseMemoryStore.getState().getTodayReviewTargetIds(5), [phrases]);
+  const duePhraseIds = useMemo(() => getTodayReviewTargetIds(5), [getTodayReviewTargetIds]);
   const weekData = DAYS.map((day, index) => ({ d: day, xp: progress.weeklyXP[index] || 0 }));
   const goalPct = Math.min(100, Math.round((progress.todayMinutes / Math.max(progress.dailyGoalMinutes, 1)) * 100));
   const introducedWords = progress.introducedWords || progress.learnedWords || [];
