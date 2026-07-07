@@ -1,13 +1,19 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { a0MemoryTargets } from '../data/a0MemoryPlan';
 import { useAppStore } from '../stores/useAppStore';
 import { usePhraseMemoryStore } from '../stores/usePhraseMemoryStore';
 
 const PracticePage: React.FC = () => {
   const { setPage, setCurrentLesson, lessons, progress } = useAppStore();
+  const phrases = usePhraseMemoryStore((state) => state.phrases);
   const firstLesson = lessons.find((lesson) => !lesson.isLocked);
-  const duePhraseIds = usePhraseMemoryStore((state) => state.getTodayReviewTargetIds(5));
   const introducedWords = progress.introducedWords;
+  const now = Date.now();
+  const duePhraseCount = Object.values(phrases).filter((memory) => {
+    const target = a0MemoryTargets.find((item) => item.id === memory.targetId);
+    return target?.priority === 'active' && memory.exposures > 0 && new Date(memory.nextReview).getTime() <= now;
+  }).length;
 
   const options = [
     { icon: '🌟', label: 'Шинэ үг үзэх', sub: 'Дэлгэрэнгүй танилцах', color: 'rgba(234,179,8,.15)', accent: '#EAB308', action: () => setPage('interactiveLearning') },
@@ -19,7 +25,7 @@ const PracticePage: React.FC = () => {
     { icon: '📝', label: 'Хоосон үг нөхөх', sub: 'Дүрэм, үгсийн сан', color: 'rgba(99,102,241,.1)', accent: '#6366F1', action: () => setPage('fillBlank') },
     { icon: '🎧', label: 'Сонсох дасгал', sub: 'Аудио ойлголт', color: 'rgba(34,197,94,.1)', accent: '#22C55E', action: () => setPage('listening') },
     { icon: '🗣️', label: 'Ярих дасгал', sub: 'Дуудлага шалгах', color: 'rgba(99,102,241,.15)', accent: '#818CF8', action: () => setPage('speaking') },
-    { icon: '🧠', label: 'Өнөөдөр давтах', sub: duePhraseIds.length > 0 ? `${duePhraseIds.length} гол хэллэг хугацаа болсон` : 'Дараагийн хугацаат хэллэгээ харах', color: 'rgba(239,68,68,.1)', accent: '#F87171', action: () => setPage('todayReview') },
+    { icon: '🧠', label: 'Өнөөдөр давтах', sub: duePhraseCount > 0 ? `${duePhraseCount} гол хэллэг хугацаа болсон` : 'Дараагийн хугацаат хэллэгээ харах', color: 'rgba(239,68,68,.1)', accent: '#F87171', action: () => setPage('todayReview') },
   ];
 
   return (
