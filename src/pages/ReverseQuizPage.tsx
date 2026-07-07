@@ -1,196 +1,85 @@
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronLeft, Volume2, Check, X } from 'lucide-react';
-import { useAppStore } from '../stores/useAppStore';
+import { Check, ChevronLeft, Volume2, X } from 'lucide-react';
+import { AnimatePresence, motion } from 'framer-motion';
+import { speakMongolian } from '../components/audio/czechSpeech';
 import { ProgressBar, XPToast } from '../components/UI/SharedComponents';
+import { useAppStore } from '../stores/useAppStore';
 
-interface MCQ {
-  id: string;
-  cz: string;
-  mn: string;
-  options: string[];
-}
+type Question = { id: string; czech: string; mongolian: string; options: string[] };
 
-function generateQuestions(words: any[]): MCQ[] {
-  const shuffled = [...words].sort(() => Math.random() - 0.5).slice(0, 10);
-  return shuffled.map((w) => {
-    const others = words.filter((x) => x.id !== w.id).sort(() => Math.random() - 0.5).slice(0, 3).map(x => x.czech);
-    return {
-      id: w.id,
-      cz: w.czech,
-      mn: w.mongolian,
-      options: [w.czech, ...others].sort(() => Math.random() - 0.5),
-    };
-  });
+function makeQuestions(words: any[]): Question[] {
+  return [...words].sort(() => Math.random() - 0.5).slice(0, 10).map((word) => ({
+    id: word.id,
+    czech: word.czech,
+    mongolian: word.mongolian,
+    options: [word.czech, ...words.filter((item) => item.id !== word.id).sort(() => Math.random() - 0.5).slice(0, 3).map((item) => item.czech)].sort(() => Math.random() - 0.5),
+  }));
 }
 
 const ReverseQuizPage: React.FC = () => {
   const { words, addXP, setPage, updateSRSCard } = useAppStore();
-  const [qs] = useState<MCQ[]>(() => generateQuestions(words));
-  const [idx, setIdx] = useState(0);
-  const [sel, setSel] = useState<string | null>(null);
-  const [phase, setPhase] = useState<'question' | 'result'>('question');
-  const [showXP, setXP] = useState(false);
+  const [questions] = useState<Question[]>(() => makeQuestions(words));
+  const [index, setIndex] = useState(0);
+  const [selected, setSelected] = useState<string | null>(null);
+  const [checked, setChecked] = useState(false);
   const [score, setScore] = useState(0);
-  const [done, setDone] = useState(false);
-  
-  const q = qs[idx];
+  const [showXP, setShowXP] = useState(false);
+  const [finished, setFinished] = useState(false);
+  const question = questions[index];
 
-  const playAudio = () => {
-    if (!q) return;
-    // We try to speak Mongolian. If the browser doesn't support it, it might just fallback.
-    const u = new SpeechSynthesisUtterance(q.mn);
-    u.lang = 'mn-MN';
-    window.speechSynthesis.cancel();
-    window.speechSynthesis.speak(u);
-  };
+  if (!question) return null;
 
-  const handleSelect = (opt: string) => {
-    if (sel) return;
-    setSel(opt);
-  };
-
-  const handleCheck = () => {
-    if (!sel) return;
-    const isCorrect = sel === q.cz;
-    if (isCorrect) {
+  const correct = selected === question.czech;
+  const check = () => {
+    if (!selected) return;
+    setChecked(true);
+    if (correct) {
       addXP(10);
-      setScore(s => s + 1);
-      setXP(true);
-      setTimeout(() => setXP(false), 1200);
-      updateSRSCard(q.id, 5);
-    } else {
-      updateSRSCard(q.id, 1);
-    }
-    setPhase('result');
+      setScore((value) => value + 1);
+      setShowXP(true);
+      window.setTimeout(() => setShowXP(false), 1200);
+      updateSRSCard(question.id, 5);
+    } else updateSRSCard(question.id, 1);
   };
 
   const next = () => {
-    if (idx < qs.length - 1) {
-      setIdx(i => i + 1);
-      setSel(null);
-      setPhase('question');
-    } else {
-      setDone(true);
+    if (index >= questions.length - 1) setFinished(true);
+    else {
+      setIndex((value) => value + 1);
+      setSelected(null);
+      setChecked(false);
     }
   };
 
-  if (done) {
-    const pct = qs.length > 0 ? Math.round((score / qs.length) * 100) : 0;
-    return (
-      <div style={{ background: '#0C0C0E', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24, fontFamily: 'Inter,sans-serif' }}>
-        <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
-          style={{ background: '#1C1C1F', borderRadius: 28, padding: 32, textAlign: 'center', border: '1px solid #2A2A2F', width: '100%' }}>
-          <div style={{ fontSize: 56, marginBottom: 12 }}>{pct >= 70 ? '🏆' : '👍'}</div>
-          <h2 style={{ fontSize: 24, fontWeight: 900, color: '#FFF', marginBottom: 6 }}>Дасгал дууслаа!</h2>
-          <p style={{ fontSize: 14, color: '#A0A0A8', marginBottom: 20 }}>{score} / {qs.length} зөв хариулсан</p>
-          <button onClick={() => setPage('practice')} className="btn-gold" style={{ width: '100%', padding: 16, fontSize: 16 }}>
-            Буцах
-          </button>
-        </motion.div>
-      </div>
-    );
+  if (finished) {
+    const percent = questions.length ? Math.round((score / questions.length) * 100) : 0;
+    return <div style={{ minHeight: '100vh', display: 'grid', placeItems: 'center', padding: 24, background: '#0C0C0E', color: '#FFF', fontFamily: 'Inter,sans-serif' }}><section style={{ width: '100%', maxWidth: 430, padding: 28, textAlign: 'center', borderRadius: 24, background: '#1C1C1F', border: '1px solid #2A2A2F' }}><div style={{ fontSize: 52 }}>{percent >= 70 ? '🏆' : '👍'}</div><h1 style={{ fontSize: 24 }}>Дасгал дууслаа</h1><p style={{ color: '#A0A0A8' }}>{score} / {questions.length} зөв хариулсан</p><button className="btn-gold" onClick={() => setPage('practice')} style={{ width: '100%', padding: 15 }}>Буцах</button></section></div>;
   }
 
-  if (!q) return null;
-
-  const isCorrect = sel === q.cz;
-
   return (
-    <div style={{ background: '#0C0C0E', minHeight: '100vh', display: 'flex', flexDirection: 'column', fontFamily: 'Inter,sans-serif' }}>
-      
-      {/* Header */}
-      <div style={{ padding: '16px 20px', display: 'flex', alignItems: 'center', gap: 16 }}>
-        <button onClick={() => setPage('practice')}
-          style={{ width: 34, height: 34, borderRadius: 10, background: 'transparent', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <ChevronLeft size={24} color="#C8952A" />
-        </button>
-        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
-          <span style={{ fontSize: 13, fontWeight: 700, color: '#A0A0A8' }}>{idx + 1} / {qs.length}</span>
-          <ProgressBar value={idx + (phase === 'result' ? 1 : 0)} max={qs.length} height={4} color="#C8952A" />
-        </div>
-        <div style={{ width: 34 }} /> {/* Spacer */}
-      </div>
-
-      <AnimatePresence>
-        {showXP && (
-          <motion.div style={{ display: 'flex', justifyContent: 'center', position: 'absolute', width: '100%', top: 70, zIndex: 10 }}
-            initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>
-            <XPToast xp={10} />
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* Main Content Area */}
-      <div style={{ flex: 1, padding: '24px 24px 40px', display: 'flex', flexDirection: 'column', position: 'relative' }}>
-        
-        <AnimatePresence mode="wait">
-          {phase === 'question' ? (
-            <motion.div key="question" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}
-              style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-              
-              <div style={{ textAlign: 'center', marginBottom: 40, marginTop: 40 }}>
-                <h1 style={{ fontSize: 20, fontWeight: 600, color: '#FFF', marginBottom: 32, lineHeight: 1.4 }}>
-                  "{q.mn}" гэдэгт аль вэ?
-                </h1>
-                
-                <button onClick={playAudio}
-                  style={{ width: 64, height: 64, borderRadius: 32, background: 'rgba(200,149,42,0.1)', border: '1.5px solid rgba(200,149,42,0.3)', color: '#C8952A', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto', cursor: 'pointer' }}>
-                  <Volume2 size={28} />
-                </button>
-              </div>
-
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginTop: 'auto' }}>
-                {q.options.map((opt, i) => {
-                  const isSelected = sel === opt;
-                  return (
-                    <button key={i} onClick={() => handleSelect(opt)}
-                      style={{
-                        display: 'flex', alignItems: 'center', gap: 16, padding: '16px', borderRadius: 16,
-                        background: '#1C1C1F', border: `1.5px solid ${isSelected ? '#C8952A' : '#2A2A2F'}`,
-                        cursor: 'pointer', textAlign: 'left', transition: 'all .2s'
-                      }}>
-                      <div style={{ width: 32, height: 32, borderRadius: 10, background: isSelected ? '#C8952A' : '#242428', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, fontWeight: 700, color: isSelected ? '#000' : '#A0A0A8', flexShrink: 0 }}>
-                        {['A', 'B', 'C', 'D'][i]}
-                      </div>
-                      <span style={{ flex: 1, fontSize: 15, fontWeight: 600, color: '#FFF' }}>{opt}</span>
-                      {isSelected && <Check size={20} color="#C8952A" />}
-                    </button>
-                  );
-                })}
-              </div>
-
-              <button 
-                onClick={handleCheck}
-                disabled={!sel}
-                className="btn-gold" 
-                style={{ width: '100%', padding: 18, fontSize: 16, marginTop: 24, opacity: sel ? 1 : 0.5 }}>
-                Дараах
-              </button>
-            </motion.div>
-          ) : (
-            <motion.div key="result" initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}
-              style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center' }}>
-              
-              <div style={{ width: 120, height: 120, borderRadius: 60, border: `4px solid ${isCorrect ? '#22C55E' : '#EF4444'}`, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 32 }}>
-                {isCorrect ? <Check size={64} color="#22C55E" /> : <X size={64} color="#EF4444" />}
-              </div>
-              
-              <h2 style={{ fontSize: 24, fontWeight: 800, color: isCorrect ? '#22C55E' : '#EF4444', marginBottom: 16 }}>
-                {isCorrect ? 'Зөв байна!' : 'Буруу байна!'}
-              </h2>
-              
-              <p style={{ fontSize: 20, color: '#FFF' }}>{q.cz}</p>
-              
-              <div style={{ marginTop: 'auto', width: '100%', paddingTop: 40 }}>
-                <button onClick={next} className="btn-gold" style={{ width: '100%', padding: 18, fontSize: 16 }}>
-                  Дараах
-                </button>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
+    <div style={{ minHeight: '100vh', background: '#0C0C0E', color: '#FFF', fontFamily: 'Inter,sans-serif' }}>
+      <header style={{ padding: '16px 20px', display: 'flex', alignItems: 'center', gap: 14 }}>
+        <button onClick={() => setPage('practice')} style={{ border: 0, background: 'transparent', color: '#C8952A' }}><ChevronLeft size={24} /></button>
+        <div style={{ flex: 1 }}><p style={{ margin: 0, fontWeight: 800 }}>Урвуу сонгох</p><ProgressBar value={index + (checked ? 1 : 0)} max={questions.length} height={5} /></div>
+        <span style={{ color: '#A0A0A8', fontSize: 13 }}>{index + 1}/{questions.length}</span>
+      </header>
+      <main style={{ maxWidth: 430, margin: '0 auto', padding: 20 }}>
+        <AnimatePresence>{showXP && <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }} style={{ display: 'flex', justifyContent: 'center' }}><XPToast xp={10} /></motion.div>}</AnimatePresence>
+        <section style={{ padding: 22, borderRadius: 24, background: '#1C1C1F', border: '1px solid #2A2A2F' }}>
+          <p style={{ color: '#A0A0A8', textAlign: 'center' }}>Монгол утгыг сонсоод Чех хувилбарыг сонгоно.</p>
+          <p style={{ minHeight: 70, margin: '14px 0', textAlign: 'center', fontSize: 24, fontWeight: 800 }}>{question.mongolian}</p>
+          <button onClick={() => speakMongolian(question.mongolian, { rate: .9 })} style={{ margin: '0 auto 22px', width: 64, height: 64, borderRadius: 32, display: 'grid', placeItems: 'center', background: 'rgba(200,149,42,.12)', border: '1px solid rgba(200,149,42,.35)', color: '#C8952A' }}><Volume2 size={28} /></button>
+          <div style={{ display: 'grid', gap: 10 }}>
+            {question.options.map((option) => {
+              const selectedOption = option === selected;
+              const right = checked && option === question.czech;
+              const wrong = checked && selectedOption && !right;
+              return <button key={option} disabled={checked} onClick={() => setSelected(option)} style={{ padding: 14, textAlign: 'left', borderRadius: 14, color: '#FFF', background: right ? 'rgba(34,197,94,.16)' : wrong ? 'rgba(239,68,68,.16)' : '#242428', border: `1px solid ${right ? '#22C55E' : wrong ? '#EF4444' : selectedOption ? '#C8952A' : '#34343A'}` }}>{option}</button>;
+            })}
+          </div>
+          {!checked ? <button className="btn-gold" disabled={!selected} onClick={check} style={{ width: '100%', marginTop: 18, padding: 15, opacity: selected ? 1 : .5 }}>Шалгах</button> : <><p style={{ textAlign: 'center', color: correct ? '#4ADE80' : '#F87171', fontWeight: 800 }}>{correct ? <><Check size={17} style={{ verticalAlign: 'middle' }} /> Зөв байна.</> : <><X size={17} style={{ verticalAlign: 'middle' }} /> Зөв хариулт: {question.czech}</>}</p><button className="btn-gold" onClick={next} style={{ width: '100%', padding: 15 }}>{index === questions.length - 1 ? 'Дуусгах' : 'Дараах'}</button></>}
+        </section>
+      </main>
     </div>
   );
 };
