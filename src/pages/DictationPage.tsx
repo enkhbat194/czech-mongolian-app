@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, Volume2, Check, X } from 'lucide-react';
 import { useAppStore } from '../stores/useAppStore';
 import { ProgressBar, XPToast } from '../components/UI/SharedComponents';
+import { speakCzech } from '../components/audio/czechSpeech';
 
 // Simple Levenshtein distance for "almost correct" checking
 function levenshtein(a: string, b: string): number {
@@ -46,10 +47,7 @@ const DictationPage: React.FC = () => {
 
   const playAudio = () => {
     if (!q) return;
-    const u = new SpeechSynthesisUtterance(q.cz);
-    u.lang = 'cs-CZ'; u.rate = 0.8;
-    window.speechSynthesis.cancel();
-    window.speechSynthesis.speak(u);
+    speakCzech(q.cz, { rate: 0.8 });
   };
 
   const handleCheck = () => {
