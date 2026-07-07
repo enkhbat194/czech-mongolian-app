@@ -15,6 +15,7 @@ import ReverseQuizPage from '../../pages/ReverseQuizPage';
 import WritingPage from '../../pages/WritingPage';
 import DictationPage from '../../pages/DictationPage';
 import FillBlankPage from '../../pages/FillBlankPage';
+import SentenceBuilderPage from '../../pages/SentenceBuilderPage';
 import InteractiveLearningPage from '../../pages/InteractiveLearningPage';
 import A0ReferenceLessonPage from '../../pages/A0ReferenceLessonPage';
 import TodayReviewPage from '../../pages/TodayReviewPage';
@@ -39,6 +40,7 @@ const pages: Record<string, React.FC> = {
   writing: WritingPage,
   dictation: DictationPage,
   fillBlank: FillBlankPage,
+  sentenceBuilder: SentenceBuilderPage,
   interactiveLearning: InteractiveLearningPage,
   todayReview: TodayReviewPage,
 };
