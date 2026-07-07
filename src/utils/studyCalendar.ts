@@ -1,18 +1,37 @@
-export const WEEKDAY_LABELS_MN = ['Да', 'Мя', 'Лх', 'Пү', 'Ба', 'Бя', 'Ня'] as const;
+import {
+  WEEKDAY_LABELS_MN as labels,
+  addWeeklyXp as addWeeklyXpCore,
+  getLocalDateKey as getLocalDateKeyCore,
+  getMondayIndex as getMondayIndexCore,
+  getWeekStartKey as getWeekStartKeyCore,
+  normalizeCalendarState,
+} from './studyCalendarCore.mjs';
+
+export const WEEKDAY_LABELS_MN = labels as readonly ['Да', 'Мя', 'Лх', 'Пү', 'Ба', 'Бя', 'Ня'];
+
+export interface CalendarProgressShape {
+  studyDate: string;
+  todayMinutes: number;
+  weeklyXPWeekStart: string;
+  weeklyXP: number[];
+}
 
 export function getLocalDateKey(date = new Date()) {
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
-  return `${year}-${month}-${day}`;
+  return getLocalDateKeyCore(date);
 }
 
 export function getMondayIndex(date = new Date()) {
-  return (date.getDay() + 6) % 7;
+  return getMondayIndexCore(date);
 }
 
 export function getWeekStartKey(date = new Date()) {
-  const localMidnight = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-  localMidnight.setDate(localMidnight.getDate() - getMondayIndex(localMidnight));
-  return getLocalDateKey(localMidnight);
+  return getWeekStartKeyCore(date);
+}
+
+export function normalizeStudyCalendar<T extends CalendarProgressShape>(progress: T, now = new Date()): T {
+  return normalizeCalendarState(progress, now) as T;
+}
+
+export function addWeeklyXp(weeklyXP: number[], amount: number, date = new Date()) {
+  return addWeeklyXpCore(weeklyXP, amount, date) as number[];
 }
