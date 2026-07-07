@@ -8,9 +8,18 @@ export function cancelCzechSpeech() {
   window.speechSynthesis.cancel();
 }
 
+function findCzechVoice() {
+  if (typeof window === 'undefined' || !('speechSynthesis' in window)) return null;
+
+  const voices = window.speechSynthesis.getVoices();
+  return voices.find((voice) => voice.lang.toLowerCase() === 'cs-cz')
+    ?? voices.find((voice) => voice.lang.toLowerCase().startsWith('cs'))
+    ?? null;
+}
+
 /**
- * Temporary browser TTS fallback. Native MP3 playback will replace this in the
- * audio production phase. The API is shared by lessons, dialogues, and review.
+ * Temporary browser TTS fallback. Azure-generated MP3 playback will replace this
+ * in the audio production phase. The API is shared by lessons, dialogues, and review.
  */
 export function speakCzech(text: string, options: SpeakCzechOptions = {}) {
   const { rate = 0.84, onFinished } = options;
@@ -24,6 +33,9 @@ export function speakCzech(text: string, options: SpeakCzechOptions = {}) {
   const utterance = new SpeechSynthesisUtterance(text);
   utterance.lang = 'cs-CZ';
   utterance.rate = rate;
+
+  const czechVoice = findCzechVoice();
+  if (czechVoice) utterance.voice = czechVoice;
 
   let settled = false;
   const finish = () => {
