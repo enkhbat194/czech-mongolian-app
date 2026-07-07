@@ -32,17 +32,27 @@ function toPhraseMemory(card: SRSCard): PhraseMemory {
   };
 }
 
+function isKnownMemoryTarget(targetId: string) {
+  return a0MemoryTargets.some((target) => target.id === targetId);
+}
+
 function getPhraseMemoryState(app: AppState): PhraseMemoryState {
   const phrases = Object.fromEntries(
-    Object.entries(app.progress.srsCards).map(([id, card]) => [id, toPhraseMemory(card)]),
+    Object.entries(app.progress.srsCards)
+      .filter(([id]) => isKnownMemoryTarget(id))
+      .map(([id, card]) => [id, toPhraseMemory(card)]),
   );
 
   const weaknessScore = (memory: PhraseMemory) => memory.incorrectAttempts * 4 - memory.correctAttempts + (memory.repetitions <= 1 ? 2 : 0);
 
   return {
     phrases,
-    recordExposure: (targetId) => app.activateWordForReview(targetId),
-    recordAttempt: (targetId, correct) => app.updateSRSCard(targetId, correct ? 4 : 1),
+    recordExposure: (targetId) => {
+      if (isKnownMemoryTarget(targetId)) app.activateWordForReview(targetId);
+    },
+    recordAttempt: (targetId, correct) => {
+      if (isKnownMemoryTarget(targetId)) app.updateSRSCard(targetId, correct ? 4 : 1);
+    },
     getCarryoverTargetIds: (lessonId, limit = 3) => {
       const now = new Date();
       return [...getPriorActiveTargetIds(lessonId)]
