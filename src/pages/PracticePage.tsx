@@ -5,7 +5,6 @@ import { usePhraseMemoryStore } from '../stores/usePhraseMemoryStore';
 
 const PracticePage: React.FC = () => {
   const { setPage, setCurrentLesson, lessons, progress } = useAppStore();
-  const phrases = usePhraseMemoryStore((state) => state.phrases);
   const firstLesson = lessons.find((lesson) => !lesson.isLocked);
   const duePhraseIds = usePhraseMemoryStore((state) => state.getTodayReviewTargetIds(5));
   const introducedWords = progress.introducedWords;
@@ -17,7 +16,6 @@ const PracticePage: React.FC = () => {
     { icon: '🔄', label: 'Урвуу сонгох', sub: 'Монгол → Чех', color: 'rgba(168,85,247,.1)', accent: '#A855F7', action: () => setPage('reverseQuiz') },
     { icon: '✍️', label: 'Бичих дасгал', sub: 'Зөв бичих', color: 'rgba(245,158,11,.1)', accent: '#F59E0B', action: () => setPage('writing') },
     { icon: '🎧', label: 'Сонсоод бичих', sub: 'Чээж бичиг', color: 'rgba(236,72,153,.1)', accent: '#EC4899', action: () => setPage('dictation') },
-    { icon: '🧩', label: 'Өгүүлбэр бүтээх', sub: 'Зөв дараалал', color: 'rgba(16,185,129,.1)', accent: '#10B981', action: () => setPage('sentenceBuilder') },
     { icon: '📝', label: 'Хоосон үг нөхөх', sub: 'Дүрэм, үгсийн сан', color: 'rgba(99,102,241,.1)', accent: '#6366F1', action: () => setPage('fillBlank') },
     { icon: '🎧', label: 'Сонсох дасгал', sub: 'Аудио ойлголт', color: 'rgba(34,197,94,.1)', accent: '#22C55E', action: () => setPage('listening') },
     { icon: '🗣️', label: 'Ярих дасгал', sub: 'Дуудлага шалгах', color: 'rgba(99,102,241,.15)', accent: '#818CF8', action: () => setPage('speaking') },
