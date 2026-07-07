@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Volume2 } from 'lucide-react';
 import type { DialogueChoice, DialogueScenario } from '../../data/a0Dialogues';
-import { cancelCzechSpeech, speakCzech } from './dialogueAudio';
+import { cancelCzechSpeech, speakCzech } from '../audio/czechSpeech';
 
 type DialogueStatus = 'playingQuestion' | 'awaitingAnswer' | 'correct' | 'wrong' | 'complete';
 type DialogueSide = 'staff' | 'learner';
