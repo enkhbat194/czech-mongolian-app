@@ -11,7 +11,7 @@ import { getA0ExerciseMemoryTargetId } from '../../data/a0ExerciseMemoryMap';
 import { getA0MemoryTargetByCzech } from '../../data/a0MemoryPlan';
 import type { DialogueScenario } from '../../data/a0Dialogues';
 import DialogueRunner from './DialogueRunner';
-import { speakCzech } from './dialogueAudio';
+import { speakCzech } from '../audio/czechSpeech';
 
 type Stage = 'cards' | 'exercises' | 'microDialogue' | 'microReward' | 'finalDialogue' | 'complete';
 type Feedback = 'correct' | 'wrong' | null;
@@ -181,6 +181,7 @@ const A0LessonEngineV5: React.FC<{ config: A0LessonEngineConfig }> = ({ config }
   const micro = config.microLessons[microIndex];
   const card = micro ? config.getCard(micro.cardIds[cardIndex]) : null;
   const baseExercise = micro?.exercises[exerciseIndex] ?? null;
+  const baseExerciseId = baseExercise?.id;
   const exercise: EngineExercise | null = baseExercise ? getA0MatchExercise(baseExercise.id) ?? baseExercise : null;
   const microDialogue = micro ? config.microDialogues[micro.id] : null;
 
@@ -213,9 +214,8 @@ const A0LessonEngineV5: React.FC<{ config: A0LessonEngineConfig }> = ({ config }
   }, [recordAttempt]);
 
   const trackCurrentExerciseAttempt = useCallback((correct: boolean) => {
-    const targetId = baseExercise ? getA0ExerciseMemoryTargetId(baseExercise.id) : undefined;
-    if (targetId) recordAttempt(targetId, correct);
-  }, [baseExercise, recordAttempt]);
+    if (baseExerciseId) recordAttempt(getA0ExerciseMemoryTargetId(baseExerciseId) ?? baseExerciseId, correct);
+  }, [baseExerciseId, recordAttempt]);
 
   useEffect(() => () => {
     recognitionRef.current?.abort();
@@ -230,20 +230,16 @@ const A0LessonEngineV5: React.FC<{ config: A0LessonEngineConfig }> = ({ config }
 
   useEffect(() => {
     if (stage !== 'exercises' || !exercise) return;
-    const targetId = baseExercise ? getA0ExerciseMemoryTargetId(baseExercise.id) : undefined;
-    if (targetId) recordExposure(targetId);
+    if (baseExerciseId) {
+      const targetId = getA0ExerciseMemoryTargetId(baseExerciseId);
+      if (targetId) recordExposure(targetId);
+    }
     if (exercise.type === 'match') exercise.pairs.forEach((pair) => trackTextExposure(pair.czech));
-  }, [baseExercise?.id, exercise, recordExposure, stage, trackTextExposure]);
-
-  useEffect(() => {
-    if (speaking !== 'heard') return;
-    speakingTimerRef.current = window.setTimeout(() => nextCard(), 1250);
-    return () => { if (speakingTimerRef.current) window.clearTimeout(speakingTimerRef.current); };
-  }, [speaking, cardIndex, microIndex]);
+  }, [baseExerciseId, exercise, recordExposure, stage, trackTextExposure]);
 
   const addMistake = () => setMicroMistakes((value) => value + 1);
 
-  const resetExercise = () => {
+  const resetExercise = useCallback(() => {
     setFeedback(null);
     setChoice(null);
     setTokens([]);
@@ -252,16 +248,16 @@ const A0LessonEngineV5: React.FC<{ config: A0LessonEngineConfig }> = ({ config }
     setSelectedMongolian(null);
     setMatched([]);
     setWrongMatch([]);
-  };
+  }, []);
 
-  const resetSpeaking = () => {
+  const resetSpeaking = useCallback(() => {
     recognitionRef.current?.abort();
     recognitionRef.current = null;
     setSpeaking('idle');
     setHeard('');
-  };
+  }, []);
 
-  const nextCard = () => {
+  const nextCard = useCallback(() => {
     if (!micro) return;
     resetSpeaking();
     if (cardIndex < micro.cardIds.length - 1) {
@@ -272,7 +268,13 @@ const A0LessonEngineV5: React.FC<{ config: A0LessonEngineConfig }> = ({ config }
     setStage('exercises');
     setExerciseIndex(0);
     resetExercise();
-  };
+  }, [cardIndex, micro, resetExercise, resetSpeaking]);
+
+  useEffect(() => {
+    if (speaking !== 'heard') return;
+    speakingTimerRef.current = window.setTimeout(nextCard, 1250);
+    return () => { if (speakingTimerRef.current) window.clearTimeout(speakingTimerRef.current); };
+  }, [nextCard, speaking]);
 
   const nextMicro = () => {
     if (microIndex < config.microLessons.length - 1) {
@@ -306,10 +308,8 @@ const A0LessonEngineV5: React.FC<{ config: A0LessonEngineConfig }> = ({ config }
   };
 
   const finish = () => {
-    config.cards.forEach((item) => {
-      store.markWordLearned(item.id);
-      store.updateSRSCard(item.id, 4);
-    });
+    // Lesson completion records actual study time, XP, streak, and progression.
+    // Card mastery is only changed by evidence from card/exercise/dialogue attempts.
     store.addXP(config.xpReward);
     store.addMinutes(config.durationMinutes);
     store.updateStreak();
