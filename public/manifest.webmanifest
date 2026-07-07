@@ -1,0 +1,19 @@
+{
+  "name": "Чех–Монгол хэлний сургалт",
+  "short_name": "Чех–Монгол",
+  "description": "Монгол хэлтэй хүмүүст зориулсан Чех хэлний offline-first сургалтын апп.",
+  "lang": "mn",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#0C0C0E",
+  "theme_color": "#0C0C0E",
+  "icons": [
+    {
+      "src": "/czech-flag.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
