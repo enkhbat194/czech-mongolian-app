@@ -3,7 +3,7 @@ import { Check, Volume2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { getA0MemoryTarget } from '../../data/a0MemoryPlan';
 import { usePhraseMemoryStore } from '../../stores/usePhraseMemoryStore';
-import { speakCzech } from './dialogueAudio';
+import { speakCzech } from '../audio/czechSpeech';
 
 type Feedback = 'correct' | 'wrong' | null;
 
