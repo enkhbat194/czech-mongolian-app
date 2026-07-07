@@ -11,6 +11,12 @@ export interface SpeakCzechOptions {
   onFinished?: () => void;
 }
 
+export interface SpeakMongolianOptions {
+  rate?: number;
+  onStarted?: () => void;
+  onFinished?: () => void;
+}
+
 export function cancelSpeech() {
   if (typeof window === 'undefined' || !('speechSynthesis' in window)) return;
   window.speechSynthesis.cancel();
@@ -78,4 +84,8 @@ export function speakText(text: string, options: SpeakTextOptions = {}) {
 
 export function speakCzech(text: string, options: SpeakCzechOptions = {}) {
   speakText(text, { ...options, lang: 'cs-CZ' });
+}
+
+export function speakMongolian(text: string, options: SpeakMongolianOptions = {}) {
+  speakText(text, { ...options, lang: 'mn-MN' });
 }
