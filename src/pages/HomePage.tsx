@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { ChevronRight } from 'lucide-react';
 import { useAppStore } from '../stores/useAppStore';
@@ -10,8 +10,9 @@ import { AreaChart, Area, XAxis, Tooltip, ResponsiveContainer } from 'recharts';
 const DAYS = ['Да', 'Мя', 'Лх', 'Пү', 'Ба', 'Бя', 'Ня'];
 
 const HomePage: React.FC = () => {
-  const { userName, progress, setPage, setCurrentLesson, getLessonProgress } = useAppStore();
+  const { userName, progress, refreshCalendar, setPage, setCurrentLesson, getLessonProgress } = useAppStore();
   const getTodayReviewTargetIds = usePhraseMemoryStore((state) => state.getTodayReviewTargetIds);
+  useEffect(() => { refreshCalendar(); }, [refreshCalendar]);
 
   const duePhraseIds = getTodayReviewTargetIds(5);
   const weekData = DAYS.map((day, index) => ({ d: day, xp: progress.weeklyXP[index] || 0 }));
