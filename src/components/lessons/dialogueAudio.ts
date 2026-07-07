@@ -1,44 +1,19 @@
-export interface SpeakCzechOptions {
-  rate?: number;
-  onFinished?: () => void;
-}
+import {
+  cancelCzechSpeech as cancelSharedCzechSpeech,
+  speakCzech as speakSharedCzech,
+  type SpeakCzechOptions,
+} from '../audio/czechSpeech';
 
-export function cancelCzechSpeech() {
-  if (typeof window === 'undefined' || !('speechSynthesis' in window)) return;
-  window.speechSynthesis.cancel();
-}
+export type { SpeakCzechOptions } from '../audio/czechSpeech';
 
 /**
- * Temporary browser TTS fallback. App-owned MP3 playback will replace this in
- * the audio production phase, but all dialogue components use this single API.
+ * Transitional compatibility adapter.
+ * Existing lesson imports resolve to the single shared speech implementation.
  */
+export function cancelCzechSpeech() {
+  cancelSharedCzechSpeech();
+}
+
 export function speakCzech(text: string, options: SpeakCzechOptions = {}) {
-  const { rate = 0.84, onFinished } = options;
-
-  if (typeof window === 'undefined' || !('speechSynthesis' in window)) {
-    onFinished?.();
-    return;
-  }
-
-  cancelCzechSpeech();
-
-  const utterance = new SpeechSynthesisUtterance(text);
-  utterance.lang = 'cs-CZ';
-  utterance.rate = rate;
-
-  let settled = false;
-  const finish = () => {
-    if (settled) return;
-    settled = true;
-    onFinished?.();
-  };
-
-  utterance.onend = finish;
-  utterance.onerror = finish;
-
-  try {
-    window.speechSynthesis.speak(utterance);
-  } catch {
-    finish();
-  }
+  speakSharedCzech(text, options);
 }
