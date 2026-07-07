@@ -26,26 +26,17 @@ const sourceFiles = await collectSourceFiles(sourceRoot);
 const sharedSpeech = await readFile(sharedSpeechPath, 'utf8');
 
 for (const token of runtimeTokens) {
-  if (!sharedSpeech.includes(token)) {
-    fail(`${sharedSpeechPath} must own the browser speech fallback.`);
-  }
+  if (!sharedSpeech.includes(token)) fail(`${sharedSpeechPath} must own the browser speech fallback.`);
 }
 
-for (const requiredExport of ['export function speakText', 'export function speakCzech', 'export function cancelSpeech']) {
-  if (!sharedSpeech.includes(requiredExport)) {
-    fail(`${sharedSpeechPath} is missing ${requiredExport}.`);
-  }
+for (const requiredExport of ['export function speakText', 'export function speakCzech', 'export function speakMongolian', 'export function cancelSpeech']) {
+  if (!sharedSpeech.includes(requiredExport)) fail(`${sharedSpeechPath} is missing ${requiredExport}.`);
 }
 
 const adapter = await readFile(compatibilityAdapterPath, 'utf8');
-if (!adapter.includes("from '../audio/czechSpeech'")) {
-  fail(`${compatibilityAdapterPath} must delegate to ${sharedSpeechPath}.`);
-}
-
+if (!adapter.includes("from '../audio/czechSpeech'")) fail(`${compatibilityAdapterPath} must delegate to ${sharedSpeechPath}.`);
 for (const token of runtimeTokens) {
-  if (adapter.includes(token)) {
-    fail(`${compatibilityAdapterPath} must not reimplement ${token}.`);
-  }
+  if (adapter.includes(token)) fail(`${compatibilityAdapterPath} must not reimplement ${token}.`);
 }
 
 const legacyCallSites = [];
@@ -57,7 +48,10 @@ for (const filePath of sourceFiles) {
   if (runtimeTokens.some((token) => content.includes(token))) legacyCallSites.push(relativePath);
 }
 
-console.log('Audio architecture audit: PASS');
-console.log(`Shared helper: ${sharedSpeechPath}`);
-console.log(`Legacy browser-TTS call sites pending migration: ${legacyCallSites.length}`);
-for (const filePath of legacyCallSites) console.log(`  - ${filePath}`);
+if (legacyCallSites.length > 0) {
+  fail(`direct browser TTS remains outside the shared helper:\n${legacyCallSites.map((filePath) => `  - ${filePath}`).join('\n')}`);
+} else {
+  console.log('Audio architecture audit: PASS');
+  console.log(`Shared helper: ${sharedSpeechPath}`);
+  console.log('Legacy browser-TTS call sites: 0');
+}
