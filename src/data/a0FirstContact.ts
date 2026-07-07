@@ -1,5 +1,5 @@
 import { czechWords, type CzechWord } from './czechWords';
-import type { A0Exercise, A0MicroLesson } from './a0LessonSchema';
+import type { A0MicroLesson } from './a0LessonSchema';
 
 export type { A0Exercise, A0MicroLesson } from './a0LessonSchema';
 
