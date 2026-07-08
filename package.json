@@ -9,6 +9,7 @@
     "lint": "oxlint",
     "preview": "vite preview",
     "audit:a0": "node scripts/audit-a0-ready.mjs",
+    "audit:contract": "node scripts/audit-data-contract.mjs",
     "audit:audio": "node scripts/audit-audio-architecture.mjs",
     "audit:pronunciation": "node scripts/audit-pronunciation-integrity.mjs",
     "audit:srs": "node scripts/audit-srs-integrity.mjs",
@@ -16,7 +17,7 @@
     "test:calendar": "node scripts/test-study-calendar.mjs",
     "audio:dry": "node scripts/synthesize-audio.mjs --dry-run",
     "audio:generate": "node scripts/synthesize-audio.mjs",
-    "check": "npm run lint && npm run test:calendar && npm run audit:a0 && npm run audit:audio && npm run audit:pronunciation && npm run audit:srs && npm run audit:offline && npm run build && npm run audio:dry"
+    "check": "npm run lint && npm run test:calendar && npm run audit:a0 && npm run audit:contract && npm run audit:audio && npm run audit:pronunciation && npm run audit:srs && npm run audit:offline && npm run build && npm run audio:dry"
   },
   "dependencies": {
     "@types/howler": "^2.2.13",
