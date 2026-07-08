@@ -20,6 +20,9 @@ interface PhraseMemoryState {
   getTodayReviewTargetIds: (limit?: number) => string[];
 }
 
+let cachedCards: Record<string, SRSCard> | null = null;
+let cachedPhrases: Record<string, PhraseMemory> = {};
+
 function toPhraseMemory(card: SRSCard): PhraseMemory {
   return {
     targetId: card.wordId,
@@ -36,59 +39,72 @@ function isKnownMemoryTarget(targetId: string) {
   return a0MemoryTargets.some((target) => target.id === targetId);
 }
 
-function getPhraseMemoryState(app: AppState): PhraseMemoryState {
-  const phrases = Object.fromEntries(
-    Object.entries(app.progress.srsCards)
+function getPhrases(cards: Record<string, SRSCard>) {
+  if (cachedCards === cards) return cachedPhrases;
+  cachedCards = cards;
+  cachedPhrases = Object.fromEntries(
+    Object.entries(cards)
       .filter(([id]) => isKnownMemoryTarget(id))
       .map(([id, card]) => [id, toPhraseMemory(card)]),
   );
+  return cachedPhrases;
+}
 
-  const weaknessScore = (memory: PhraseMemory) => memory.incorrectAttempts * 4 - memory.correctAttempts + (memory.repetitions <= 1 ? 2 : 0);
+function weaknessScore(memory: PhraseMemory) {
+  return memory.incorrectAttempts * 4 - memory.correctAttempts + (memory.repetitions <= 1 ? 2 : 0);
+}
 
+const stableActions = {
+  recordExposure: (targetId: string) => {
+    if (isKnownMemoryTarget(targetId)) useAppStore.getState().activateWordForReview(targetId);
+  },
+  recordAttempt: (targetId: string, correct: boolean) => {
+    if (isKnownMemoryTarget(targetId)) useAppStore.getState().updateSRSCard(targetId, correct ? 4 : 1);
+  },
+  getCarryoverTargetIds: (lessonId: string, limit = 3) => {
+    const phrases = getPhrases(useAppStore.getState().progress.srsCards);
+    const now = new Date();
+    return [...getPriorActiveTargetIds(lessonId)]
+      .sort((left, right) => {
+        const a = phrases[left];
+        const b = phrases[right];
+        const aMissing = !a ? 1 : 0;
+        const bMissing = !b ? 1 : 0;
+        if (aMissing !== bMissing) return bMissing - aMissing;
+        const aDue = a && new Date(a.nextReview) <= now ? 1 : 0;
+        const bDue = b && new Date(b.nextReview) <= now ? 1 : 0;
+        if (aDue !== bDue) return bDue - aDue;
+        const aWeakness = a ? weaknessScore(a) : 0;
+        const bWeakness = b ? weaknessScore(b) : 0;
+        if (aWeakness !== bWeakness) return bWeakness - aWeakness;
+        const aSeedRank = getA0CarryoverSeedRank(lessonId, left);
+        const bSeedRank = getA0CarryoverSeedRank(lessonId, right);
+        if (aSeedRank !== bSeedRank) return aSeedRank - bSeedRank;
+        return (a?.lastSeen || '').localeCompare(b?.lastSeen || '');
+      })
+      .slice(0, limit);
+  },
+  getTodayReviewTargetIds: (limit = 5) => {
+    const phrases = getPhrases(useAppStore.getState().progress.srsCards);
+    const now = new Date();
+    return Object.values(phrases)
+      .filter((memory) => {
+        const target = a0MemoryTargets.find((item) => item.id === memory.targetId);
+        return target?.priority === 'active' && memory.exposures > 0 && new Date(memory.nextReview) <= now;
+      })
+      .sort((left, right) => {
+        const delta = weaknessScore(right) - weaknessScore(left);
+        return delta || new Date(left.nextReview).getTime() - new Date(right.nextReview).getTime();
+      })
+      .slice(0, limit)
+      .map((memory) => memory.targetId);
+  },
+};
+
+function getPhraseMemoryState(app: AppState): PhraseMemoryState {
   return {
-    phrases,
-    recordExposure: (targetId) => {
-      if (isKnownMemoryTarget(targetId)) app.activateWordForReview(targetId);
-    },
-    recordAttempt: (targetId, correct) => {
-      if (isKnownMemoryTarget(targetId)) app.updateSRSCard(targetId, correct ? 4 : 1);
-    },
-    getCarryoverTargetIds: (lessonId, limit = 3) => {
-      const now = new Date();
-      return [...getPriorActiveTargetIds(lessonId)]
-        .sort((left, right) => {
-          const a = phrases[left];
-          const b = phrases[right];
-          const aMissing = !a ? 1 : 0;
-          const bMissing = !b ? 1 : 0;
-          if (aMissing !== bMissing) return bMissing - aMissing;
-          const aDue = a && new Date(a.nextReview) <= now ? 1 : 0;
-          const bDue = b && new Date(b.nextReview) <= now ? 1 : 0;
-          if (aDue !== bDue) return bDue - aDue;
-          const aWeakness = a ? weaknessScore(a) : 0;
-          const bWeakness = b ? weaknessScore(b) : 0;
-          if (aWeakness !== bWeakness) return bWeakness - aWeakness;
-          const aSeedRank = getA0CarryoverSeedRank(lessonId, left);
-          const bSeedRank = getA0CarryoverSeedRank(lessonId, right);
-          if (aSeedRank !== bSeedRank) return aSeedRank - bSeedRank;
-          return (a?.lastSeen || '').localeCompare(b?.lastSeen || '');
-        })
-        .slice(0, limit);
-    },
-    getTodayReviewTargetIds: (limit = 5) => {
-      const now = new Date();
-      return Object.values(phrases)
-        .filter((memory) => {
-          const target = a0MemoryTargets.find((item) => item.id === memory.targetId);
-          return target?.priority === 'active' && memory.exposures > 0 && new Date(memory.nextReview) <= now;
-        })
-        .sort((left, right) => {
-          const delta = weaknessScore(right) - weaknessScore(left);
-          return delta || new Date(left.nextReview).getTime() - new Date(right.nextReview).getTime();
-        })
-        .slice(0, limit)
-        .map((memory) => memory.targetId);
-    },
+    phrases: getPhrases(app.progress.srsCards),
+    ...stableActions,
   };
 }
 
