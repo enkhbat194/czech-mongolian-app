@@ -5,7 +5,6 @@ import { useAppStore } from '../stores/useAppStore';
 import { usePhraseMemoryStore } from '../stores/usePhraseMemoryStore';
 import { lessons as courseLessons } from '../data/lessons';
 import { CircularProgress, ProgressBar } from '../components/UI/SharedComponents';
-import { AreaChart, Area, XAxis, Tooltip, ResponsiveContainer } from 'recharts';
 
 const DAYS = ['Да', 'Мя', 'Лх', 'Пү', 'Ба', 'Бя', 'Ня'];
 
@@ -16,6 +15,7 @@ const HomePage: React.FC = () => {
 
   const duePhraseIds = getTodayReviewTargetIds(5);
   const weekData = DAYS.map((day, index) => ({ d: day, xp: progress.weeklyXP[index] || 0 }));
+  const maxWeeklyXp = Math.max(1, ...weekData.map((day) => day.xp));
   const goalPct = Math.min(100, Math.round((progress.todayMinutes / Math.max(progress.dailyGoalMinutes, 1)) * 100));
   const introducedWords = progress.introducedWords || progress.learnedWords || [];
   const isUnlockedInSequence = (lessonIndex: number) => lessonIndex === 0 || progress.completedLessons.includes(courseLessons[lessonIndex - 1].id);
@@ -52,9 +52,20 @@ const HomePage: React.FC = () => {
           {[{ icon: '⭐', label: 'Нийт XP', val: progress.totalXP }, { icon: '📚', label: 'Баттай карт', val: progress.learnedWords.length }].map((item) => <div key={item.label} style={{ background: '#1C1C1F', borderRadius: 18, padding: 16, border: '1px solid #2A2A2F' }}><span style={{ fontSize: 22 }}>{item.icon}</span><p style={{ fontSize: 22, fontWeight: 900, color: '#C8952A', margin: '4px 0 2px' }}>{item.val}</p><p style={{ fontSize: 11, color: '#606068', margin: 0 }}>{item.label}</p></div>)}
         </div>
 
-        <div style={{ background: '#1C1C1F', borderRadius: 20, padding: '16px 16px 8px', border: '1px solid #2A2A2F', marginBottom: 16 }}>
-          <p style={{ fontSize: 13, fontWeight: 700, color: '#FFF', marginBottom: 12 }}>📈 Сурсан цэгийн ахиц</p>
-          <div style={{ height: 100 }}><ResponsiveContainer width="100%" height="100%"><AreaChart data={weekData}><defs><linearGradient id="gg" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="#C8952A" stopOpacity={0.25} /><stop offset="95%" stopColor="#C8952A" stopOpacity={0} /></linearGradient></defs><XAxis dataKey="d" tick={{ fill: '#606068', fontSize: 10 }} axisLine={false} tickLine={false} /><Tooltip contentStyle={{ background: '#1C1C1F', border: '1px solid #2A2A2F', borderRadius: 10, color: '#FFF', fontSize: 11 }} formatter={(value) => [`${value ?? 0} XP`, ''] as [string, string]} /><Area type="monotone" dataKey="xp" stroke="#C8952A" strokeWidth={2} fill="url(#gg)" dot={{ fill: '#C8952A', r: 3, strokeWidth: 0 }} activeDot={{ r: 5, fill: '#F5C842', stroke: '#000', strokeWidth: 2 }} /></AreaChart></ResponsiveContainer></div>
+        <div style={{ background: '#1C1C1F', borderRadius: 20, padding: 16, border: '1px solid #2A2A2F', marginBottom: 16 }}>
+          <p style={{ fontSize: 13, fontWeight: 700, color: '#FFF', margin: '0 0 12px' }}>📈 Сурсан цэгийн ахиц</p>
+          <div style={{ height: 104, display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 8, alignItems: 'end' }}>
+            {weekData.map((day) => {
+              const barHeight = Math.max(8, Math.round((day.xp / maxWeeklyXp) * 78));
+              return (
+                <div key={day.d} style={{ height: 104, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-end', gap: 6 }}>
+                  <div style={{ color: day.xp > 0 ? '#F5C842' : '#606068', fontSize: 10, fontWeight: 800, minHeight: 14 }}>{day.xp}</div>
+                  <div style={{ width: '100%', height: barHeight, borderRadius: '8px 8px 3px 3px', background: day.xp > 0 ? 'linear-gradient(180deg,#F5C842,#C8952A)' : '#2A2A2F', transition: 'height .2s ease' }} />
+                  <div style={{ color: '#606068', fontSize: 10, fontWeight: 700 }}>{day.d}</div>
+                </div>
+              );
+            })}
+          </div>
         </div>
 
         <div style={{ marginBottom: 16 }}>
