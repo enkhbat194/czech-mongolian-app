@@ -12,7 +12,7 @@ export interface CzechWord {
 }
 
 /**
- * A0.1–A0.7-ийн цорын ганц canonical vocabulary bank.
+ * A0.1–A0.8-ийн цорын ганц canonical vocabulary bank.
  * Нэг normalized Czech card нь зөвхөн нэг lessonId-д анхлан орно.
  * Дараагийн хичээлд тухайн phrase зөвхөн review/dialogue reuse болж орно.
  */
@@ -151,4 +151,12 @@ export const czechWords: CzechWord[] = [
   { id:'a0c0116', czech:'Platím hotově.', ipa:'', mongolian:'Би бэлнээр төлнө.', example:'Platím hotově.', exampleTranslation:'Би бэлнээр төлнө.', category:'payment-pattern', lessonId:'l007', difficulty:'medium' },
   { id:'a0c0117', czech:'Co si dáte?', ipa:'', mongolian:'Та юу авах вэ?', example:'Co si dáte?', exampleTranslation:'Та юу авах вэ?', category:'food-question', lessonId:'l007', difficulty:'medium' },
   { id:'a0c0118', czech:'Platíte kartou?', ipa:'', mongolian:'Та картаар төлөх үү?', example:'Platíte kartou?', exampleTranslation:'Та картаар төлөх үү?', category:'payment-question', lessonId:'l007', difficulty:'medium' },
+
+  // A0.8 — Дэлгүүр, мөнгө
+  { id:'a0c0119', czech:'taška', ipa:'', mongolian:'уут', example:'Taška, prosím.', exampleTranslation:'Уут өгнө үү.', category:'shop', lessonId:'l008', difficulty:'easy' },
+  { id:'a0c0120', czech:'Tašku, prosím.', ipa:'', mongolian:'Уут өгнө үү.', example:'Ano, tašku, prosím.', exampleTranslation:'Тийм, уут өгнө үү.', category:'shop-request', lessonId:'l008', difficulty:'easy' },
+  { id:'a0c0121', czech:'účtenka', ipa:'', mongolian:'баримт', example:'Účtenku, prosím.', exampleTranslation:'Баримт өгнө үү.', category:'shop', lessonId:'l008', difficulty:'easy' },
+  { id:'a0c0122', czech:'Účtenku, prosím.', ipa:'', mongolian:'Баримт өгнө үү.', example:'Ano, účtenku, prosím.', exampleTranslation:'Тийм, баримт өгнө үү.', category:'shop-request', lessonId:'l008', difficulty:'medium' },
+  { id:'a0c0123', czech:'Tohle, prosím.', ipa:'', mongolian:'Үүнийг авъя.', example:'Dobrý den. Tohle, prosím.', exampleTranslation:'Сайн байна уу. Үүнийг авъя.', category:'shop-request', lessonId:'l008', difficulty:'easy' },
+  { id:'a0c0124', czech:'To je drahé.', ipa:'', mongolian:'Энэ үнэтэй байна.', example:'To je drahé.', exampleTranslation:'Энэ үнэтэй байна.', category:'shop-price', lessonId:'l008', difficulty:'medium' },
 ];
