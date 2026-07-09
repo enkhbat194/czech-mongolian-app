@@ -46,7 +46,6 @@ export const a0ExerciseMemoryTargetIds: Record<string, string> = {
   'a0-7-b-1': 'a0c0108', 'a0-7-b-2': 'a0c0110', 'a0-7-b-3': 'a0c0109',
   'a0-7-c-1': 'a0c0113', 'a0-7-c-2': 'a0c0112', 'a0-7-c-3': 'a0c0112',
   'a0-7-d-1': 'a0c0114', 'a0-7-d-2': 'a0c0115', 'a0-7-d-3': 'a0c0116', 'a0-7-d-4': 'a0c0114',
-  'a0-7-e-1': 'a0c0106', 'a0-7-e-2': 'a0c0112', 'a0-7-e-3': 'a0c0115',
 };
 
 export function getA0ExerciseMemoryTargetId(exerciseId: string) {
