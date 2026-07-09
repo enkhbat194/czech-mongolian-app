@@ -5,7 +5,7 @@ const root = process.cwd();
 const load = (file) => fs.readFileSync(path.join(root, file), 'utf8');
 const issues = [];
 
-const expectedReadyLessonCount = 8;
+const expectedReadyLessonCount = 11;
 const normalize = (text) => text.toLocaleLowerCase('cs-CZ').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[.,!?—-]/g, '').replace(/\s+/g, ' ').trim();
 const vocabulary = load('src/data/czechWords.ts');
 const lessons = load('src/data/lessons.ts');
