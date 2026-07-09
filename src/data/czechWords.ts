@@ -12,7 +12,7 @@ export interface CzechWord {
 }
 
 /**
- * A0.1–A0.6-ийн цорын ганц canonical vocabulary bank.
+ * A0.1–A0.7-ийн цорын ганц canonical vocabulary bank.
  * Нэг normalized Czech card нь зөвхөн нэг lessonId-д анхлан орно.
  * Дараагийн хичээлд тухайн phrase зөвхөн review/dialogue reuse болж орно.
  */
@@ -135,4 +135,20 @@ export const czechWords: CzechWord[] = [
   { id:'a0c0099', czech:'Ukažte mi, prosím.', ipa:'', mongolian:'Надад үзүүлж өгнө үү.', example:'Nerozumím. Ukažte mi, prosím.', exampleTranslation:'Би ойлгохгүй байна. Надад үзүүлж өгнө үү.', category:'job-survival', lessonId:'l006', difficulty:'medium' },
   { id:'a0c0103', czech:'Nový úkol.', ipa:'', mongolian:'Шинэ даалгавар.', example:'Nový úkol.', exampleTranslation:'Шинэ даалгавар.', category:'job', lessonId:'l006', difficulty:'medium' },
   { id:'a0c0104', czech:'Ukážu vám.', ipa:'', mongolian:'Би танд үзүүлж өгнө.', example:'Ukážu vám.', exampleTranslation:'Би танд үзүүлж өгнө.', category:'job-response', lessonId:'l006', difficulty:'medium' },
+
+  // A0.7 — Хоол, кафе, ресторан
+  { id:'a0c0105', czech:'menu', ipa:'', mongolian:'цэс', example:'Menu, prosím.', exampleTranslation:'Цэс өгнө үү.', category:'food', lessonId:'l007', difficulty:'easy' },
+  { id:'a0c0106', czech:'Menu, prosím.', ipa:'', mongolian:'Цэс өгнө үү.', example:'Dobrý den. Menu, prosím.', exampleTranslation:'Сайн байна уу. Цэс өгнө үү.', category:'food-request', lessonId:'l007', difficulty:'easy' },
+  { id:'a0c0107', czech:'Dám si …', ipa:'', mongolian:'Би … авъя.', example:'Dám si kávu.', exampleTranslation:'Би кофе авъя.', category:'food-pattern', lessonId:'l007', difficulty:'medium' },
+  { id:'a0c0108', czech:'Dám si kávu.', ipa:'', mongolian:'Би кофе авъя.', example:'Dám si kávu, prosím.', exampleTranslation:'Би кофе авъя, гуйя.', category:'food-pattern', lessonId:'l007', difficulty:'medium' },
+  { id:'a0c0109', czech:'Dám si čaj.', ipa:'', mongolian:'Би цай авъя.', example:'Dám si čaj, prosím.', exampleTranslation:'Би цай авъя, гуйя.', category:'food-pattern', lessonId:'l007', difficulty:'medium' },
+  { id:'a0c0110', czech:'Dám si polévku.', ipa:'', mongolian:'Би шөл авъя.', example:'Dám si polévku, prosím.', exampleTranslation:'Би шөл авъя, гуйя.', category:'food-pattern', lessonId:'l007', difficulty:'medium' },
+  { id:'a0c0111', czech:'s sebou', ipa:'', mongolian:'авч явах', example:'S sebou, prosím.', exampleTranslation:'Авч явъя, гуйя.', category:'food-service', lessonId:'l007', difficulty:'medium' },
+  { id:'a0c0112', czech:'S sebou, prosím.', ipa:'', mongolian:'Авч явъя, гуйя.', example:'S sebou, prosím.', exampleTranslation:'Авч явъя, гуйя.', category:'food-response', lessonId:'l007', difficulty:'medium' },
+  { id:'a0c0113', czech:'Tady, nebo s sebou?', ipa:'', mongolian:'Энд хэрэглэх үү, авч явах уу?', example:'Tady, nebo s sebou?', exampleTranslation:'Энд хэрэглэх үү, авч явах уу?', category:'food-question', lessonId:'l007', difficulty:'medium' },
+  { id:'a0c0114', czech:'Kolik to stojí?', ipa:'', mongolian:'Энэ хэд вэ?', example:'Kolik to stojí?', exampleTranslation:'Энэ хэд вэ?', category:'payment-question', lessonId:'l007', difficulty:'medium' },
+  { id:'a0c0115', czech:'Platím kartou.', ipa:'', mongolian:'Би картаар төлнө.', example:'Platím kartou.', exampleTranslation:'Би картаар төлнө.', category:'payment-pattern', lessonId:'l007', difficulty:'medium' },
+  { id:'a0c0116', czech:'Platím hotově.', ipa:'', mongolian:'Би бэлнээр төлнө.', example:'Platím hotově.', exampleTranslation:'Би бэлнээр төлнө.', category:'payment-pattern', lessonId:'l007', difficulty:'medium' },
+  { id:'a0c0117', czech:'Co si dáte?', ipa:'', mongolian:'Та юу авах вэ?', example:'Co si dáte?', exampleTranslation:'Та юу авах вэ?', category:'food-question', lessonId:'l007', difficulty:'medium' },
+  { id:'a0c0118', czech:'Platíte kartou?', ipa:'', mongolian:'Та картаар төлөх үү?', example:'Platíte kartou?', exampleTranslation:'Та картаар төлөх үү?', category:'payment-question', lessonId:'l007', difficulty:'medium' },
 ];
