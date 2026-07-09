@@ -6,6 +6,10 @@ import { a0ShopCards, a0ShopMicroLessons, getA0ShopCard } from './a0Shop';
 import { a0HomeCards, a0HomeMicroLessons, getA0HomeCard } from './a0Home';
 import { a0HealthCards, a0HealthMicroLessons, getA0HealthCard } from './a0Health';
 import { a0PhoneCards, a0PhoneMicroLessons, getA0PhoneCard } from './a0Phone';
+import { a0PeopleCards, a0PeopleMicroLessons, getA0PeopleCard } from './a0People';
+import { a0WeatherCards, a0WeatherMicroLessons, getA0WeatherCard } from './a0Weather';
+import { a0SafetyCards, a0SafetyMicroLessons, getA0SafetyCard } from './a0Safety';
+import { a0FirstWeekCards, a0FirstWeekMicroLessons, getA0FirstWeekCard } from './a0FirstWeek';
 import { a0DirectionsFinalDialogue, a0DirectionsMicroDialogues } from './a0DirectionsDialogues';
 import { a0TimeFinalDialogue, a0TimeMicroDialogues } from './a0TimeDialogues';
 import { a0WorkFinalDialogue, a0WorkMicroDialogues } from './a0WorkDialogues';
@@ -14,10 +18,14 @@ import { a0ShopFinalDialogue, a0ShopMicroDialogues } from './a0ShopDialogues';
 import { a0HomeFinalDialogue, a0HomeMicroDialogues } from './a0HomeDialogues';
 import { a0HealthFinalDialogue, a0HealthMicroDialogues } from './a0HealthDialogues';
 import { a0PhoneFinalDialogue, a0PhoneMicroDialogues } from './a0PhoneDialogues';
+import { a0PeopleFinalDialogue, a0PeopleMicroDialogues } from './a0PeopleDialogues';
+import { a0WeatherFinalDialogue, a0WeatherMicroDialogues } from './a0WeatherDialogues';
+import { a0SafetyFinalDialogue, a0SafetyMicroDialogues } from './a0SafetyDialogues';
+import { a0FirstWeekFinalDialogue, a0FirstWeekMicroDialogues } from './a0FirstWeekDialogues';
 import { a0LessonMeta } from './a0LessonMeta';
 import { defineA0Lesson, type A0LessonDefinition } from './a0LessonSchema';
 
-export const a0ReferenceNewLessons: Record<'l004' | 'l005' | 'l006' | 'l007' | 'l008' | 'l009' | 'l010' | 'l011', A0LessonDefinition> = {
+export const a0ReferenceNewLessons: Record<'l004' | 'l005' | 'l006' | 'l007' | 'l008' | 'l009' | 'l010' | 'l011' | 'l012' | 'l013' | 'l014' | 'l015', A0LessonDefinition> = {
   l004: defineA0Lesson({
     lessonId:'l004', titleMn:a0LessonMeta.l004.titleMn, durationMinutes:a0LessonMeta.l004.durationMinutes, cards:a0DirectionsCards, microLessons:a0DirectionsMicroLessons, getCard:getA0DirectionsCard,
     microDialogues:a0DirectionsMicroDialogues, finalDialogue:a0DirectionsFinalDialogue, xpReward:180, completionIcon:'🚌',
@@ -65,5 +73,29 @@ export const a0ReferenceNewLessons: Record<'l004' | 'l005' | 'l006' | 'l007' | '
     microDialogues:a0PhoneMicroDialogues, finalDialogue:a0PhoneFinalDialogue, xpReward:250, completionIcon:'📞',
     completionSummaryMn:'Та утсан дээр сонсож байгаа эсэхээ хэлж, ойлгохгүй бол дахин хэлүүлэх, удаан яриулах, бичүүлэх, SMS хүсэх чадвартай болно.',
     completionPhrases:['Slyším vás.','Ještě jednou, prosím.','Můžete to zopakovat?','Napište mi to, prosím.','Pošlete mi SMS, prosím.'],
+  }),
+  l012: defineA0Lesson({
+    lessonId:'l012', titleMn:a0LessonMeta.l012.titleMn, durationMinutes:a0LessonMeta.l012.durationMinutes, cards:a0PeopleCards, microLessons:a0PeopleMicroLessons, getCard:getA0PeopleCard,
+    microDialogues:a0PeopleMicroDialogues, finalDialogue:a0PeopleFinalDialogue, xpReward:260, completionIcon:'👨‍👩‍👧‍👦',
+    completionSummaryMn:'Та гэр бүл, эхнэр, нөхөр, хүүхэдтэй эсэх, гэр бүлтэйгээ эсвэл ганцаараа байгаа эсэхээ хэлж чадна.',
+    completionPhrases:['Mám rodinu.','Mám dítě.','Mám děti.','Jsem tady s rodinou.','Jsem tady sám.','Jsem tady sama.'],
+  }),
+  l013: defineA0Lesson({
+    lessonId:'l013', titleMn:a0LessonMeta.l013.titleMn, durationMinutes:a0LessonMeta.l013.durationMinutes, cards:a0WeatherCards, microLessons:a0WeatherMicroLessons, getCard:getA0WeatherCard,
+    microDialogues:a0WeatherMicroDialogues, finalDialogue:a0WeatherFinalDialogue, xpReward:270, completionIcon:'🌦️',
+    completionSummaryMn:'Та өнөөдрийн цаг агаар, бороо, цас, даарч байгаа эсэх, хүрэм эсвэл малгай хэрэгтэйгээ хэлж чадна.',
+    completionPhrases:['Dnes je zima.','Dnes je teplo.','Prší.','Sněží.','Je mi zima.','Potřebuji bundu.'],
+  }),
+  l014: defineA0Lesson({
+    lessonId:'l014', titleMn:a0LessonMeta.l014.titleMn, durationMinutes:a0LessonMeta.l014.durationMinutes, cards:a0SafetyCards, microLessons:a0SafetyMicroLessons, getCard:getA0SafetyCard,
+    microDialogues:a0SafetyMicroDialogues, finalDialogue:a0SafetyFinalDialogue, xpReward:280, completionIcon:'🆘',
+    completionSummaryMn:'Та яаралтай үед тусламж гуйж, асуудалтай эсэхээ хэлж, цагдаа, эмч, түргэн тусламж дуудаж өгөхийг хүсэж чадна.',
+    completionPhrases:['Pomoc!','Mám problém.','Zavolejte prosím policii.','Zavolejte prosím doktora.','Nejsem v pořádku.'],
+  }),
+  l015: defineA0Lesson({
+    lessonId:'l015', titleMn:a0LessonMeta.l015.titleMn, durationMinutes:a0LessonMeta.l015.durationMinutes, cards:a0FirstWeekCards, microLessons:a0FirstWeekMicroLessons, getCard:getA0FirstWeekCard,
+    microDialogues:a0FirstWeekMicroDialogues, finalDialogue:a0FirstWeekFinalDialogue, xpReward:300, completionIcon:'🇨🇿',
+    completionSummaryMn:'Та эхний долоо хоногт өөрийгөө танилцуулж, ойлгохгүй үед тайлбарлаж, чиглэл, кафе, дэлгүүр, байр, эмийн сан, утасны нөхцөлийг давж чадна.',
+    completionPhrases:['Učím se česky.','Mluvím trochu česky.','Prosím, pomozte mi.','Je problém. Nemám klíč.','Ještě jednou, prosím. Napište mi to, prosím.'],
   }),
 };
