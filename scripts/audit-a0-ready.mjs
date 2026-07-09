@@ -13,9 +13,8 @@ const wordFiles = [
   'src/data/a0SafetyWords.ts',
   'src/data/a0FirstWeekWords.ts',
 ];
-// Czech accent marks can distinguish different words: být = байх, byt = байр.
-// Do not strip diacritics when checking canonical card uniqueness.
-const normalize = (text) => text.toLocaleLowerCase('cs-CZ').replace(/[.,!?—-]/g, '').replace(/\s+/g, ' ').trim();
+// Czech accent marks and ! can distinguish use: pomoc = тусламж, Pomoc! = Туслаарай!
+const normalize = (text) => text.toLocaleLowerCase('cs-CZ').replace(/[.,?—-]/g, '').replace(/\s+/g, ' ').trim();
 const vocabulary = wordFiles.map(load).join('\n');
 const lessons = load('src/data/lessons.ts');
 const definitions = load('src/data/a0ReferenceLessons.ts') + '\n' + load('src/data/a0ReferenceNewLessons.ts');
