@@ -30,13 +30,6 @@ export const a0FoodMicroDialogues: Record<string, DialogueScenario> = {
       { id:'a07d-d2', speaker:'Ажилтан', staffCzech:'Platíte kartou?', staffMn:'Та картаар төлөх үү?', promptMn:'Та картаар төлнө гэж хариулаарай.', choices:choices([['a','Ano, platím kartou.','Тийм, картаар төлнө.'],['b','Platím hotově.','Би бэлнээр төлнө.'],['c','Nemám peníze.','Надад мөнгө байхгүй.']]), correctId:'a', feedbackMn:'Platíte kartou? гэсэн асуултад Ano, platím kartou. гэж хариулж болно.' },
     ],
   },
-  'a0-7-e': {
-    id:'a0-7-e-dialogue', titleMn:'Богино яриа — бүтэн захиалга', contextMn:'Та кафед орж, кофе авч явах бүтэн яриаг хийж байна.',
-    steps:[
-      { id:'a07e-d1', speaker:'Ажилтан', staffCzech:'Dobrý den.', staffMn:'Сайн байна уу.', promptMn:'Та мэндлээд цэс хүсээрэй.', choices:choices([['a','Dobrý den. Menu, prosím.','Сайн байна уу. Цэс өгнө үү.'],['b','Dobrý den. Kdy je přestávka?','Сайн байна уу. Завсарлага хэзээ вэ?'],['c','Na shledanou.','Баяртай.']]), correctId:'a', feedbackMn:'Кафены эхлэл: Dobrý den. Menu, prosím.' },
-      { id:'a07e-d2', speaker:'Ажилтан', staffCzech:'Co si dáte?', staffMn:'Та юу авах вэ?', promptMn:'Та кофе захиалаарай.', choices:choices([['a','Dám si kávu, prosím.','Би кофе авъя, гуйя.'],['b','S sebou, prosím.','Авч явъя, гуйя.'],['c','Platím kartou.','Би картаар төлнө.']]), correctId:'a', feedbackMn:'Захиалга өгөхдөө Dám si kávu, prosím. гэж хэлнэ.' },
-    ],
-  },
 };
 
 export const a0FoodFinalDialogue: DialogueScenario = {
