@@ -10,7 +10,7 @@ export const a0FirstWeekCards: CzechWord[] = a0FirstWeekWords;
 
 export const a0FirstWeekMicroLessons: A0MicroLesson[] = [
   {
-    id:'a0-15-a', titleMn:'1/4 — Би шинэ хүн', canDoMn:'Эхний долоо хоногт шинэ хүн гэдгээ богино тайлбарлаж чадна.',
+    id:'a0-15-a', titleMn:'1/3 — Би шинэ хүн', canDoMn:'Эхний долоо хоногт шинэ хүн гэдгээ богино тайлбарлаж чадна.',
     cardIds:['a0c0181','a0c0182','a0c0183'],
     instructions:{
       a0c0181:'první týden = эхний долоо хоног. Энэ хичээлийн амьдралын нөхцөл.',
@@ -24,7 +24,7 @@ export const a0FirstWeekMicroLessons: A0MicroLesson[] = [
     ],
   },
   {
-    id:'a0-15-b', titleMn:'2/4 — Би чех хэл сурч байна', canDoMn:'Чех хэл сурч байгаагаа, бага зэрэг ярьдгаа хэлж чадна.',
+    id:'a0-15-b', titleMn:'2/3 — Би чех хэл сурч байна', canDoMn:'Чех хэл сурч байгаагаа, бага зэрэг ярьдгаа хэлж чадна.',
     cardIds:['a0c0184','a0c0185'],
     instructions:{
       a0c0184:'Učím se česky. = Би чех хэл сурч байна. Ойлгоход хэцүү үед өөрийгөө тайлбарлаж болно.',
@@ -37,7 +37,7 @@ export const a0FirstWeekMicroLessons: A0MicroLesson[] = [
     ],
   },
   {
-    id:'a0-15-c', titleMn:'3/4 — Надад туслаарай', canDoMn:'Эелдгээр тусламж хүсэж чадна.',
+    id:'a0-15-c', titleMn:'3/3 — Надад туслаарай', canDoMn:'Эелдгээр тусламж хүсэж чадна.',
     cardIds:['a0c0186'],
     instructions:{
       a0c0186:'Prosím, pomozte mi. = Надад туслаарай. Эелдэг, шууд тусламж хүсэх хэллэг.',
@@ -46,19 +46,6 @@ export const a0FirstWeekMicroLessons: A0MicroLesson[] = [
       { id:'a0-15-c-1', type:'choice', titleMn:'Тусламж хүсэх', promptMn:'Prosím, pomozte mi. ямар утгатай вэ?', choices:[{id:'a',text:'Надад туслаарай.'},{id:'b',text:'Цагдаа дуудаж өгнө үү.'},{id:'c',text:'Дахиад нэг удаа хэлнэ үү.'}], correctId:'a', feedbackMn:'Prosím, pomozte mi. = Надад туслаарай.' },
       { id:'a0-15-c-2', type:'choice', titleMn:'Эелдэг хүсэлт', promptMn:'Та эелдгээр тусламж хүсэх хэрэгтэй. Аль нь зөв вэ?', choices:[{id:'a',text:'Prosím, pomozte mi.'},{id:'b',text:'Pomoc!'},{id:'c',text:'Prší.'}], correctId:'a', feedbackMn:'Эелдгээр тусламж хүсэхдээ Prosím, pomozte mi. гэж хэлнэ.' },
       { id:'a0-15-c-3', type:'order', titleMn:'Хүсэлт бүтээх', promptMn:'“Надад туслаарай” гэсэн хүсэлтийг зөв дарааллаар байрлуул.', tokens:['mi.','pomozte','Prosím,'], expectedText:'Prosím, pomozte mi.', feedbackMn:'Prosím, pomozte mi. = Надад туслаарай.' },
-    ],
-  },
-  {
-    id:'a0-15-d', titleMn:'4/4 — Эхний долоо хоногийн давтлага', canDoMn:'Өмнөх хичээлүүдийн гол хэллэгүүдийг нэг дараалалд ашиглаж чадна.',
-    cardIds:['a0c0184','a0c0186'],
-    instructions:{
-      a0c0184:'Učím se česky. гэдгийг ойлгохгүй үедээ өөрийгөө тайлбарлахад дахин хэрэглэнэ.',
-      a0c0186:'Prosím, pomozte mi. гэдгийг эхний долоо хоногийн олон нөхцөлд дахин хэрэглэнэ.',
-    },
-    exercises:[
-      { id:'a0-15-d-1', type:'choice', titleMn:'Ойлгохгүй үед', promptMn:'Та чех хэл сурч байгаагаа хэлээд удаан ярихыг хүсэх хэрэгтэй. Аль дараалал зөв вэ?', choices:[{id:'a',text:'Učím se česky. Mluvte prosím pomalu.'},{id:'b',text:'Prší. Potřebuji bundu.'},{id:'c',text:'Mám děti. Jsem tady s rodinou.'}], correctId:'a', feedbackMn:'Učím se česky. Mluvte prosím pomalu. гэж хэлж болно.' },
-      { id:'a0-15-d-2', type:'choice', titleMn:'Түлхүүрийн асуудал', promptMn:'Байранд түлхүүр байхгүй. Аль нь зөв вэ?', choices:[{id:'a',text:'Je problém. Nemám klíč.'},{id:'b',text:'Dnes je teplo.'},{id:'c',text:'Mám dítě.'}], correctId:'a', feedbackMn:'Байрны асуудалд Je problém. Nemám klíč. гэж хэлж болно.' },
-      { id:'a0-15-d-3', type:'choice', titleMn:'Эмийн сан', promptMn:'Толгой өвдөж, өвчин намдаах зүйл асуух хэрэгтэй. Аль нь зөв вэ?', choices:[{id:'a',text:'Bolí mě hlava. Máte něco na bolest?'},{id:'b',text:'Pošlete mi SMS, prosím.'},{id:'c',text:'Zavolejte prosím policii.'}], correctId:'a', feedbackMn:'Эмийн санд Bolí mě hlava. Máte něco na bolest? гэж хэлж болно.' },
     ],
   },
 ];
