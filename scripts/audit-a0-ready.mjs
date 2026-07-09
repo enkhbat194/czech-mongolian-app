@@ -5,6 +5,7 @@ const root = process.cwd();
 const load = (file) => fs.readFileSync(path.join(root, file), 'utf8');
 const issues = [];
 
+const expectedReadyLessonCount = 7;
 const normalize = (text) => text.toLocaleLowerCase('cs-CZ').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[.,!?—-]/g, '').replace(/\s+/g, ' ').trim();
 const vocabulary = load('src/data/czechWords.ts');
 const lessons = load('src/data/lessons.ts');
@@ -25,7 +26,7 @@ for (const card of cards) {
   totals.set(card.lessonId, (totals.get(card.lessonId) || 0) + 1);
 }
 
-if (readyIds.length !== 6) issues.push(`ready lesson count must be 6, found ${readyIds.length}`);
+if (readyIds.length !== expectedReadyLessonCount) issues.push(`ready lesson count must be ${expectedReadyLessonCount}, found ${readyIds.length}`);
 if (!lessons.includes("wordCount:cardCount('l001')")) issues.push('ready lesson counts must be derived from canonical vocabulary');
 for (const lessonId of readyIds) {
   if (!(totals.get(lessonId) || 0)) issues.push(`${lessonId} has no canonical cards`);
