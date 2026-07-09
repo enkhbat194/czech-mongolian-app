@@ -1,4 +1,4 @@
-export type A0ReadyLessonId = 'l001' | 'l002' | 'l003' | 'l004' | 'l005' | 'l006' | 'l007' | 'l008' | 'l009' | 'l010' | 'l011';
+export type A0ReadyLessonId = 'l001' | 'l002' | 'l003' | 'l004' | 'l005' | 'l006' | 'l007' | 'l008' | 'l009' | 'l010' | 'l011' | 'l012' | 'l013' | 'l014' | 'l015';
 
 export type A0LessonMeta = {
   titleMn: string;
@@ -17,4 +17,8 @@ export const a0LessonMeta: Record<A0ReadyLessonId, A0LessonMeta> = {
   l009: { titleMn: 'A0.9 — Гэр, байр, хэрэгцээ', durationMinutes: 36 },
   l010: { titleMn: 'A0.10 — Эрүүл мэнд, эмийн сан', durationMinutes: 38 },
   l011: { titleMn: 'A0.11 — Утас, ойлгоогүй үед', durationMinutes: 36 },
+  l012: { titleMn: 'A0.12 — Хүмүүс, гэр бүл', durationMinutes: 36 },
+  l013: { titleMn: 'A0.13 — Цаг агаар, хувцас', durationMinutes: 36 },
+  l014: { titleMn: 'A0.14 — Асуудал, аюулгүй байдал', durationMinutes: 38 },
+  l015: { titleMn: 'A0.15 — Чехэд эхний долоо хоног', durationMinutes: 45 },
 };
