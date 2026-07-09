@@ -5,11 +5,18 @@ const root = process.cwd();
 const load = (file) => fs.readFileSync(path.join(root, file), 'utf8');
 const issues = [];
 
-const expectedReadyLessonCount = 11;
+const expectedReadyLessonCount = 15;
+const wordFiles = [
+  'src/data/czechWords.ts',
+  'src/data/a0PeopleWords.ts',
+  'src/data/a0WeatherWords.ts',
+  'src/data/a0SafetyWords.ts',
+  'src/data/a0FirstWeekWords.ts',
+];
 // Czech accent marks can distinguish different words: být = байх, byt = байр.
 // Do not strip diacritics when checking canonical card uniqueness.
 const normalize = (text) => text.toLocaleLowerCase('cs-CZ').replace(/[.,!?—-]/g, '').replace(/\s+/g, ' ').trim();
-const vocabulary = load('src/data/czechWords.ts');
+const vocabulary = wordFiles.map(load).join('\n');
 const lessons = load('src/data/lessons.ts');
 const definitions = load('src/data/a0ReferenceLessons.ts') + '\n' + load('src/data/a0ReferenceNewLessons.ts');
 
