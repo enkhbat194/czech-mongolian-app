@@ -116,8 +116,8 @@ const aliasMap: Record<string, string[]> = {
 function normalizeCzech(text: string) {
   return text
     .toLocaleLowerCase('cs-CZ')
-    // Keep Czech diacritics: být and byt are different words.
-    .replace(/[.,!?—-]/g, '')
+    // Keep Czech diacritics and urgent !: být/byt and pomoc/Pomoc! are different uses.
+    .replace(/[.,?—-]/g, '')
     .replace(/\s+/g, ' ')
     .trim();
 }
