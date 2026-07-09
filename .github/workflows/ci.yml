@@ -29,5 +29,32 @@ jobs:
       - name: Install dependencies
         run: npm install --legacy-peer-deps --ignore-scripts --no-audit --no-fund
 
-      - name: Run quality gate
-        run: npm run check
+      - name: Lint
+        run: npm run lint
+
+      - name: Test study calendar
+        run: npm run test:calendar
+
+      - name: Audit A0 data
+        run: npm run audit:a0
+
+      - name: Audit data contract
+        run: npm run audit:contract
+
+      - name: Audit audio architecture
+        run: npm run audit:audio
+
+      - name: Audit pronunciation
+        run: npm run audit:pronunciation
+
+      - name: Audit SRS
+        run: npm run audit:srs
+
+      - name: Audit offline foundation
+        run: npm run audit:offline
+
+      - name: Build
+        run: npm run build
+
+      - name: Audio dry run
+        run: npm run audio:dry
