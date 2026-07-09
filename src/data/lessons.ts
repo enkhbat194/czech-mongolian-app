@@ -1,5 +1,9 @@
 import { czechWords } from './czechWords';
+import { a0FirstWeekWords } from './a0FirstWeekWords';
 import { a0LessonMeta } from './a0LessonMeta';
+import { a0PeopleWords } from './a0PeopleWords';
+import { a0SafetyWords } from './a0SafetyWords';
+import { a0WeatherWords } from './a0WeatherWords';
 
 export type LessonStatus = 'ready' | 'planned';
 
@@ -16,7 +20,8 @@ export interface Lesson {
   status: LessonStatus;
 }
 
-const cardCount = (lessonId: string) => czechWords.filter((card) => card.lessonId === lessonId).length;
+const readyWords = [...czechWords, ...a0PeopleWords, ...a0WeatherWords, ...a0SafetyWords, ...a0FirstWeekWords];
+const cardCount = (lessonId: string) => readyWords.filter((card) => card.lessonId === lessonId).length;
 
 export const lessons: Lesson[] = [
   { id:'l001', title:'A0.1 First contact', titleMn:a0LessonMeta.l001.titleMn, description:'Мэндлэх, нэрээ хэлэх, ойлгохгүй үед удаан ярихыг хүсэх', wordCount:cardCount('l001'), estimatedMinutes:a0LessonMeta.l001.durationMinutes, icon:'👋', order:1, isLocked:false, status:'ready' },
@@ -30,8 +35,8 @@ export const lessons: Lesson[] = [
   { id:'l009', title:'A0.9 Home', titleMn:a0LessonMeta.l009.titleMn, description:'Өрөө, байр, түлхүүр, ус гарахгүй, хүйтэн байна гэсэн асуудал хэлэх', wordCount:cardCount('l009'), estimatedMinutes:a0LessonMeta.l009.durationMinutes, icon:'🏠', order:9, isLocked:true, status:'ready' },
   { id:'l010', title:'A0.10 Health', titleMn:a0LessonMeta.l010.titleMn, description:'Өвдөж байгаагаа хэлэх, эмийн санд өвчин намдаах зүйл болон заавар асуух', wordCount:cardCount('l010'), estimatedMinutes:a0LessonMeta.l010.durationMinutes, icon:'💊', order:10, isLocked:true, status:'ready' },
   { id:'l011', title:'A0.11 Phone', titleMn:a0LessonMeta.l011.titleMn, description:'Утсан дээр сонсож байгаа эсэх, давтуулах, бичүүлэх, SMS хүсэх', wordCount:cardCount('l011'), estimatedMinutes:a0LessonMeta.l011.durationMinutes, icon:'📞', order:11, isLocked:true, status:'ready' },
-  { id:'l012', title:'A0.12 People', titleMn:'A0.12 — Хүмүүс, гэр бүл', description:'Хүн, гэр бүл, суурь тодорхойлолт', wordCount:0, estimatedMinutes:0, icon:'👨‍👩‍👧‍👦', order:12, isLocked:true, status:'planned' },
-  { id:'l013', title:'A0.13 Weather', titleMn:'A0.13 — Цаг агаар, хувцас', description:'Цаг агаар ба өдөр тутмын сонголт', wordCount:0, estimatedMinutes:0, icon:'🌦️', order:13, isLocked:true, status:'planned' },
-  { id:'l014', title:'A0.14 Safety', titleMn:'A0.14 — Асуудал, аюулгүй байдал', description:'Тусламж хүсэх, яаралтай нөхцөл', wordCount:0, estimatedMinutes:0, icon:'🆘', order:14, isLocked:true, status:'planned' },
-  { id:'l015', title:'A0.15 First week', titleMn:'A0.15 — Чехэд эхний долоо хоног', description:'Бүх суурь чадварыг нэг сценарид ашиглах', wordCount:0, estimatedMinutes:0, icon:'🇨🇿', order:15, isLocked:true, status:'planned' },
+  { id:'l012', title:'A0.12 People', titleMn:a0LessonMeta.l012.titleMn, description:'Гэр бүл, эхнэр, нөхөр, хүүхэдтэй эсэх, ганцаараа эсвэл гэр бүлтэйгээ байгаа эсэх', wordCount:cardCount('l012'), estimatedMinutes:a0LessonMeta.l012.durationMinutes, icon:'👨‍👩‍👧‍👦', order:12, isLocked:true, status:'ready' },
+  { id:'l013', title:'A0.13 Weather', titleMn:a0LessonMeta.l013.titleMn, description:'Цаг агаар, бороо, цас, даарах, хүрэм эсвэл малгай хэрэгтэйгээ хэлэх', wordCount:cardCount('l013'), estimatedMinutes:a0LessonMeta.l013.durationMinutes, icon:'🌦️', order:13, isLocked:true, status:'ready' },
+  { id:'l014', title:'A0.14 Safety', titleMn:a0LessonMeta.l014.titleMn, description:'Тусламж гуйх, асуудал хэлэх, цагдаа, эмч, түргэн тусламж дуудаж өгөхийг хүсэх', wordCount:cardCount('l014'), estimatedMinutes:a0LessonMeta.l014.durationMinutes, icon:'🆘', order:14, isLocked:true, status:'ready' },
+  { id:'l015', title:'A0.15 First week', titleMn:a0LessonMeta.l015.titleMn, description:'Эхний долоо хоногийн амьдралын дараалалд бүх суурь хэллэгийг ашиглах', wordCount:cardCount('l015'), estimatedMinutes:a0LessonMeta.l015.durationMinutes, icon:'🇨🇿', order:15, isLocked:true, status:'ready' },
 ];
