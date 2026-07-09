@@ -15,9 +15,8 @@ const readyVocabularyCards: CzechWord[] = [...czechWords, ...a0PeopleWords, ...a
 function normalize(text: string) {
   return text
     .toLocaleLowerCase('cs-CZ')
-    // Czech accent marks can distinguish different words: být = байх, byt = байр.
-    // Keep diacritics in canonical-card uniqueness checks.
-    .replace(/[.,!?—-]/g, '')
+    // Czech accent marks and ! can distinguish use: pomoc = тусламж, Pomoc! = Туслаарай!
+    .replace(/[.,?—-]/g, '')
     .replace(/\s+/g, ' ')
     .trim();
 }
