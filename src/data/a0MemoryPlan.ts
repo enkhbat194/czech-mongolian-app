@@ -25,7 +25,9 @@ const activeCategories = new Set([
   'pattern', 'survival', 'direction-pattern', 'transport-pattern', 'time-pattern', 'meeting-pattern',
   'job-pattern', 'job-question', 'job-survival', 'job-response', 'listening-pattern',
   'food-request', 'food-pattern', 'food-response', 'food-question', 'payment-question', 'payment-pattern',
-  'shop-request', 'shop-price',
+  'shop-request', 'shop-price', 'home-pattern', 'home-problem',
+  'health-pattern', 'health-problem', 'health-request', 'health-question',
+  'phone-response', 'phone-repair', 'phone-request',
 ]);
 
 const explicitActiveIds = new Set([
@@ -33,6 +35,9 @@ const explicitActiveIds = new Set([
   'a0c0048', 'a0c0049', 'a0c0101', 'a0c0102', 'a0c0103', 'a0c0104',
   'a0c0106', 'a0c0108', 'a0c0112', 'a0c0114', 'a0c0115', 'a0c0116',
   'a0c0120', 'a0c0122', 'a0c0123', 'a0c0124',
+  'a0c0128', 'a0c0129', 'a0c0130', 'a0c0131', 'a0c0132',
+  'a0c0134', 'a0c0135', 'a0c0136', 'a0c0137', 'a0c0139', 'a0c0140',
+  'a0c0143', 'a0c0144', 'a0c0145', 'a0c0146', 'a0c0147',
 ]);
 
 const aliasMap: Record<string, string[]> = {
@@ -43,7 +48,7 @@ const aliasMap: Record<string, string[]> = {
   a0c0005: ['Děkuji.', 'Děkuji. Na shledanou.'],
   a0c0006: ['Ano.', 'Ano, děkuji.', 'Ano, prosím.'],
   a0c0007: ['Ne.', 'Ne, děkuji.'],
-  a0c0013: ['Jmenuji se Eba.'],
+  a0c0013: ['Jmenuji se Eba.', 'Dobrý den. Jmenuji se Eba.'],
   a0c0017: ['Dobře, děkuji.'],
   a0c0019: ['Odkud jste?', 'Odkud?'],
   a0c0027: ['Ano, potřebuji vodu.'],
@@ -73,6 +78,14 @@ const aliasMap: Record<string, string[]> = {
   a0c0120: ['Ano, tašku, prosím.'],
   a0c0122: ['Ano, účtenku, prosím.'],
   a0c0123: ['Dobrý den. Tohle, prosím.'],
+  a0c0130: ['Dobrý den. Je problém.'],
+  a0c0134: ['Bolí mě hlava.'],
+  a0c0135: ['Bolí mě břicho.'],
+  a0c0136: ['Bolí mě v krku.'],
+  a0c0139: ['Máte něco na bolest?'],
+  a0c0143: ['Ano, slyším vás.'],
+  a0c0146: ['Napište mi to, prosím.'],
+  a0c0147: ['Pošlete mi SMS, prosím.'],
 };
 
 function normalizeCzech(text: string) {
