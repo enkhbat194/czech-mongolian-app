@@ -12,7 +12,7 @@ export interface CzechWord {
 }
 
 /**
- * A0.1–A0.8-ийн цорын ганц canonical vocabulary bank.
+ * A0.1–A0.11-ийн цорын ганц canonical vocabulary bank.
  * Нэг normalized Czech card нь зөвхөн нэг lessonId-д анхлан орно.
  * Дараагийн хичээлд тухайн phrase зөвхөн review/dialogue reuse болж орно.
  */
@@ -159,4 +159,32 @@ export const czechWords: CzechWord[] = [
   { id:'a0c0122', czech:'Účtenku, prosím.', ipa:'', mongolian:'Баримт өгнө үү.', example:'Ano, účtenku, prosím.', exampleTranslation:'Тийм, баримт өгнө үү.', category:'shop-request', lessonId:'l008', difficulty:'medium' },
   { id:'a0c0123', czech:'Tohle, prosím.', ipa:'', mongolian:'Үүнийг авъя.', example:'Dobrý den. Tohle, prosím.', exampleTranslation:'Сайн байна уу. Үүнийг авъя.', category:'shop-request', lessonId:'l008', difficulty:'easy' },
   { id:'a0c0124', czech:'To je drahé.', ipa:'', mongolian:'Энэ үнэтэй байна.', example:'To je drahé.', exampleTranslation:'Энэ үнэтэй байна.', category:'shop-price', lessonId:'l008', difficulty:'medium' },
+
+  // A0.9 — Гэр, байр, хэрэгцээ
+  { id:'a0c0125', czech:'pokoj', ipa:'', mongolian:'өрөө', example:'Kde je pokoj?', exampleTranslation:'Өрөө хаана байна?', category:'home', lessonId:'l009', difficulty:'easy' },
+  { id:'a0c0126', czech:'byt', ipa:'', mongolian:'байр', example:'Byt je tady.', exampleTranslation:'Байр энд байна.', category:'home', lessonId:'l009', difficulty:'easy' },
+  { id:'a0c0127', czech:'klíč', ipa:'', mongolian:'түлхүүр', example:'Mám klíč.', exampleTranslation:'Надад түлхүүр байна.', category:'home', lessonId:'l009', difficulty:'easy' },
+  { id:'a0c0128', czech:'Mám klíč.', ipa:'', mongolian:'Надад түлхүүр байна.', example:'Mám klíč.', exampleTranslation:'Надад түлхүүр байна.', category:'home-pattern', lessonId:'l009', difficulty:'medium' },
+  { id:'a0c0129', czech:'Nemám klíč.', ipa:'', mongolian:'Надад түлхүүр байхгүй.', example:'Nemám klíč.', exampleTranslation:'Надад түлхүүр байхгүй.', category:'home-problem', lessonId:'l009', difficulty:'medium' },
+  { id:'a0c0130', czech:'Je problém.', ipa:'', mongolian:'Асуудал байна.', example:'Dobrý den. Je problém.', exampleTranslation:'Сайн байна уу. Асуудал байна.', category:'home-problem', lessonId:'l009', difficulty:'medium' },
+  { id:'a0c0131', czech:'Neteče voda.', ipa:'', mongolian:'Ус гарахгүй байна.', example:'Neteče voda.', exampleTranslation:'Ус гарахгүй байна.', category:'home-problem', lessonId:'l009', difficulty:'medium' },
+  { id:'a0c0132', czech:'Je zima.', ipa:'', mongolian:'Хүйтэн байна.', example:'Je zima.', exampleTranslation:'Хүйтэн байна.', category:'home-problem', lessonId:'l009', difficulty:'easy' },
+
+  // A0.10 — Эрүүл мэнд, эмийн сан
+  { id:'a0c0133', czech:'Bolí mě ...', ipa:'', mongolian:'Миний ... өвдөж байна.', example:'Bolí mě hlava.', exampleTranslation:'Миний толгой өвдөж байна.', category:'health-pattern', lessonId:'l010', difficulty:'medium' },
+  { id:'a0c0134', czech:'Bolí mě hlava.', ipa:'', mongolian:'Миний толгой өвдөж байна.', example:'Bolí mě hlava.', exampleTranslation:'Миний толгой өвдөж байна.', category:'health-problem', lessonId:'l010', difficulty:'medium' },
+  { id:'a0c0135', czech:'Bolí mě břicho.', ipa:'', mongolian:'Миний гэдэс өвдөж байна.', example:'Bolí mě břicho.', exampleTranslation:'Миний гэдэс өвдөж байна.', category:'health-problem', lessonId:'l010', difficulty:'medium' },
+  { id:'a0c0136', czech:'Bolí mě v krku.', ipa:'', mongolian:'Миний хоолой өвдөж байна.', example:'Bolí mě v krku.', exampleTranslation:'Миний хоолой өвдөж байна.', category:'health-problem', lessonId:'l010', difficulty:'medium' },
+  { id:'a0c0137', czech:'Mám teplotu.', ipa:'', mongolian:'Би халуурч байна.', example:'Mám teplotu.', exampleTranslation:'Би халуурч байна.', category:'health-problem', lessonId:'l010', difficulty:'medium' },
+  { id:'a0c0138', czech:'lék', ipa:'', mongolian:'эм', example:'Tento lék.', exampleTranslation:'Энэ эм.', category:'health', lessonId:'l010', difficulty:'easy' },
+  { id:'a0c0139', czech:'Máte něco na bolest?', ipa:'', mongolian:'Өвчин намдаах юм байна уу?', example:'Máte něco na bolest?', exampleTranslation:'Өвчин намдаах юм байна уу?', category:'health-request', lessonId:'l010', difficulty:'hard' },
+  { id:'a0c0140', czech:'Jak to mám brát?', ipa:'', mongolian:'Үүнийг яаж уух вэ?', example:'Jak to mám brát?', exampleTranslation:'Үүнийг яаж уух вэ?', category:'health-question', lessonId:'l010', difficulty:'hard' },
+
+  // A0.11 — Утас, ойлгоогүй үед
+  { id:'a0c0142', czech:'Slyšíte mě?', ipa:'', mongolian:'Та намайг сонсож байна уу?', example:'Slyšíte mě?', exampleTranslation:'Та намайг сонсож байна уу?', category:'phone-question', lessonId:'l011', difficulty:'medium' },
+  { id:'a0c0143', czech:'Slyším vás.', ipa:'', mongolian:'Би таныг сонсож байна.', example:'Slyším vás.', exampleTranslation:'Би таныг сонсож байна.', category:'phone-response', lessonId:'l011', difficulty:'medium' },
+  { id:'a0c0144', czech:'Ještě jednou, prosím.', ipa:'', mongolian:'Дахиад нэг удаа хэлнэ үү.', example:'Ještě jednou, prosím.', exampleTranslation:'Дахиад нэг удаа хэлнэ үү.', category:'phone-repair', lessonId:'l011', difficulty:'medium' },
+  { id:'a0c0145', czech:'Můžete to zopakovat?', ipa:'', mongolian:'Та үүнийг давтаж хэлж болох уу?', example:'Můžete to zopakovat?', exampleTranslation:'Та үүнийг давтаж хэлж болох уу?', category:'phone-repair', lessonId:'l011', difficulty:'hard' },
+  { id:'a0c0146', czech:'Napište mi to, prosím.', ipa:'', mongolian:'Үүнийг надад бичээд өгнө үү.', example:'Napište mi to, prosím.', exampleTranslation:'Үүнийг надад бичээд өгнө үү.', category:'phone-request', lessonId:'l011', difficulty:'hard' },
+  { id:'a0c0147', czech:'Pošlete mi SMS, prosím.', ipa:'', mongolian:'Надад SMS явуулна уу.', example:'Pošlete mi SMS, prosím.', exampleTranslation:'Надад SMS явуулна уу.', category:'phone-request', lessonId:'l011', difficulty:'hard' },
 ];
