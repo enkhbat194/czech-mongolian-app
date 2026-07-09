@@ -24,13 +24,6 @@ export const a0FirstWeekMicroDialogues: Record<string, DialogueScenario> = {
       { id:'a15c-d2', speaker:'Нөгөө хүн', staffCzech:'Dobře.', staffMn:'За.', promptMn:'Та талархаарай.', choices:choices([['a','Děkuji.','Баярлалаа.'],['b','Mám problém.','Надад асуудал байна.'],['c','Je mi zima.','Би даарч байна.']]), correctId:'a', feedbackMn:'Děkuji. = Баярлалаа.' },
     ],
   },
-  'a0-15-d': {
-    id:'a0-15-d-dialogue', titleMn:'Богино яриа — эхний долоо хоногийн давтлага', contextMn:'Та эхний долоо хоногт олон нөхцөлийг нэг дарааллаар давж байна.',
-    steps:[
-      { id:'a15d-d1', speaker:'Нөгөө хүн', staffCzech:'Mluvíte česky?', staffMn:'Та чехээр ярьдаг уу?', promptMn:'Та сурч байгаагаа хэлээд удаан ярихыг хүсээрэй.', choices:choices([['a','Učím se česky. Mluvte prosím pomalu.','Би чех хэл сурч байна. Удаан ярьж өгнө үү.'],['b','Potřebuji bundu.','Надад хүрэм хэрэгтэй.'],['c','Mám rodinu.','Би гэр бүлтэй.']]), correctId:'a', feedbackMn:'Ойлгохгүй үед өөрийгөө тайлбарлаад удаан хэлүүлэх нь зөв.' },
-      { id:'a15d-d2', speaker:'Нөгөө хүн', staffCzech:'Je problém?', staffMn:'Асуудал байна уу?', promptMn:'Та түлхүүр байхгүйгээ хэлээрэй.', choices:choices([['a','Je problém. Nemám klíč.','Асуудал байна. Надад түлхүүр байхгүй.'],['b','Dnes je zima.','Өнөөдөр хүйтэн байна.'],['c','Mám děti.','Би хүүхдүүдтэй.']]), correctId:'a', feedbackMn:'Байрны асуудалд Je problém. Nemám klíč. гэж хэлж болно.' },
-    ],
-  },
 };
 
 export const a0FirstWeekFinalDialogue: DialogueScenario = {
