@@ -5,6 +5,8 @@ import { useAppStore } from '../stores/useAppStore';
 import { lessons as courseLessons } from '../data/lessons';
 import { ProgressBar } from '../components/UI/SharedComponents';
 
+const DEV_UNLOCK_READY_LESSONS = import.meta.env.DEV;
+
 const LearningPathPage: React.FC = () => {
   const { setCurrentLesson, setPage, getLessonProgress, progress } = useAppStore();
   const total = courseLessons.filter((lesson) => lesson.status === 'ready').reduce((sum, lesson) => sum + lesson.wordCount, 0);
@@ -33,7 +35,7 @@ const LearningPathPage: React.FC = () => {
           const progressPercent = getLessonProgress(lesson.id);
           const done = progress.completedLessons.includes(lesson.id);
           const ready = lesson.status === 'ready';
-          const sequenceOpen = index === 0 || progress.completedLessons.includes(courseLessons[index - 1].id);
+          const sequenceOpen = DEV_UNLOCK_READY_LESSONS || index === 0 || progress.completedLessons.includes(courseLessons[index - 1].id);
           const locked = !ready || !sequenceOpen;
 
           return (
