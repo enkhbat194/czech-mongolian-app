@@ -4,6 +4,13 @@ import path from 'node:path';
 const root = process.cwd();
 const load = (file) => fs.readFileSync(path.join(root, file), 'utf8');
 const issues = [];
+const wordFiles = [
+  'src/data/czechWords.ts',
+  'src/data/a0PeopleWords.ts',
+  'src/data/a0WeatherWords.ts',
+  'src/data/a0SafetyWords.ts',
+  'src/data/a0FirstWeekWords.ts',
+];
 
 function normalizeCzech(text) {
   return text
@@ -23,7 +30,7 @@ function inferSpeechType(targetText) {
   return 'word';
 }
 
-const vocabulary = load('src/data/czechWords.ts');
+const vocabulary = wordFiles.map(load).join('\n');
 const contract = load('src/data/lessonDataContract.ts');
 const cards = [...vocabulary.matchAll(/\{\s*id:'([^']+)'\s*,\s*czech:'([^']+)'[\s\S]*?mongolian:'([^']*)'[\s\S]*?lessonId:'(l\d{3})'[\s\S]*?difficulty:'(easy|medium|hard)'\s*\}/g)]
   .map((match) => ({ id: match[1], czech: match[2], mongolian: match[3], lessonId: match[4], difficulty: match[5] }));
