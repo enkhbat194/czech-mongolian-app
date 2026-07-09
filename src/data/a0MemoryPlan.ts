@@ -24,11 +24,13 @@ const supportCoverage = { card: 1, recognition: 1, retrieval: 1, dialogue: 1, ca
 const activeCategories = new Set([
   'pattern', 'survival', 'direction-pattern', 'transport-pattern', 'time-pattern', 'meeting-pattern',
   'job-pattern', 'job-question', 'job-survival', 'job-response', 'listening-pattern',
+  'food-request', 'food-pattern', 'food-response', 'food-question', 'payment-question', 'payment-pattern',
 ]);
 
 const explicitActiveIds = new Set([
   'a0c0001', 'a0c0003', 'a0c0005', 'a0c0006', 'a0c0012', 'a0c0013', 'a0c0016', 'a0c0017', 'a0c0019', 'a0c0021', 'a0c0326', 'a0c0327',
   'a0c0048', 'a0c0049', 'a0c0101', 'a0c0102', 'a0c0103', 'a0c0104',
+  'a0c0106', 'a0c0108', 'a0c0112', 'a0c0114', 'a0c0115', 'a0c0116',
 ]);
 
 const aliasMap: Record<string, string[]> = {
@@ -60,6 +62,12 @@ const aliasMap: Record<string, string[]> = {
   a0c0102: ['Ve dvanáct.'],
   a0c0103: ['Nový úkol.'],
   a0c0104: ['Ukážu vám.'],
+  a0c0106: ['Dobrý den. Menu, prosím.'],
+  a0c0108: ['Dám si kávu, prosím.'],
+  a0c0109: ['Dám si čaj, prosím.'],
+  a0c0110: ['Dám si polévku, prosím.'],
+  a0c0115: ['Ano, platím kartou.'],
+  a0c0116: ['Ne, platím hotově.'],
 };
 
 function normalizeCzech(text: string) {
