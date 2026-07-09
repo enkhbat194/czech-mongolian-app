@@ -33,6 +33,39 @@ for (const lessonId of readyIds) {
   if (!definitions.includes(`${lessonId}: defineA0Lesson`)) issues.push(`${lessonId} has no executable definition`);
 }
 
+const forbiddenLearnerTerms = [
+  { label: 'A0-д / A0 дээр', pattern: /\bA0(?:-д|\s+д|\s+дээр|\s+түвшин(?:д)?)\b/i },
+  { label: 'staff', pattern: /\bstaff\b/i },
+  { label: 'formal', pattern: /\bformal\b/i },
+  { label: 'chunk', pattern: /\bchunk\b/i },
+  { label: 'pattern', pattern: /\bpattern\b/i },
+  { label: 'case', pattern: /\bcase\b/i },
+  { label: 'accusative', pattern: /\baccusative\b/i },
+  { label: 'nominative', pattern: /\bnominative\b/i },
+  { label: 'genitive', pattern: /\bgenitive\b/i },
+  { label: 'dative', pattern: /\bdative\b/i },
+  { label: 'locative', pattern: /\blocative\b/i },
+  { label: 'instrumental', pattern: /\binstrumental\b/i },
+  { label: 'noun', pattern: /\bnoun\b/i },
+  { label: 'verb', pattern: /\bverb\b/i },
+  { label: 'adjective', pattern: /\badjective\b/i },
+  { label: 'adverb', pattern: /\badverb\b/i },
+  { label: 'preposition', pattern: /\bpreposition\b/i },
+];
+
+const learnerFieldPattern = /(?:titleMn|canDoMn|description|mongolian|exampleTranslation|promptMn|feedbackMn|text|a0c\d{4}):'((?:\\'|[^'])*)'/g;
+const auditFiles = ['src/data/lessons.ts', 'src/data/czechWords.ts', ...fs.readdirSync(path.join(root, 'src/data')).filter((name) => /^a0.*\.ts$/.test(name)).map((name) => `src/data/${name}`)];
+
+for (const file of auditFiles) {
+  const content = load(file);
+  for (const match of content.matchAll(learnerFieldPattern)) {
+    const value = match[1];
+    for (const term of forbiddenLearnerTerms) {
+      if (term.pattern.test(value)) issues.push(`learner-facing technical term "${term.label}" in ${file}: ${value}`);
+    }
+  }
+}
+
 console.log('A0 audit');
 for (const lessonId of readyIds) console.log(`${lessonId}: ${totals.get(lessonId) || 0} cards`);
 if (issues.length) {
