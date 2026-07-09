@@ -9,8 +9,8 @@ export interface A0VocabularyAuditResult {
 function normalize(text: string) {
   return text
     .toLocaleLowerCase('cs-CZ')
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
+    // Czech accent marks can distinguish different words: být = байх, byt = байр.
+    // Keep diacritics in canonical-card uniqueness checks.
     .replace(/[.,!?—-]/g, '')
     .replace(/\s+/g, ' ')
     .trim();
