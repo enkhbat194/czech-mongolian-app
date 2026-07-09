@@ -33,7 +33,7 @@ export const a0WeatherMicroLessons: A0MicroLesson[] = [
     exercises:[
       { id:'a0-13-b-1', type:'choice', titleMn:'Бороо', promptMn:'Prší. ямар утгатай вэ?', choices:[{id:'a',text:'Бороо орж байна.'},{id:'b',text:'Цас орж байна.'},{id:'c',text:'Би даарч байна.'}], correctId:'a', feedbackMn:'Prší. = Бороо орж байна.' },
       { id:'a0-13-b-2', type:'choice', titleMn:'Цас', promptMn:'Цас орж байна. Аль нь зөв вэ?', choices:[{id:'a',text:'Sněží.'},{id:'b',text:'Prší.'},{id:'c',text:'Pomoc!'}], correctId:'a', feedbackMn:'Sněží. = Цас орж байна.' },
-      { id:'a0-13-b-3', type:'order', titleMn:'Үг бүтээх', promptMn:'“Бороо орж байна” гэсэн өгүүлбэрийг сонго.', tokens:['Prší.','Sněží.'], expectedText:'Prší.', feedbackMn:'Prší. = Бороо орж байна.' },
+      { id:'a0-13-b-3', type:'choice', titleMn:'Ялгаж сонгох', promptMn:'“Бороо орж байна” гэсэн өгүүлбэр аль вэ?', choices:[{id:'a',text:'Prší.'},{id:'b',text:'Sněží.'},{id:'c',text:'Je mi zima.'}], correctId:'a', feedbackMn:'Prší. = Бороо орж байна.' },
     ],
   },
   {
