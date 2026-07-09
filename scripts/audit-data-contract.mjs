@@ -8,8 +8,8 @@ const issues = [];
 function normalizeCzech(text) {
   return text
     .toLocaleLowerCase('cs-CZ')
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
+    // Czech accent marks can distinguish different words: být = байх, byt = байр.
+    // Keep diacritics when checking canonical card uniqueness.
     .replace(/[.,!?—-]/g, '')
     .replace(/\s+/g, ' ')
     .trim();
