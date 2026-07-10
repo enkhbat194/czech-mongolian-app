@@ -4,24 +4,24 @@ const choices = (items: Array<[string, string, string]>) => items.map(([id, text
 
 export const a0PeopleMicroDialogues: Record<string, DialogueScenario> = {
   'a0-12-a': {
-    id:'a0-12-a-dialogue', titleMn:'Богино яриа — гэр бүл', contextMn:'Та шинэ хүнтэй танилцаж, гэр бүлийн тухай богино ярьж байна.',
+    id:'a0-12-a-dialogue', titleMn:'Богино яриа — гэр бүл', contextMn:'Та шинэ хүнтэй танилцаж, гэр бүлтэй эсэхээ хэлж байна.',
     steps:[
-      { id:'a12a-d1', speaker:'Нөгөө хүн', staffCzech:'Dobrý den. Jak se jmenujete?', staffMn:'Сайн байна уу. Таны нэр хэн бэ?', promptMn:'Та нэрээ хэлээрэй.', choices:choices([['a','Jmenuji se Eba.','Миний нэр Эба.'],['b','Mám problém.','Надад асуудал байна.'],['c','Prší.','Бороо орж байна.']]), correctId:'a', feedbackMn:'Танилцахдаа Jmenuji se ... гэж эхэлж болно.' },
-      { id:'a12a-d2', speaker:'Нөгөө хүн', staffCzech:'Rodina?', staffMn:'Гэр бүл үү?', promptMn:'Та “миний гэр бүл” гэж хэлээрэй.', choices:choices([['a','Moje rodina.','Миний гэр бүл.'],['b','Moje čepice.','Миний малгай.'],['c','Moje práce.','Миний ажил.']]), correctId:'a', feedbackMn:'Moje rodina. = Миний гэр бүл.' },
+      { id:'a12a-d1', speaker:'Нөгөө хүн', staffCzech:'Dobrý den. Jak se jmenujete?', staffMn:'Сайн байна уу. Таны нэр хэн бэ?', promptMn:'Та мэндлээд нэрээ хэлээрэй.', choices:choices([['a','Dobrý den. Jmenuji se Eba.','Сайн байна уу. Миний нэр Эба.'],['b','Mám problém.','Надад асуудал байна.'],['c','Prší.','Бороо орж байна.']]), correctId:'a', feedbackMn:'Танилцахдаа Dobrý den. Jmenuji se ... гэж эхэлж болно.' },
+      { id:'a12a-d2', speaker:'Нөгөө хүн', staffCzech:'Máte rodinu?', staffMn:'Та гэр бүлтэй юу?', promptMn:'Та гэр бүлтэйгээ хэлээрэй.', choices:choices([['a','Ano, mám rodinu.','Тийм, би гэр бүлтэй.'],['b','Moje čepice.','Миний малгай.'],['c','Moje práce.','Миний ажил.']]), correctId:'a', feedbackMn:'Бодит ярианд Máte rodinu? гэж асуувал Ano, mám rodinu. гэж хариулна.' },
     ],
   },
   'a0-12-b': {
     id:'a0-12-b-dialogue', titleMn:'Богино яриа — хүүхэдтэй юу?', contextMn:'Нөгөө хүн таныг хүүхэдтэй эсэхийг асууж байна.',
     steps:[
       { id:'a12b-d1', speaker:'Нөгөө хүн', staffCzech:'Máte děti?', staffMn:'Та хүүхэдтэй юу?', promptMn:'Та нэг хүүхэдтэйгээ хэлээрэй.', choices:choices([['a','Mám dítě.','Би хүүхэдтэй.'],['b','Mám děti.','Би хүүхдүүдтэй.'],['c','Nemám klíč.','Надад түлхүүр байхгүй.']]), correctId:'a', feedbackMn:'Нэг хүүхэдтэй бол Mám dítě. гэж хэлнэ.' },
-      { id:'a12b-d2', speaker:'Нөгөө хүн', staffCzech:'Máte rodinu?', staffMn:'Та гэр бүлтэй юу?', promptMn:'Та гэр бүлтэйгээ хэлээрэй.', choices:choices([['a','Mám rodinu.','Би гэр бүлтэй.'],['b','Mám teplotu.','Би халуурч байна.'],['c','Mám čas.','Би завтай.']]), correctId:'a', feedbackMn:'Mám rodinu. = Би гэр бүлтэй.' },
+      { id:'a12b-d2', speaker:'Нөгөө хүн', staffCzech:'Máte děti?', staffMn:'Та хүүхэдтэй юу?', promptMn:'Та хүүхдүүдтэйгээ хэлээрэй.', choices:choices([['a','Ano, mám děti.','Тийм, би хүүхдүүдтэй.'],['b','Mám teplotu.','Би халуурч байна.'],['c','Mám čas.','Би завтай.']]), correctId:'a', feedbackMn:'Олон хүүхэдтэй бол Ano, mám děti. гэж хэлнэ.' },
     ],
   },
   'a0-12-c': {
     id:'a0-12-c-dialogue', titleMn:'Богино яриа — гэр бүлтэйгээ байна', contextMn:'Таныг энд ганцаараа эсвэл гэр бүлтэйгээ байгаа эсэхийг асууж байна.',
     steps:[
-      { id:'a12c-d1', speaker:'Нөгөө хүн', staffCzech:'Jste tady s rodinou?', staffMn:'Та энд гэр бүлтэйгээ байгаа юу?', promptMn:'Та гэр бүлтэйгээ байгаагаа хэлээрэй.', choices:choices([['a','Ano, jsem tady s rodinou.','Тийм, би энд гэр бүлтэйгээ байна.'],['b','Je mi zima.','Би даарч байна.'],['c','Pomoc!','Туслаарай!']]), correctId:'a', feedbackMn:'Гэр бүлтэйгээ байвал jsem tady s rodinou гэж хэлнэ.' },
-      { id:'a12c-d2', speaker:'Нөгөө хүн', staffCzech:'Dobře.', staffMn:'За.', promptMn:'Та талархаарай.', choices:choices([['a','Děkuji.','Баярлалаа.'],['b','Sněží.','Цас орж байна.'],['c','Zavolejte prosím policii.','Цагдаа дуудаж өгнө үү.']]), correctId:'a', feedbackMn:'Děkuji. = Баярлалаа.' },
+      { id:'a12c-d1', speaker:'Нөгөө хүн', staffCzech:'Jste tady s rodinou?', staffMn:'Та энд гэр бүлтэйгээ байгаа юу?', promptMn:'Та гэр бүлтэйгээ байгаагаа хэлээрэй.', choices:choices([['a','Ano, jsem tady s rodinou.','Тийм, би энд гэр бүлтэйгээ байна.'],['b','Je mi zima.','Би даарч байна.'],['c','Pomoc!','Туслаарай!']]), correctId:'a', feedbackMn:'Гэр бүлтэйгээ байвал Ano, jsem tady s rodinou. гэж хэлнэ.' },
+      { id:'a12c-d2', speaker:'Нөгөө хүн', staffCzech:'Máte děti tady?', staffMn:'Хүүхдүүд тань энд байгаа юу?', promptMn:'Та хүүхдүүдтэйгээ байгаагаа хэлээрэй.', choices:choices([['a','Ano, mám děti tady.','Тийм, хүүхдүүд маань энд байна.'],['b','Sněží.','Цас орж байна.'],['c','Zavolejte prosím policii.','Цагдаа дуудаж өгнө үү.']]), correctId:'a', feedbackMn:'Гэр бүлийн тухай ярианд өмнөх děti үг бодит асуултад орж байна.' },
     ],
   },
   'a0-12-d': {
