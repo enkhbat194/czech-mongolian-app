@@ -3,4 +3,4 @@ export {
   a0FirstContactFinalDialogue as a0FirstContactCoveredFinalDialogue,
   a0NeedsMicroDialogues as a0NeedsCoveredMicroDialogues,
   a0NeedsFinalDialogue as a0NeedsCoveredFinalDialogue,
-} from './a0Dialogues';
+} from './a0CoreRealityDialogues';
