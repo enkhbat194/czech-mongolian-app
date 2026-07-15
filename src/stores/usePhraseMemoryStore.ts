@@ -1,6 +1,6 @@
 import { a0MemoryTargets, getPriorActiveTargetIds } from '../data/a0MemoryPlan';
 import { getA0CarryoverSeedRank } from '../data/a0CarryoverSeeds';
-import { useAppStore, type AppState, type SRSCard } from './useAppStore';
+import { useAppStore, type AppState, type SRSAttemptMeta, type SRSMistakeType, type SRSCard } from './useAppStore';
 
 export interface PhraseMemory {
   targetId: string;
@@ -10,12 +10,16 @@ export interface PhraseMemory {
   repetitions: number;
   nextReview: string;
   lastSeen: string;
+  lastResponseTimeMs: number;
+  lastMistakeType: SRSMistakeType;
+  correctStreak: number;
+  lastAnswerAt: string;
 }
 
 interface PhraseMemoryState {
   phrases: Record<string, PhraseMemory>;
   recordExposure: (targetId: string) => void;
-  recordAttempt: (targetId: string, correct: boolean) => void;
+  recordAttempt: (targetId: string, correct: boolean, attempt?: SRSAttemptMeta) => void;
   getCarryoverTargetIds: (lessonId: string, limit?: number) => string[];
   getTodayReviewTargetIds: (limit?: number) => string[];
 }
@@ -32,6 +36,10 @@ function toPhraseMemory(card: SRSCard): PhraseMemory {
     repetitions: card.repetitions,
     nextReview: card.nextReview,
     lastSeen: card.lastReview,
+    lastResponseTimeMs: card.lastResponseTimeMs,
+    lastMistakeType: card.lastMistakeType,
+    correctStreak: card.correctStreak,
+    lastAnswerAt: card.lastAnswerAt,
   };
 }
 
@@ -58,8 +66,8 @@ const stableActions = {
   recordExposure: (targetId: string) => {
     if (isKnownMemoryTarget(targetId)) useAppStore.getState().activateWordForReview(targetId);
   },
-  recordAttempt: (targetId: string, correct: boolean) => {
-    if (isKnownMemoryTarget(targetId)) useAppStore.getState().updateSRSCard(targetId, correct ? 4 : 1);
+  recordAttempt: (targetId: string, correct: boolean, attempt?: SRSAttemptMeta) => {
+    if (isKnownMemoryTarget(targetId)) useAppStore.getState().updateSRSCard(targetId, correct ? 4 : 1, attempt);
   },
   getCarryoverTargetIds: (lessonId: string, limit = 3) => {
     const phrases = getPhrases(useAppStore.getState().progress.srsCards);
