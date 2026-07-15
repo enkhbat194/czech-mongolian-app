@@ -53,6 +53,9 @@ jobs:
       - name: Audit offline foundation
         run: npm run audit:offline
 
+      - name: Audit reuse density
+        run: npm run audit:reuse
+
       - name: Build
         run: npm run build
 
