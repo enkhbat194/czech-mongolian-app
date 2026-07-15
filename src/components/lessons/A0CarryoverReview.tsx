@@ -28,7 +28,7 @@ function stableShuffle<T>(items: T[], seedText: string): T[] {
 
 const A0CarryoverReview: React.FC<A0CarryoverReviewProps> = ({ lessonId, onComplete }) => {
   const recordAttempt = usePhraseMemoryStore((state) => state.recordAttempt);
-  const [targetIds] = useState(() => usePhraseMemoryStore.getState().getCarryoverTargetIds(lessonId, 3));
+  const [targetIds] = useState(() => usePhraseMemoryStore.getState().getCarryoverTargetIds(lessonId));
   const [index, setIndex] = useState(0);
   const [feedback, setFeedback] = useState<Feedback>(null);
   const [pickedId, setPickedId] = useState<string | null>(null);
