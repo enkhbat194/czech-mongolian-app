@@ -8,6 +8,8 @@ import { getLocalDateKey, getMondayIndex, getWeekStartKey } from '../utils/study
 
 export type SRSMistakeType = 'none' | 'recognition' | 'recall' | 'typing' | 'listening' | 'confusion';
 
+const validMistakeTypes: readonly SRSMistakeType[] = ['none', 'recognition', 'recall', 'typing', 'listening', 'confusion'];
+
 export interface SRSAttemptMeta {
   responseTimeMs?: number;
   mistakeType?: SRSMistakeType;
@@ -123,6 +125,10 @@ function createReviewCard(wordId: string): SRSCard {
   };
 }
 
+function normalizeMistakeType(value: unknown): SRSMistakeType {
+  return typeof value === 'string' && validMistakeTypes.includes(value as SRSMistakeType) ? value as SRSMistakeType : 'none';
+}
+
 function normalizeCard(card: Partial<SRSCard> & Pick<SRSCard, 'wordId'>): SRSCard {
   return {
     ...createReviewCard(card.wordId),
@@ -131,7 +137,7 @@ function normalizeCard(card: Partial<SRSCard> & Pick<SRSCard, 'wordId'>): SRSCar
     correctAttempts: card.correctAttempts ?? 0,
     incorrectAttempts: card.incorrectAttempts ?? 0,
     lastResponseTimeMs: card.lastResponseTimeMs ?? 0,
-    lastMistakeType: card.lastMistakeType ?? 'none',
+    lastMistakeType: normalizeMistakeType(card.lastMistakeType),
     correctStreak: card.correctStreak ?? 0,
     lastAnswerAt: card.lastAnswerAt ?? '',
   };
@@ -143,7 +149,8 @@ function normalizeResponseTime(value: number | undefined, fallback: number) {
 
 function resolveMistakeType(quality: 0 | 1 | 2 | 3 | 4 | 5, attempt?: SRSAttemptMeta): SRSMistakeType {
   if (quality >= 3) return 'none';
-  return attempt?.mistakeType && attempt.mistakeType !== 'none' ? attempt.mistakeType : 'recall';
+  const mistakeType = normalizeMistakeType(attempt?.mistakeType);
+  return mistakeType === 'none' ? 'recall' : mistakeType;
 }
 
 function normalizeCalendar(progress: UserProgress, now = new Date()): UserProgress {
