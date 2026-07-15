@@ -36,6 +36,9 @@ const TodayReviewPage: React.FC = () => {
   const recordAttempt = usePhraseMemoryStore((state) => state.recordAttempt);
 
   const [targetIds] = useState(() => usePhraseMemoryStore.getState().getTodayReviewTargetIds());
+  // Session-scoped seed: choice order is stable within one session but differs
+  // across sessions, so learners cannot memorize the answer position.
+  const [sessionSeed] = useState(() => `${Date.now()}-${Math.random()}`);
   const [queueIds, setQueueIds] = useState<string[]>(() => targetIds);
   const [repairCounts, setRepairCounts] = useState<Record<string, number>>({});
   const [index, setIndex] = useState(0);
@@ -69,15 +72,15 @@ const TodayReviewPage: React.FC = () => {
     if (!current) return [];
     const merged = [current];
     const seen = new Set([current.id]);
-    const filler = stableShuffle(activePool, `${current.id}-today-options`);
+    const filler = stableShuffle(activePool, `${sessionSeed}:${current.id}-today-options`);
     for (const item of [...getA0ConfusionChoices(current, activePool, 3), ...filler]) {
       if (merged.length >= 4) break;
       if (seen.has(item.id)) continue;
       seen.add(item.id);
       merged.push(item);
     }
-    return stableShuffle(merged, `${current.id}-today-final`);
-  }, [current, activePool]);
+    return stableShuffle(merged, `${sessionSeed}:${current.id}-today-final`);
+  }, [current, activePool, sessionSeed]);
 
   const finish = () => {
     addXP(targets.length * 4);

@@ -50,6 +50,9 @@ jobs:
       - name: Audit SRS
         run: npm run audit:srs
 
+      - name: Audit answer position
+        run: npm run audit:position
+
       - name: Audit offline foundation
         run: npm run audit:offline
 

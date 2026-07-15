@@ -17,6 +17,9 @@ interface A0CarryoverReviewProps {
 const A0CarryoverReview: React.FC<A0CarryoverReviewProps> = ({ lessonId, onComplete }) => {
   const recordAttempt = usePhraseMemoryStore((state) => state.recordAttempt);
   const [targetIds] = useState(() => usePhraseMemoryStore.getState().getCarryoverTargetIds(lessonId));
+  // Session-scoped seed keeps choice order stable within one review run while
+  // preventing learners from memorizing the answer position across sessions.
+  const [sessionSeed] = useState(() => `${Date.now()}-${Math.random()}`);
   const [index, setIndex] = useState(0);
   const [feedback, setFeedback] = useState<Feedback>(null);
   const [pickedId, setPickedId] = useState<string | null>(null);
@@ -40,8 +43,8 @@ const A0CarryoverReview: React.FC<A0CarryoverReviewProps> = ({ lessonId, onCompl
       seen.add(item.id);
       merged.push(item);
     }
-    return stableShuffle(merged, `${target.id}-carryover`);
-  }, [target, targets, distractorPool]);
+    return stableShuffle(merged, `${sessionSeed}:${target.id}-carryover`);
+  }, [target, targets, distractorPool, sessionSeed]);
 
   useEffect(() => {
     if (targets.length === 0) onComplete();
