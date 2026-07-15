@@ -10,6 +10,7 @@ export interface PhraseMemory {
   repetitions: number;
   nextReview: string;
   lastSeen: string;
+  quality: SRSCard['quality'];
   lastResponseTimeMs: number;
   lastMistakeType: SRSMistakeType;
   correctStreak: number;
@@ -36,6 +37,7 @@ function toPhraseMemory(card: SRSCard): PhraseMemory {
     repetitions: card.repetitions,
     nextReview: card.nextReview,
     lastSeen: card.lastReview,
+    quality: card.quality,
     lastResponseTimeMs: card.lastResponseTimeMs,
     lastMistakeType: card.lastMistakeType,
     correctStreak: card.correctStreak,
