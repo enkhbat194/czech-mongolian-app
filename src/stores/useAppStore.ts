@@ -6,6 +6,13 @@ import { lessons } from '../data/lessons';
 import type { Lesson } from '../data/lessons';
 import { getLocalDateKey, getMondayIndex, getWeekStartKey } from '../utils/studyCalendar';
 
+export type SRSMistakeType = 'none' | 'recognition' | 'recall' | 'typing' | 'listening' | 'confusion';
+
+export interface SRSAttemptMeta {
+  responseTimeMs?: number;
+  mistakeType?: SRSMistakeType;
+}
+
 export interface SRSCard {
   wordId: string;
   interval: number;
@@ -17,6 +24,10 @@ export interface SRSCard {
   exposures: number;
   correctAttempts: number;
   incorrectAttempts: number;
+  lastResponseTimeMs: number;
+  lastMistakeType: SRSMistakeType;
+  correctStreak: number;
+  lastAnswerAt: string;
 }
 
 export interface UserProgress {
@@ -56,7 +67,7 @@ export interface AppState {
   addMinutes: (minutes: number) => void;
   updateStreak: () => void;
   refreshCalendar: () => void;
-  updateSRSCard: (wordId: string, quality: 0 | 1 | 2 | 3 | 4 | 5) => void;
+  updateSRSCard: (wordId: string, quality: 0 | 1 | 2 | 3 | 4 | 5, attempt?: SRSAttemptMeta) => void;
   getDueReviewCards: () => SRSCard[];
   getWordsForLesson: (lessonId: string) => CzechWord[];
   getLessonProgress: (lessonId: string) => number;
@@ -94,11 +105,45 @@ function tomorrowIso() {
 
 function createReviewCard(wordId: string): SRSCard {
   const now = new Date().toISOString();
-  return { wordId, repetitions: 1, interval: 1, easeFactor: 2.5, nextReview: tomorrowIso(), lastReview: now, quality: 3, exposures: 0, correctAttempts: 0, incorrectAttempts: 0 };
+  return {
+    wordId,
+    repetitions: 1,
+    interval: 1,
+    easeFactor: 2.5,
+    nextReview: tomorrowIso(),
+    lastReview: now,
+    quality: 3,
+    exposures: 0,
+    correctAttempts: 0,
+    incorrectAttempts: 0,
+    lastResponseTimeMs: 0,
+    lastMistakeType: 'none',
+    correctStreak: 0,
+    lastAnswerAt: '',
+  };
 }
 
 function normalizeCard(card: Partial<SRSCard> & Pick<SRSCard, 'wordId'>): SRSCard {
-  return { ...createReviewCard(card.wordId), ...card, exposures: card.exposures ?? 0, correctAttempts: card.correctAttempts ?? 0, incorrectAttempts: card.incorrectAttempts ?? 0 };
+  return {
+    ...createReviewCard(card.wordId),
+    ...card,
+    exposures: card.exposures ?? 0,
+    correctAttempts: card.correctAttempts ?? 0,
+    incorrectAttempts: card.incorrectAttempts ?? 0,
+    lastResponseTimeMs: card.lastResponseTimeMs ?? 0,
+    lastMistakeType: card.lastMistakeType ?? 'none',
+    correctStreak: card.correctStreak ?? 0,
+    lastAnswerAt: card.lastAnswerAt ?? '',
+  };
+}
+
+function normalizeResponseTime(value: number | undefined, fallback: number) {
+  return typeof value === 'number' && Number.isFinite(value) && value >= 0 ? Math.round(value) : fallback;
+}
+
+function resolveMistakeType(quality: 0 | 1 | 2 | 3 | 4 | 5, attempt?: SRSAttemptMeta): SRSMistakeType {
+  if (quality >= 3) return 'none';
+  return attempt?.mistakeType && attempt.mistakeType !== 'none' ? attempt.mistakeType : 'recall';
 }
 
 function normalizeCalendar(progress: UserProgress, now = new Date()): UserProgress {
@@ -199,11 +244,22 @@ export const useAppStore = create<AppState>()(
         const normalized = normalizeCalendar(progress);
         if (hasCalendarChanged(progress, normalized)) set({ progress: normalized });
       },
-      updateSRSCard: (wordId, quality) => {
+      updateSRSCard: (wordId, quality, attempt) => {
         const { progress } = get();
         const current = normalizeCard(progress.srsCards[wordId] || createReviewCard(wordId));
+        const now = new Date().toISOString();
         const scheduled = quality < 3 ? sm2(current, quality) : isDue(current) ? sm2(current, quality) : { ...current, quality: Math.max(current.quality, quality) as SRSCard['quality'] };
-        const updated = { ...scheduled, exposures: current.exposures + 1, correctAttempts: current.correctAttempts + (quality >= 3 ? 1 : 0), incorrectAttempts: current.incorrectAttempts + (quality < 3 ? 1 : 0), lastReview: new Date().toISOString() };
+        const updated = {
+          ...scheduled,
+          exposures: current.exposures + 1,
+          correctAttempts: current.correctAttempts + (quality >= 3 ? 1 : 0),
+          incorrectAttempts: current.incorrectAttempts + (quality < 3 ? 1 : 0),
+          lastReview: now,
+          lastResponseTimeMs: normalizeResponseTime(attempt?.responseTimeMs, current.lastResponseTimeMs),
+          lastMistakeType: resolveMistakeType(quality, attempt),
+          correctStreak: quality >= 3 ? current.correctStreak + 1 : 0,
+          lastAnswerAt: now,
+        };
         const cards = { ...progress.srsCards, [wordId]: updated };
         const learnedWords = quality < 3 ? progress.learnedWords.filter((id) => id !== wordId) : updated.repetitions >= 3 && updated.quality >= 4 && !progress.learnedWords.includes(wordId) ? [...progress.learnedWords, wordId] : progress.learnedWords;
         set({ progress: { ...progress, introducedWords: withIntroducedWord(progress, wordId), learnedWords, srsCards: cards } });
