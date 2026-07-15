@@ -37,7 +37,7 @@ const TodayReviewPage: React.FC = () => {
   const phrases = usePhraseMemoryStore((state) => state.phrases);
   const recordAttempt = usePhraseMemoryStore((state) => state.recordAttempt);
 
-  const [targetIds] = useState(() => usePhraseMemoryStore.getState().getTodayReviewTargetIds(5));
+  const [targetIds] = useState(() => usePhraseMemoryStore.getState().getTodayReviewTargetIds());
   const [index, setIndex] = useState(0);
   const [feedback, setFeedback] = useState<Feedback>(null);
   const [pickedId, setPickedId] = useState<string | null>(null);
