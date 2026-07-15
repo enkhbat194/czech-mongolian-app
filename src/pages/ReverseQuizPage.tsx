@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
-import { Check, ChevronLeft, Volume2, X } from 'lucide-react';
+import { Check, ChevronLeft, X } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { speakMongolian } from '../components/audio/czechSpeech';
 import { ProgressBar, XPToast } from '../components/UI/SharedComponents';
 import { useAppStore } from '../stores/useAppStore';
 
@@ -66,9 +65,8 @@ const ReverseQuizPage: React.FC = () => {
       <main style={{ maxWidth: 430, margin: '0 auto', padding: 20 }}>
         <AnimatePresence>{showXP && <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }} style={{ display: 'flex', justifyContent: 'center' }}><XPToast xp={10} /></motion.div>}</AnimatePresence>
         <section style={{ padding: 22, borderRadius: 24, background: '#1C1C1F', border: '1px solid #2A2A2F' }}>
-          <p style={{ color: '#A0A0A8', textAlign: 'center' }}>Монгол утгыг сонсоод Чех хувилбарыг сонгоно.</p>
-          <p style={{ minHeight: 70, margin: '14px 0', textAlign: 'center', fontSize: 24, fontWeight: 800 }}>{question.mongolian}</p>
-          <button onClick={() => speakMongolian(question.mongolian, { rate: .9 })} style={{ margin: '0 auto 22px', width: 64, height: 64, borderRadius: 32, display: 'grid', placeItems: 'center', background: 'rgba(200,149,42,.12)', border: '1px solid rgba(200,149,42,.35)', color: '#C8952A' }}><Volume2 size={28} /></button>
+          <p style={{ color: '#A0A0A8', textAlign: 'center' }}>Монгол утгыг хараад Чех хувилбарыг сонгоно.</p>
+          <p style={{ minHeight: 70, margin: '14px 0 24px', textAlign: 'center', fontSize: 24, fontWeight: 800 }}>{question.mongolian}</p>
           <div style={{ display: 'grid', gap: 10 }}>
             {question.options.map((option) => {
               const selectedOption = option === selected;
