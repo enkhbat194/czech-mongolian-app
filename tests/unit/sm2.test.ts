@@ -7,7 +7,9 @@ function card(overrides: Partial<SRSCard> = {}): SRSCard {
 }
 
 function daysFromNow(iso: string) {
-  return Math.round((new Date(iso).getTime() - Date.now()) / (24 * 60 * 60 * 1000));
+  // A few ms elapse between scheduling and this check, so "today" rounds to
+  // -0 on slower machines; || 0 normalizes it for Object.is equality in toBe.
+  return Math.round((new Date(iso).getTime() - Date.now()) / (24 * 60 * 60 * 1000)) || 0;
 }
 
 describe('sm2', () => {
