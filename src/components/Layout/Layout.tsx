@@ -19,6 +19,7 @@ import SentenceBuilderPage from '../../pages/SentenceBuilderPage';
 import InteractiveLearningPage from '../../pages/InteractiveLearningPage';
 import A0ReferenceLessonPage from '../../pages/A0ReferenceLessonPage';
 import TodayReviewPage from '../../pages/TodayReviewPage';
+import A0FinalMissionPage from '../../pages/A0FinalMissionPage';
 
 const v: Variants = {
   initial: { opacity: 0, y: 10 },
@@ -43,13 +44,14 @@ const pages: Record<string, React.FC> = {
   sentenceBuilder: SentenceBuilderPage,
   interactiveLearning: InteractiveLearningPage,
   todayReview: TodayReviewPage,
+  a0FinalMission: A0FinalMissionPage,
 };
 
 const Layout: React.FC = () => {
   const { currentPage, currentLessonId } = useAppStore();
   const isA0Lesson = currentPage === 'a0Lesson';
   const Page = isA0Lesson ? A0ReferenceLessonPage : (pages[currentPage] || HomePage);
-  const isImmersiveLesson = isA0Lesson || currentPage === 'todayReview';
+  const isImmersiveLesson = isA0Lesson || currentPage === 'todayReview' || currentPage === 'a0FinalMission';
 
   return (
     <div style={{ minHeight: '100dvh', background: '#080810', display: 'flex', justifyContent: 'center' }}>
