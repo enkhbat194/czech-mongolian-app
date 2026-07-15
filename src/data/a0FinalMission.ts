@@ -35,13 +35,13 @@ export const a0FinalMissionSections: A0FinalMissionSection[] = [
   {
     id: 'listening',
     titleMn: 'Сонсож таних',
-    goalMn: 'Чехээр сонсоод зөв утгыг сонгоно.',
+    goalMn: 'Чехээр сонсоод аль хэллэг байсныг сонгоно.',
     questions: [
       {
         id: 'a0-final-listen-write',
         type: 'listening',
         titleMn: 'Сонсох 1',
-        promptMn: 'Дууг сонсоод зөв утгыг сонго.',
+        promptMn: 'Дууг сонсоод сонссон Чех хэллэгээ сонго.',
         czech: 'Napište mi to, prosím.',
         targetId: 'a0c0146',
         choices: choices([
@@ -56,7 +56,7 @@ export const a0FinalMissionSections: A0FinalMissionSection[] = [
         id: 'a0-final-listen-ambulance',
         type: 'listening',
         titleMn: 'Сонсох 2',
-        promptMn: 'Дууг сонсоод зөв утгыг сонго.',
+        promptMn: 'Дууг сонсоод сонссон Чех хэллэгээ сонго.',
         czech: 'Zavolejte prosím sanitku.',
         targetId: 'a0c0178',
         choices: choices([
@@ -72,13 +72,13 @@ export const a0FinalMissionSections: A0FinalMissionSection[] = [
   {
     id: 'meaning',
     titleMn: 'Утга таних',
-    goalMn: 'Чех хэллэгийн зөв утгыг сонгоно.',
+    goalMn: 'Чех хэллэгийн Монгол утгыг сонгоно.',
     questions: [
       {
         id: 'a0-final-meaning-cold',
         type: 'choice',
         titleMn: 'Утга 1',
-        promptMn: 'Je mi zima. гэдэг нь ямар утгатай вэ?',
+        promptMn: 'Зөв Монгол утгыг сонго.',
         czech: 'Je mi zima.',
         targetId: 'a0c0165',
         choices: choices([
@@ -93,7 +93,7 @@ export const a0FinalMissionSections: A0FinalMissionSection[] = [
         id: 'a0-final-meaning-key',
         type: 'choice',
         titleMn: 'Утга 2',
-        promptMn: 'Nemám klíč. гэдэг нь ямар утгатай вэ?',
+        promptMn: 'Зөв Монгол утгыг сонго.',
         czech: 'Nemám klíč.',
         targetId: 'a0c0129',
         choices: choices([
@@ -109,13 +109,13 @@ export const a0FinalMissionSections: A0FinalMissionSection[] = [
   {
     id: 'typing',
     titleMn: 'Өөрөө бичих',
-    goalMn: 'Гол хамгаалах хэллэгийг өөрөө бичнэ.',
+    goalMn: 'Санаж байвал өөрөө бичнэ. Мэдэхгүй бол хариуг харж үргэлжилж болно.',
     questions: [
       {
         id: 'a0-final-type-understand',
         type: 'typing',
         titleMn: 'Бичих 1',
-        promptMn: '“Би ойлгохгүй байна.” гэж Чехээр бич.',
+        promptMn: '“Би ойлгохгүй байна.” гэж Чехээр бичээд үз.',
         expectedText: 'Nerozumím.',
         acceptedAnswers: ['Nerozumím.', 'Nerozumím'],
         targetId: 'a0c0012',
@@ -125,7 +125,7 @@ export const a0FinalMissionSections: A0FinalMissionSection[] = [
         id: 'a0-final-type-czech',
         type: 'typing',
         titleMn: 'Бичих 2',
-        promptMn: '“Би бага зэрэг чехээр ярьдаг.” гэж Чехээр бич.',
+        promptMn: '“Би бага зэрэг чехээр ярьдаг.” гэж Чехээр бичээд үз.',
         expectedText: 'Mluvím trochu česky.',
         acceptedAnswers: ['Mluvím trochu česky.', 'Mluvím trochu česky'],
         targetId: 'a0c0185',
@@ -136,7 +136,7 @@ export const a0FinalMissionSections: A0FinalMissionSection[] = [
   {
     id: 'dialogue',
     titleMn: 'Ярианы шийдвэр',
-    goalMn: 'Нөхцөлд таарах хариуг сонгоно.',
+    goalMn: 'Нөхцөлд таарах Чех хариуг сонгоно.',
     questions: [
       {
         id: 'a0-final-dialogue-pay',
@@ -175,7 +175,7 @@ export const a0FinalMissionSections: A0FinalMissionSection[] = [
   {
     id: 'survival',
     titleMn: 'Амьд нөхцөл',
-    goalMn: 'Эхний өдөр хэрэг болох дараалсан хариуг сонгоно.',
+    goalMn: 'Эхний өдөр хэрэг болох дараалсан Чех хариуг сонгоно.',
     questions: [
       {
         id: 'a0-final-survival-name',
