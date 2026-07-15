@@ -17,9 +17,10 @@
     "audit:offline": "node scripts/audit-offline-foundation.mjs",
     "audit:reuse": "node scripts/audit-reuse-density.mjs",
     "test:calendar": "node scripts/test-study-calendar.mjs",
+    "test:unit": "vitest run",
     "audio:dry": "node scripts/synthesize-audio.mjs --dry-run",
     "audio:generate": "node scripts/synthesize-audio.mjs",
-    "check": "npm run lint && npm run test:calendar && npm run audit:a0 && npm run audit:contract && npm run audit:audio && npm run audit:pronunciation && npm run audit:srs && npm run audit:position && npm run audit:offline && npm run audit:reuse && npm run build && npm run audio:dry"
+    "check": "npm run lint && npm run test:calendar && npm run test:unit && npm run audit:a0 && npm run audit:contract && npm run audit:audio && npm run audit:pronunciation && npm run audit:srs && npm run audit:position && npm run audit:offline && npm run audit:reuse && npm run build && npm run audio:dry"
   },
   "dependencies": {
     "framer-motion": "^12.42.0",
@@ -37,6 +38,7 @@
     "oxlint": "^1.69.0",
     "tailwindcss": "^4.3.1",
     "typescript": "~6.0.2",
-    "vite": "^8.1.0"
+    "vite": "^8.1.0",
+    "vitest": "^4.1.10"
   }
 }

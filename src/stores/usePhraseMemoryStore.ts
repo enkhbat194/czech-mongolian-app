@@ -103,7 +103,7 @@ function clampTargetCount(value: number, total: number) {
   return Math.min(upper, Math.max(lower, value));
 }
 
-function getAdaptiveTargetCount(targetIds: string[], phrases: Record<string, PhraseMemory>, now: Date) {
+export function getAdaptiveTargetCount(targetIds: string[], phrases: Record<string, PhraseMemory>, now: Date) {
   const total = targetIds.length;
   if (total <= 0) return 0;
 

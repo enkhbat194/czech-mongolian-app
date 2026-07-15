@@ -132,7 +132,7 @@ function normalizeMistakeType(value: unknown): SRSMistakeType {
   return typeof value === 'string' && validMistakeTypes.includes(value as SRSMistakeType) ? value as SRSMistakeType : 'none';
 }
 
-function normalizeCard(card: Partial<SRSCard> & Pick<SRSCard, 'wordId'>): SRSCard {
+export function normalizeCard(card: Partial<SRSCard> & Pick<SRSCard, 'wordId'>): SRSCard {
   return {
     ...createReviewCard(card.wordId),
     ...card,
@@ -180,7 +180,7 @@ function hasCalendarChanged(previous: UserProgress, next: UserProgress) {
     || previous.weeklyXP.some((value, index) => value !== next.weeklyXP[index]);
 }
 
-function sm2(card: SRSCard, quality: 0 | 1 | 2 | 3 | 4 | 5): SRSCard {
+export function sm2(card: SRSCard, quality: 0 | 1 | 2 | 3 | 4 | 5): SRSCard {
   let { repetitions, easeFactor } = card;
   let interval = 0;
   if (quality >= 3) {

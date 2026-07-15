@@ -35,6 +35,9 @@ jobs:
       - name: Test study calendar
         run: npm run test:calendar
 
+      - name: Unit tests
+        run: npm run test:unit
+
       - name: Audit A0 data
         run: npm run audit:a0
 
