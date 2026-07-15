@@ -160,6 +160,9 @@ const A0LessonEngineV5: React.FC<{ config: A0LessonEngineConfig }> = ({ config }
   const [speaking, setSpeaking] = useState<SpeakingState>('idle');
   const [heard, setHeard] = useState('');
   const [microMistakes, setMicroMistakes] = useState(0);
+  // Session-scoped seed: exercise choice order is stable within one lesson run
+  // but differs across runs, so answer positions cannot be memorized.
+  const [sessionSeed] = useState(() => `${Date.now()}-${Math.random()}`);
 
   const speakingTimerRef = useRef<number | null>(null);
   const wrongTimerRef = useRef<number | null>(null);
@@ -187,9 +190,9 @@ const A0LessonEngineV5: React.FC<{ config: A0LessonEngineConfig }> = ({ config }
     return total;
   }, [cardIndex, config, dialogueProgress, exerciseIndex, micro, microDialogue?.steps.length, microIndex, stage, total]);
 
-  const choices = useMemo(() => exercise && (exercise.type === 'choice' || exercise.type === 'fillBlank') ? shuffle(exercise.choices, exercise.id) : [], [exercise]);
-  const czechPairs = useMemo(() => exercise?.type === 'match' ? shuffle(exercise.pairs, `${exercise.id}-cs`) : [], [exercise]);
-  const mongolianPairs = useMemo(() => exercise?.type === 'match' ? shuffle(exercise.pairs, `${exercise.id}-mn`) : [], [exercise]);
+  const choices = useMemo(() => exercise && (exercise.type === 'choice' || exercise.type === 'fillBlank') ? shuffle(exercise.choices, `${sessionSeed}:${exercise.id}`) : [], [exercise, sessionSeed]);
+  const czechPairs = useMemo(() => exercise?.type === 'match' ? shuffle(exercise.pairs, `${sessionSeed}:${exercise.id}-cs`) : [], [exercise, sessionSeed]);
+  const mongolianPairs = useMemo(() => exercise?.type === 'match' ? shuffle(exercise.pairs, `${sessionSeed}:${exercise.id}-mn`) : [], [exercise, sessionSeed]);
 
   const trackTextExposure = useCallback((text: string) => {
     const target = getA0MemoryTargetByCzech(text);

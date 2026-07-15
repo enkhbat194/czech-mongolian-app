@@ -66,10 +66,11 @@ globalCounts.forEach((count, position) => {
 
 // 2. Static checks: review surfaces must compose their shuffle seeds with a
 // session seed, and the shuffle implementation must have a single source.
-const [today, carryover, dialogueRunner] = await Promise.all([
+const [today, carryover, dialogueRunner, lessonEngine] = await Promise.all([
   readFile('src/pages/TodayReviewPage.tsx', 'utf8'),
   readFile('src/components/lessons/A0CarryoverReview.tsx', 'utf8'),
   readFile('src/components/lessons/DialogueRunner.tsx', 'utf8'),
+  readFile('src/components/lessons/A0LessonEngineV5.tsx', 'utf8'),
 ]);
 
 if (!/stableShuffle\([^)]*`\$\{sessionSeed\}/.test(today)) {
@@ -80,6 +81,9 @@ if (!/stableShuffle\([^)]*`\$\{sessionSeed\}/.test(carryover)) {
 }
 if (!/`\$\{sessionSeed\}:/.test(dialogueRunner)) {
   failures.push('DialogueRunner must keep its session-scoped dialogue choice seed.');
+}
+if (!/shuffle\(exercise\.choices,\s*`\$\{sessionSeed\}/.test(lessonEngine)) {
+  failures.push('A0LessonEngineV5 must include sessionSeed in its exercise choice seed.');
 }
 
 const { execSync } = await import('node:child_process');
