@@ -50,7 +50,7 @@ const WordQuizPage: React.FC = () => {
   };
 
   const handleCheck = () => {
-    if (!sel) return;
+    if (!sel || !q) return;
     const isCorrect = sel === q.mn;
     if (isCorrect) {
       addXP(10);

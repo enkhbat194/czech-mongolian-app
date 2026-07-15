@@ -26,6 +26,7 @@ const SpeakingPage: React.FC = () => {
   const [result, setResult] = useState<Result>(null);
   const [showXP, setShowXP] = useState(false);
   const phrase = PHRASES[index];
+  if (!phrase) return null;
 
   const listen = () => speakCzech(phrase.czech, { rate: 0.78 });
 

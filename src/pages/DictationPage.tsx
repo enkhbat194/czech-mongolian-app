@@ -7,19 +7,18 @@ import { speakCzech } from '../components/audio/czechSpeech';
 
 // Simple Levenshtein distance for "almost correct" checking
 function levenshtein(a: string, b: string): number {
-  const m: number[][] = [];
-  const min = Math.min;
   if (!(a && b)) return (b || a).length;
-  for (let i = 0; i <= b.length; m[i] = [i++]);
-  for (let j = 0; j <= a.length; m[0][j] = j++);
+  let prev: number[] = Array.from({ length: a.length + 1 }, (_, j) => j);
   for (let i = 1; i <= b.length; i++) {
+    const curr: number[] = [i];
     for (let j = 1; j <= a.length; j++) {
-      m[i][j] = b.charAt(i - 1) === a.charAt(j - 1)
-        ? m[i - 1][j - 1]
-        : m[i][j] = min(m[i - 1][j - 1] + 1, min(m[i][j - 1] + 1, m[i - 1][j] + 1));
+      curr[j] = b.charAt(i - 1) === a.charAt(j - 1)
+        ? (prev[j - 1] ?? 0)
+        : Math.min(prev[j - 1] ?? 0, curr[j - 1] ?? 0, prev[j] ?? 0) + 1;
     }
+    prev = curr;
   }
-  return m[b.length][a.length];
+  return prev[a.length] ?? 0;
 }
 
 interface Question { id: string; cz: string; mn: string; }
@@ -51,7 +50,7 @@ const DictationPage: React.FC = () => {
   };
 
   const handleCheck = () => {
-    if (!inputVal.trim()) return;
+    if (!q || !inputVal.trim()) return;
     const target = q.cz.trim().toLowerCase();
     const input = inputVal.trim().toLowerCase();
     

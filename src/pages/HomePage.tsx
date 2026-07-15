@@ -18,7 +18,7 @@ const HomePage: React.FC = () => {
   const maxWeeklyXp = Math.max(1, ...weekData.map((day) => day.xp));
   const goalPct = Math.min(100, Math.round((progress.todayMinutes / Math.max(progress.dailyGoalMinutes, 1)) * 100));
   const introducedWords = progress.introducedWords || progress.learnedWords || [];
-  const isUnlockedInSequence = (lessonIndex: number) => lessonIndex === 0 || progress.completedLessons.includes(courseLessons[lessonIndex - 1].id);
+  const isUnlockedInSequence = (lessonIndex: number) => lessonIndex === 0 || progress.completedLessons.includes(courseLessons[lessonIndex - 1]?.id ?? '');
   const active = courseLessons.filter((lesson, index) => lesson.status === 'ready' && isUnlockedInSequence(index));
   const nextLesson = active.find((lesson) => !progress.completedLessons.includes(lesson.id)) || active[0];
 

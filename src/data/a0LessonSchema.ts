@@ -101,7 +101,8 @@ function assertA0(condition: unknown, message: string): asserts condition {
   if (!condition) throw new Error(`A0 lesson schema error: ${message}`);
 }
 
-function assertDialogue(scenario: DialogueScenario, label: string, seenStepIds: Set<string>) {
+function assertDialogue(scenario: DialogueScenario | undefined, label: string, seenStepIds: Set<string>): asserts scenario is DialogueScenario {
+  assertA0(scenario, `${label} is missing its dialogue scenario`);
   assertA0(Boolean(scenario.id && scenario.titleMn && scenario.contextMn), `${label} has incomplete dialogue labels`);
   assertA0(scenario.steps.length > 0, `${label} has no dialogue steps`);
 
@@ -201,7 +202,7 @@ export function defineA0Lesson(definition: A0LessonDefinition): A0LessonDefiniti
 export function auditA0Lesson(definition: A0LessonDefinition): A0LessonAuditResult {
   defineA0Lesson(definition);
   const microDialogueStepCount = definition.microLessons.reduce(
-    (sum, micro) => sum + definition.microDialogues[micro.id].steps.length,
+    (sum, micro) => sum + (definition.microDialogues[micro.id]?.steps.length ?? 0),
     0,
   );
   return {

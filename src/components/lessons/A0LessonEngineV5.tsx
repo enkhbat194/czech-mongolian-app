@@ -12,6 +12,7 @@ import { getA0MemoryTargetByCzech } from '../../data/a0MemoryPlan';
 import type { DialogueScenario } from '../../data/a0Dialogues';
 import DialogueRunner from './DialogueRunner';
 import { speakCzech } from '../audio/czechSpeech';
+import { stableShuffle as shuffle } from '../../utils/stableShuffle';
 
 type Stage = 'cards' | 'exercises' | 'microDialogue' | 'microReward' | 'finalDialogue' | 'complete';
 type Feedback = 'correct' | 'wrong' | null;
@@ -76,20 +77,6 @@ const panel: React.CSSProperties = {
   borderRadius: 22,
   padding: 18,
 };
-
-function shuffle<T>(items: T[], seedText: string): T[] {
-  let seed = 2166136261;
-  for (let index = 0; index < seedText.length; index += 1) {
-    seed = Math.imul(seed ^ seedText.charCodeAt(index), 16777619);
-  }
-  const result = [...items];
-  for (let index = result.length - 1; index > 0; index -= 1) {
-    seed = Math.imul(seed ^ (seed >>> 13), 2246822507) >>> 0;
-    const swapIndex = seed % (index + 1);
-    [result[index], result[swapIndex]] = [result[swapIndex], result[index]];
-  }
-  return result;
-}
 
 function normalize(text: string) {
   return text
@@ -179,7 +166,8 @@ const A0LessonEngineV5: React.FC<{ config: A0LessonEngineConfig }> = ({ config }
   const recognitionRef = useRef<SpeechRecognitionLike | null>(null);
 
   const micro = config.microLessons[microIndex];
-  const card = micro ? config.getCard(micro.cardIds[cardIndex]) : null;
+  const currentCardId = micro?.cardIds[cardIndex];
+  const card = currentCardId ? config.getCard(currentCardId) : null;
   const baseExercise = micro?.exercises[exerciseIndex] ?? null;
   const baseExerciseId = baseExercise?.id;
   const exercise: EngineExercise | null = baseExercise ? getA0MatchExercise(baseExercise.id) ?? baseExercise : null;

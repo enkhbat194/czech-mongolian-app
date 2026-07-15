@@ -35,7 +35,7 @@ const LearningPathPage: React.FC = () => {
           const progressPercent = getLessonProgress(lesson.id);
           const done = progress.completedLessons.includes(lesson.id);
           const ready = lesson.status === 'ready';
-          const sequenceOpen = DEV_UNLOCK_READY_LESSONS || index === 0 || progress.completedLessons.includes(courseLessons[index - 1].id);
+          const sequenceOpen = DEV_UNLOCK_READY_LESSONS || index === 0 || progress.completedLessons.includes(courseLessons[index - 1]?.id ?? '');
           const locked = !ready || !sequenceOpen;
 
           return (

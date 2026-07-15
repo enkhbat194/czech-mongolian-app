@@ -36,5 +36,11 @@ const coreReferenceLessons: Record<'l001' | 'l002' | 'l003', A0LessonDefinition>
 };
 
 export const a0ReferenceLessons: Record<string, A0LessonDefinition> = { ...coreReferenceLessons, ...a0ReferenceNewLessons };
+
+export function getA0ReferenceLesson(lessonId: string): A0LessonDefinition {
+  const lesson = a0ReferenceLessons[lessonId];
+  if (!lesson) throw new Error(`Unknown A0 reference lesson: ${lessonId}`);
+  return lesson;
+}
 export const a0ReferenceAudit = Object.values(a0ReferenceLessons).map(auditA0Lesson);
 export { a0VocabularyAudit };

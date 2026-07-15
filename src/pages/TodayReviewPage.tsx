@@ -6,6 +6,7 @@ import { getA0ConfusionChoices } from '../data/a0ConfusionPairs';
 import { useAppStore } from '../stores/useAppStore';
 import { getMasteryTier, usePhraseMemoryStore, type MasteryTier } from '../stores/usePhraseMemoryStore';
 import { speakCzech } from '../components/audio/czechSpeech';
+import { stableShuffle } from '../utils/stableShuffle';
 
 type Feedback = 'correct' | 'wrong' | null;
 type ReviewMode = 'recognition' | 'reverse' | 'listening';
@@ -17,20 +18,6 @@ function getReviewMode(tier: MasteryTier): ReviewMode {
   if (tier === 'FAMILIAR') return 'reverse';
   if (tier === 'STRONG' || tier === 'MASTERED') return 'listening';
   return 'recognition';
-}
-
-function stableShuffle<T>(items: T[], seedText: string): T[] {
-  let seed = 2166136261;
-  for (let index = 0; index < seedText.length; index += 1) {
-    seed = Math.imul(seed ^ seedText.charCodeAt(index), 16777619);
-  }
-  const result = [...items];
-  for (let index = result.length - 1; index > 0; index -= 1) {
-    seed = Math.imul(seed ^ (seed >>> 13), 2246822507) >>> 0;
-    const swapIndex = seed % (index + 1);
-    [result[index], result[swapIndex]] = [result[swapIndex], result[index]];
-  }
-  return result;
 }
 
 const reviewPanel: React.CSSProperties = {

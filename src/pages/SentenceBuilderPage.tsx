@@ -34,7 +34,7 @@ function generateQuestions(words: any[]): Question[] {
       .filter((item) => item.id !== word.id)
       .flatMap((item) => tokenize(item.czech.includes(' ') ? item.czech : item.example))
       .filter((token) => token.length > 2 && /^[a-zA-Zěščřžýáíéůúťďň]+$/i.test(token));
-    const distractor = otherTokens.length > 0 ? otherTokens[Math.floor(Math.random() * otherTokens.length)] : 'jmenu';
+    const distractor = otherTokens[Math.floor(Math.random() * otherTokens.length)] ?? 'jmenu';
 
     return {
       id: word.id,

@@ -30,7 +30,7 @@ function findVoice(language: string) {
   if (typeof window === 'undefined' || !('speechSynthesis' in window)) return null;
 
   const normalizedLanguage = language.toLowerCase();
-  const languagePrefix = normalizedLanguage.split('-')[0];
+  const languagePrefix = normalizedLanguage.split('-')[0] ?? normalizedLanguage;
   const voices = window.speechSynthesis.getVoices();
 
   return voices.find((voice) => voice.lang.toLowerCase() === normalizedLanguage)

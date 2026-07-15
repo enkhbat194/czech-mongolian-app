@@ -4,6 +4,7 @@ import type { DialogueChoice, DialogueScenario } from '../../data/a0Dialogues';
 import { getA0MemoryTargetsByCzech } from '../../data/a0MemoryPlan';
 import { usePhraseMemoryStore } from '../../stores/usePhraseMemoryStore';
 import { cancelCzechSpeech, speakCzech } from '../audio/czechSpeech';
+import { stableShuffle } from '../../utils/stableShuffle';
 
 type DialogueStatus = 'playingQuestion' | 'awaitingAnswer' | 'correct' | 'wrong' | 'complete';
 type DialogueSide = 'staff' | 'learner';
@@ -24,21 +25,6 @@ export interface DialogueRunnerProps {
   onExposure?: (text: string) => void;
   onMistake?: () => void;
   completionBehavior?: 'continue' | 'stay';
-}
-
-function stableShuffle<T>(items: T[], seedText: string): T[] {
-  let seed = 2166136261;
-  for (let index = 0; index < seedText.length; index += 1) {
-    seed = Math.imul(seed ^ seedText.charCodeAt(index), 16777619);
-  }
-
-  const result = [...items];
-  for (let index = result.length - 1; index > 0; index -= 1) {
-    seed = Math.imul(seed ^ (seed >>> 13), 2246822507) >>> 0;
-    const swapIndex = seed % (index + 1);
-    [result[index], result[swapIndex]] = [result[swapIndex], result[index]];
-  }
-  return result;
 }
 
 function createSessionSeed() {

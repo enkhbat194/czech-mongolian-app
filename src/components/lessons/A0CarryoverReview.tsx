@@ -5,26 +5,13 @@ import { a0MemoryTargets, getA0MemoryTarget } from '../../data/a0MemoryPlan';
 import { getA0ConfusionChoices } from '../../data/a0ConfusionPairs';
 import { usePhraseMemoryStore } from '../../stores/usePhraseMemoryStore';
 import { speakCzech } from '../audio/czechSpeech';
+import { stableShuffle } from '../../utils/stableShuffle';
 
 type Feedback = 'correct' | 'wrong' | null;
 
 interface A0CarryoverReviewProps {
   lessonId: string;
   onComplete: () => void;
-}
-
-function stableShuffle<T>(items: T[], seedText: string): T[] {
-  let seed = 2166136261;
-  for (let index = 0; index < seedText.length; index += 1) {
-    seed = Math.imul(seed ^ seedText.charCodeAt(index), 16777619);
-  }
-  const result = [...items];
-  for (let index = result.length - 1; index > 0; index -= 1) {
-    seed = Math.imul(seed ^ (seed >>> 13), 2246822507) >>> 0;
-    const swapIndex = seed % (index + 1);
-    [result[index], result[swapIndex]] = [result[swapIndex], result[index]];
-  }
-  return result;
 }
 
 const A0CarryoverReview: React.FC<A0CarryoverReviewProps> = ({ lessonId, onComplete }) => {

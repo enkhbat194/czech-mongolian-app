@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import A0LessonEngine from '../components/lessons/A0LessonEngine';
 import A0CarryoverReview from '../components/lessons/A0CarryoverReview';
-import { a0ReferenceLessons } from '../data/a0ReferenceLessons';
+import { getA0ReferenceLesson } from '../data/a0ReferenceLessons';
 
 const A0LocationPage: React.FC = () => {
   const [carryoverComplete, setCarryoverComplete] = useState(false);
@@ -10,7 +10,7 @@ const A0LocationPage: React.FC = () => {
     return <A0CarryoverReview lessonId="l003" onComplete={() => setCarryoverComplete(true)} />;
   }
 
-  return <A0LessonEngine config={a0ReferenceLessons.l003} />;
+  return <A0LessonEngine config={getA0ReferenceLesson('l003')} />;
 };
 
 export default A0LocationPage;
