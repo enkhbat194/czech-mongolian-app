@@ -67,6 +67,17 @@ function getPhrases(cards: Record<string, SRSCard>) {
   return cachedPhrases;
 }
 
+export type MasteryTier = 'NEW' | 'WEAK' | 'FAMILIAR' | 'STRONG' | 'MASTERED';
+
+export function getMasteryTier(memory: PhraseMemory | undefined): MasteryTier {
+  if (!memory || memory.exposures <= 1) return 'NEW';
+  if (memory.incorrectAttempts > memory.correctAttempts || memory.repetitions <= 1) return 'WEAK';
+  if (memory.correctAttempts >= 5 && memory.repetitions >= 4 && memory.quality >= 4 && memory.correctStreak >= 2) return 'MASTERED';
+  if (memory.correctAttempts >= 3 && memory.repetitions >= 3 && memory.quality >= 4) return 'STRONG';
+  if (memory.correctAttempts >= 2 && memory.repetitions >= 2) return 'FAMILIAR';
+  return 'WEAK';
+}
+
 function weaknessScore(memory: PhraseMemory) {
   return memory.incorrectAttempts * 4 - memory.correctAttempts + (memory.repetitions <= 1 ? 2 : 0) + (memory.correctStreak === 0 ? 1 : 0);
 }
