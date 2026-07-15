@@ -16,6 +16,7 @@ const PracticePage: React.FC = () => {
   }).length;
 
   const options = [
+    { icon: '🏁', label: 'A0 хаалтын шалгалт', sub: 'Эхний өдрийн чадвараа шалгах', color: 'rgba(245,200,66,.14)', accent: '#F5C842', action: () => setPage('a0FinalMission') },
     { icon: '🌟', label: 'Шинэ үг үзэх', sub: 'Дэлгэрэнгүй танилцах', color: 'rgba(234,179,8,.15)', accent: '#EAB308', action: () => setPage('interactiveLearning') },
     { icon: '🃏', label: 'Флашкард', sub: 'Үг цээжлэх', color: 'rgba(200,149,42,.15)', accent: '#C8952A', action: () => { if (firstLesson) setCurrentLesson(firstLesson.id); setPage('flashcard'); } },
     { icon: '📝', label: 'Үг сонгох', sub: 'Чех → Монгол', color: 'rgba(56,189,248,.1)', accent: '#38BDF8', action: () => setPage('wordQuiz') },
