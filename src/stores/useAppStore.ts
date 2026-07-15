@@ -13,6 +13,7 @@ const validMistakeTypes: readonly SRSMistakeType[] = ['none', 'recognition', 're
 export interface SRSAttemptMeta {
   responseTimeMs?: number;
   mistakeType?: SRSMistakeType;
+  confusedWith?: string;
 }
 
 export interface SRSCard {
@@ -30,6 +31,7 @@ export interface SRSCard {
   lastMistakeType: SRSMistakeType;
   correctStreak: number;
   lastAnswerAt: string;
+  lastConfusedWith: string;
 }
 
 export interface UserProgress {
@@ -122,6 +124,7 @@ function createReviewCard(wordId: string): SRSCard {
     lastMistakeType: 'none',
     correctStreak: 0,
     lastAnswerAt: '',
+    lastConfusedWith: '',
   };
 }
 
@@ -140,6 +143,7 @@ function normalizeCard(card: Partial<SRSCard> & Pick<SRSCard, 'wordId'>): SRSCar
     lastMistakeType: normalizeMistakeType(card.lastMistakeType),
     correctStreak: card.correctStreak ?? 0,
     lastAnswerAt: card.lastAnswerAt ?? '',
+    lastConfusedWith: typeof card.lastConfusedWith === 'string' ? card.lastConfusedWith : '',
   };
 }
 
@@ -266,6 +270,7 @@ export const useAppStore = create<AppState>()(
           lastMistakeType: resolveMistakeType(quality, attempt),
           correctStreak: quality >= 3 ? current.correctStreak + 1 : 0,
           lastAnswerAt: now,
+          lastConfusedWith: quality < 3 && attempt?.confusedWith ? attempt.confusedWith : current.lastConfusedWith,
         };
         const cards = { ...progress.srsCards, [wordId]: updated };
         const learnedWords = quality < 3 ? progress.learnedWords.filter((id) => id !== wordId) : updated.repetitions >= 3 && updated.quality >= 4 && !progress.learnedWords.includes(wordId) ? [...progress.learnedWords, wordId] : progress.learnedWords;

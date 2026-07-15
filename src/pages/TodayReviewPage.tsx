@@ -2,6 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { Check, ChevronLeft, RotateCcw, Volume2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { a0MemoryTargets, getA0MemoryTarget } from '../data/a0MemoryPlan';
+import { getA0ConfusionChoices } from '../data/a0ConfusionPairs';
 import { useAppStore } from '../stores/useAppStore';
 import { usePhraseMemoryStore } from '../stores/usePhraseMemoryStore';
 import { speakCzech } from '../components/audio/czechSpeech';
@@ -48,15 +49,25 @@ const TodayReviewPage: React.FC = () => {
     [targetIds],
   );
   const current = targets[index];
-  const activePool = current
-    ? a0MemoryTargets.filter((target) => target.priority === 'active' && target.lessonId <= current.lessonId)
-    : [];
-  const choices = current
-    ? stableShuffle([
-      current,
-      ...stableShuffle(activePool.filter((target) => target.id !== current.id), `${current.id}-today-options`).slice(0, 3),
-    ], `${current.id}-today-final`)
-    : [];
+  const activePool = useMemo(
+    () => current
+      ? a0MemoryTargets.filter((target) => target.priority === 'active' && target.lessonId <= current.lessonId && target.id !== current.id)
+      : [],
+    [current],
+  );
+  const choices = useMemo(() => {
+    if (!current) return [];
+    const merged = [current];
+    const seen = new Set([current.id]);
+    const filler = stableShuffle(activePool, `${current.id}-today-options`);
+    for (const item of [...getA0ConfusionChoices(current, activePool, 3), ...filler]) {
+      if (merged.length >= 4) break;
+      if (seen.has(item.id)) continue;
+      seen.add(item.id);
+      merged.push(item);
+    }
+    return stableShuffle(merged, `${current.id}-today-final`);
+  }, [current, activePool]);
 
   const finish = () => {
     addXP(targets.length * 4);
@@ -71,7 +82,7 @@ const TodayReviewPage: React.FC = () => {
     const chosen = a0MemoryTargets.find((target) => target.id === targetId);
     if (chosen) speakCzech(chosen.czech);
 
-    recordAttempt(current.id, correct);
+    recordAttempt(current.id, correct, correct ? undefined : { mistakeType: 'confusion', confusedWith: targetId });
     setPickedId(targetId);
     setFeedback(correct ? 'correct' : 'wrong');
   };

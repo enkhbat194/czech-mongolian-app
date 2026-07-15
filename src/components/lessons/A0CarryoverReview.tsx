@@ -1,7 +1,8 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Check, Volume2 } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { getA0MemoryTarget } from '../../data/a0MemoryPlan';
+import { a0MemoryTargets, getA0MemoryTarget } from '../../data/a0MemoryPlan';
+import { getA0ConfusionChoices } from '../../data/a0ConfusionPairs';
 import { usePhraseMemoryStore } from '../../stores/usePhraseMemoryStore';
 import { speakCzech } from '../audio/czechSpeech';
 
@@ -38,10 +39,22 @@ const A0CarryoverReview: React.FC<A0CarryoverReviewProps> = ({ lessonId, onCompl
     [targetIds],
   );
   const target = targets[index];
-  const choices = useMemo(
-    () => target ? stableShuffle(targets, `${target.id}-carryover`) : [],
-    [target, targets],
+  const distractorPool = useMemo(
+    () => a0MemoryTargets.filter((item) => item.priority === 'active' && item.lessonId < lessonId),
+    [lessonId],
   );
+  const choices = useMemo(() => {
+    if (!target) return [];
+    const merged = [target];
+    const seen = new Set([target.id]);
+    for (const item of [...getA0ConfusionChoices(target, distractorPool, 3), ...targets]) {
+      if (merged.length >= 4) break;
+      if (seen.has(item.id)) continue;
+      seen.add(item.id);
+      merged.push(item);
+    }
+    return stableShuffle(merged, `${target.id}-carryover`);
+  }, [target, targets, distractorPool]);
 
   useEffect(() => {
     if (targets.length === 0) onComplete();
@@ -51,14 +64,14 @@ const A0CarryoverReview: React.FC<A0CarryoverReviewProps> = ({ lessonId, onCompl
 
   const choose = (id: string) => {
     if (feedback === 'correct') return;
-    const picked = targets.find((item) => item.id === id);
+    const picked = choices.find((item) => item.id === id);
     if (!picked) return;
 
     speakCzech(picked.czech);
     const correct = id === target.id;
     setPickedId(id);
     setFeedback(correct ? 'correct' : 'wrong');
-    recordAttempt(target.id, correct);
+    recordAttempt(target.id, correct, correct ? undefined : { mistakeType: 'confusion', confusedWith: id });
   };
 
   const continueReview = () => {

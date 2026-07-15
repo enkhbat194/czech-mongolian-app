@@ -20,6 +20,7 @@ export interface PhraseMemory {
   lastMistakeType: SRSMistakeType;
   correctStreak: number;
   lastAnswerAt: string;
+  lastConfusedWith: string;
 }
 
 interface PhraseMemoryState {
@@ -47,6 +48,7 @@ function toPhraseMemory(card: SRSCard): PhraseMemory {
     lastMistakeType: card.lastMistakeType,
     correctStreak: card.correctStreak,
     lastAnswerAt: card.lastAnswerAt,
+    lastConfusedWith: card.lastConfusedWith,
   };
 }
 
