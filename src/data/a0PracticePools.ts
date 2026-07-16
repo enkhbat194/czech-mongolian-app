@@ -8,12 +8,15 @@ import { normalizeCzechForContract } from './lessonDataContract';
 // lines are never learner production material, and gender-marked forms are
 // held back from production until a learner profile exists.
 
-const BANNED_PRODUCTION_NORMALIZED = new Set([
-  'jsem novy',
-  'jsem nova',
-  'jsem tady sam',
-  'jsem tady sama',
-]);
+export type PracticeGenderForm = 'male' | 'female' | 'neutral';
+
+// Gender-marked forms are only offered for production once the learner's
+// profile resolves which form is theirs; neutral profiles get neither.
+const GENDER_BANNED_NORMALIZED: Record<PracticeGenderForm, ReadonlySet<string>> = {
+  male: new Set(['jsem nova', 'jsem tady sama']),
+  female: new Set(['jsem novy', 'jsem tady sam']),
+  neutral: new Set(['jsem novy', 'jsem nova', 'jsem tady sam', 'jsem tady sama']),
+};
 
 function containsHardcodedName(czech: string) {
   return /\beba\b/.test(normalizeCzechForContract(czech));
@@ -41,23 +44,23 @@ export function isA0StaffOnlyText(czech: string) {
   return staffNormalized.has(normalized) && !learnerSayNormalized.has(normalized);
 }
 
-export function isBannedProductionText(czech: string) {
-  return BANNED_PRODUCTION_NORMALIZED.has(normalizeCzechForContract(czech)) || containsHardcodedName(czech);
+export function isBannedProductionText(czech: string, genderForm: PracticeGenderForm = 'neutral') {
+  return GENDER_BANNED_NORMALIZED[genderForm].has(normalizeCzechForContract(czech)) || containsHardcodedName(czech);
 }
 
 function isLearnerSayTarget(target: A0MemoryTarget) {
   const normalized = normalizeCzechForContract(target.czech);
   return learnerSayNormalized.has(normalized)
     && !isA0StaffOnlyText(target.czech)
-    && !isBannedProductionText(target.czech);
+    && !containsHardcodedName(target.czech);
 }
 
-const learnerSayTargets: readonly A0MemoryTarget[] = a0MemoryTargets.filter(
+const learnerSayBase: readonly A0MemoryTarget[] = a0MemoryTargets.filter(
   (target) => target.priority === 'active' && isLearnerSayTarget(target),
 );
 
-export function getA0LearnerSayTargets(): readonly A0MemoryTarget[] {
-  return learnerSayTargets;
+export function getA0LearnerSayTargets(genderForm: PracticeGenderForm = 'neutral'): readonly A0MemoryTarget[] {
+  return learnerSayBase.filter((target) => !isBannedProductionText(target.czech, genderForm));
 }
 
 const ipaByNormalizedCzech = new Map(
@@ -86,13 +89,13 @@ export function pickPracticeTargets(
   return [...order(known), ...order(unknown)].slice(0, Math.max(0, limit));
 }
 
-export function getA0SpeakingPool(): readonly A0MemoryTarget[] {
-  return learnerSayTargets;
+export function getA0SpeakingPool(genderForm: PracticeGenderForm = 'neutral'): readonly A0MemoryTarget[] {
+  return getA0LearnerSayTargets(genderForm);
 }
 
 // Short phrases only: production typing must not dead-end a beginner.
-export function getA0ProductionPool(maxTokens = 4): readonly A0MemoryTarget[] {
-  return learnerSayTargets.filter((target) => tokenCount(target.czech) <= maxTokens);
+export function getA0ProductionPool(maxTokens = 4, genderForm: PracticeGenderForm = 'neutral'): readonly A0MemoryTarget[] {
+  return getA0LearnerSayTargets(genderForm).filter((target) => tokenCount(target.czech) <= maxTokens);
 }
 
 export interface A0FillBlankQuestion {
@@ -105,8 +108,8 @@ export interface A0FillBlankQuestion {
   options: string[];
 }
 
-export function buildA0FillBlankQuestions(introducedIds: readonly string[], limit = 10): A0FillBlankQuestion[] {
-  const pool = learnerSayTargets.filter((target) => tokenCount(target.czech) >= 2);
+export function buildA0FillBlankQuestions(introducedIds: readonly string[], limit = 10, genderForm: PracticeGenderForm = 'neutral'): A0FillBlankQuestion[] {
+  const pool = getA0LearnerSayTargets(genderForm).filter((target) => tokenCount(target.czech) >= 2);
   const picked = pickPracticeTargets(pool, introducedIds, limit);
   const questions: A0FillBlankQuestion[] = [];
 

@@ -6,6 +6,8 @@ import { lessons } from '../data/lessons';
 import type { Lesson } from '../data/lessons';
 import { getLocalDateKey, getMondayIndex, getWeekStartKey } from '../utils/studyCalendar';
 
+export type LearnerGenderForm = 'male' | 'female' | 'neutral';
+
 export type SRSMistakeType = 'none' | 'recognition' | 'recall' | 'typing' | 'listening' | 'confusion';
 
 const validMistakeTypes: readonly SRSMistakeType[] = ['none', 'recognition', 'recall', 'typing', 'listening', 'confusion'];
@@ -57,6 +59,8 @@ export interface AppState {
   currentLessonId: string | null;
   currentWordIndex: number;
   userName: string;
+  genderForm: LearnerGenderForm;
+  age: number | null;
   progress: UserProgress;
   isDarkMode: boolean;
   isAudioPlaying: boolean;
@@ -64,6 +68,8 @@ export interface AppState {
   setCurrentLesson: (lessonId: string) => void;
   setCurrentWordIndex: (index: number) => void;
   setUserName: (name: string) => void;
+  setGenderForm: (genderForm: LearnerGenderForm) => void;
+  setAge: (age: number | null) => void;
   activateWordForReview: (wordId: string) => void;
   markWordLearned: (wordId: string) => void;
   completeLesson: (lessonId: string) => void;
@@ -212,6 +218,8 @@ export const useAppStore = create<AppState>()(
       currentLessonId: null,
       currentWordIndex: 0,
       userName: 'Суралцагч',
+      genderForm: 'neutral',
+      age: null,
       progress: initialProgress,
       isDarkMode: true,
       isAudioPlaying: false,
@@ -219,6 +227,8 @@ export const useAppStore = create<AppState>()(
       setCurrentLesson: (lessonId) => set({ currentLessonId: lessonId, currentWordIndex: 0 }),
       setCurrentWordIndex: (index) => set({ currentWordIndex: index }),
       setUserName: (name) => set({ userName: name }),
+      setGenderForm: (genderForm) => set({ genderForm }),
+      setAge: (age) => set({ age }),
       activateWordForReview: (wordId) => {
         const { progress } = get();
         const current = progress.srsCards[wordId] ? normalizeCard(progress.srsCards[wordId]) : createReviewCard(wordId);
@@ -298,7 +308,7 @@ export const useAppStore = create<AppState>()(
     }),
     {
       name: 'czech-mn-a0-storage-v2',
-      partialize: (state) => ({ userName: state.userName, progress: state.progress, isDarkMode: state.isDarkMode }),
+      partialize: (state) => ({ userName: state.userName, genderForm: state.genderForm, age: state.age, progress: state.progress, isDarkMode: state.isDarkMode }),
       merge: (persisted, current) => {
         const saved = persisted as Partial<AppState>;
         const savedProgress = saved.progress as Partial<UserProgress> | undefined;

@@ -25,8 +25,9 @@ function formatSentence(tokens: string[]) {
 }
 
 function generateQuestions(): Question[] {
-  const introduced = useAppStore.getState().progress.introducedWords;
-  const pool = getA0LearnerSayTargets().filter((target) => {
+  const { progress, genderForm } = useAppStore.getState();
+  const introduced = progress.introducedWords;
+  const pool = getA0LearnerSayTargets(genderForm).filter((target) => {
     const count = target.czech.split(' ').filter(Boolean).length;
     return count >= 2 && count <= 5;
   });

@@ -11,8 +11,8 @@ type Question = { id: string; czech: string; mongolian: string };
 const CZECH_CHARS = ['ě', 'š', 'č', 'ř', 'ž', 'ý', 'á', 'í', 'é'];
 
 function makeQuestions(): Question[] {
-  const introduced = useAppStore.getState().progress.introducedWords;
-  return pickPracticeTargets(getA0ProductionPool(4), introduced, 10)
+  const { progress, genderForm } = useAppStore.getState();
+  return pickPracticeTargets(getA0ProductionPool(4, genderForm), progress.introducedWords, 10)
     .map((target) => ({ id: target.id, czech: target.czech, mongolian: target.mongolian }));
 }
 

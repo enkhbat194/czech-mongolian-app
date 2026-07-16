@@ -3,6 +3,8 @@ import { Volume2 } from 'lucide-react';
 import type { DialogueChoice, DialogueScenario } from '../../data/a0Dialogues';
 import { getA0MemoryTargetsByCzech } from '../../data/a0MemoryPlan';
 import { usePhraseMemoryStore } from '../../stores/usePhraseMemoryStore';
+import { useAppStore } from '../../stores/useAppStore';
+import { personalizeLearnerText } from '../../utils/learnerName';
 import { cancelCzechSpeech, speakCzech } from '../audio/czechSpeech';
 import { stableShuffle } from '../../utils/stableShuffle';
 
@@ -57,6 +59,8 @@ const DialogueRunner: React.FC<DialogueRunnerProps> = ({
   onMistake,
   completionBehavior = 'continue',
 }) => {
+  const userName = useAppStore((state) => state.userName);
+  const personalize = (text: string) => personalizeLearnerText(text, userName);
   const [index, setIndex] = useState(0);
   const [status, setStatus] = useState<DialogueStatus>('playingQuestion');
   const [pickedId, setPickedId] = useState<string | null>(null);
@@ -105,7 +109,7 @@ const DialogueRunner: React.FC<DialogueRunnerProps> = ({
 
     setStatus('playingQuestion');
     timerRef.current = window.setTimeout(() => {
-      speakCzech(step.staffCzech, { onFinished: () => setStatus('awaitingAnswer') });
+      speakCzech(personalize(step.staffCzech), { onFinished: () => setStatus('awaitingAnswer') });
     }, 180);
 
     return () => {
@@ -180,19 +184,19 @@ const DialogueRunner: React.FC<DialogueRunnerProps> = ({
         id: `${step.id}-staff`,
         side: 'staff',
         speaker: step.speaker,
-        czech: step.staffCzech,
-        mongolian: step.staffMn,
+        czech: personalize(step.staffCzech),
+        mongolian: personalize(step.staffMn),
       },
       {
         id: `${step.id}-learner`,
         side: 'learner',
         speaker: 'Та',
-        czech: reply.text,
-        mongolian: reply.mongolian,
+        czech: personalize(reply.text),
+        mongolian: personalize(reply.mongolian),
       },
     ]);
 
-    if (autoAudioRef.current) speakCzech(reply.text, { onFinished: advance });
+    if (autoAudioRef.current) speakCzech(personalize(reply.text), { onFinished: advance });
     else advance();
   };
 
@@ -221,8 +225,8 @@ const DialogueRunner: React.FC<DialogueRunnerProps> = ({
     id: `${step.id}-current`,
     side: 'staff',
     speaker: step.speaker,
-    czech: step.staffCzech,
-    mongolian: step.staffMn,
+    czech: personalize(step.staffCzech),
+    mongolian: personalize(step.staffMn),
   };
 
   return (
@@ -252,14 +256,14 @@ const DialogueRunner: React.FC<DialogueRunnerProps> = ({
         {(status === 'playingQuestion' || status === 'awaitingAnswer' || status === 'wrong') && (
           <div style={{ borderTop: '1px solid #2A2A2F', paddingTop: 11 }}>
             <p style={{ margin: '0 0 7px', color: '#C8952A', fontSize: 10, fontWeight: 900 }}>ТАНЫ ХАРИУ</p>
-            <h2 style={{ margin: '0 0 10px', fontSize: 15, lineHeight: 1.34 }}>{step.promptMn}</h2>
+            <h2 style={{ margin: '0 0 10px', fontSize: 15, lineHeight: 1.34 }}>{personalize(step.promptMn)}</h2>
             {status === 'playingQuestion' && <p style={{ margin: '-3px 0 8px', color: '#A0A0A8', fontSize: 11 }}>Асуулт дуустал сонсож байна…</p>}
             <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
               {choices.map((choice: DialogueChoice) => {
                 const wrong = status === 'wrong' && choice.id === pickedId;
                 return (
                   <button key={choice.id} onClick={() => choose(choice.id)} disabled={status === 'playingQuestion'} style={{ minHeight: 44, textAlign: 'left', padding: '10px 12px', borderRadius: 12, color: status === 'playingQuestion' ? '#8A8A93' : '#FFF', opacity: status === 'playingQuestion' ? 0.58 : 1, background: wrong ? 'rgba(239,68,68,.16)' : '#242428', border: wrong ? '1px solid rgba(239,68,68,.6)' : '1px solid #34343A', cursor: status === 'playingQuestion' ? 'default' : 'pointer', fontSize: 15, fontWeight: 700 }}>
-                    {choice.text}
+                    {personalize(choice.text)}
                   </button>
                 );
               })}

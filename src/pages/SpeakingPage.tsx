@@ -9,8 +9,8 @@ import { getA0PhraseIpa, getA0SpeakingPool, pickPracticeTargets } from '../data/
 const SESSION_PHRASE_COUNT = 8;
 
 function makeSessionPhrases() {
-  const introduced = useAppStore.getState().progress.introducedWords;
-  return pickPracticeTargets(getA0SpeakingPool(), introduced, SESSION_PHRASE_COUNT)
+  const { progress, genderForm } = useAppStore.getState();
+  return pickPracticeTargets(getA0SpeakingPool(genderForm), progress.introducedWords, SESSION_PHRASE_COUNT)
     .map((target) => ({ id: target.id, czech: target.czech, mongolian: target.mongolian, ipa: getA0PhraseIpa(target.czech) }));
 }
 

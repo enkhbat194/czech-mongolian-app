@@ -9,7 +9,7 @@ import { buildA0FillBlankQuestions } from '../data/a0PracticePools';
 
 const FillBlankPage: React.FC = () => {
   const { addXP, setPage, updateSRSCard } = useAppStore();
-  const questions = useMemo(() => buildA0FillBlankQuestions(useAppStore.getState().progress.introducedWords), []);
+  const questions = useMemo(() => buildA0FillBlankQuestions(useAppStore.getState().progress.introducedWords, 10, useAppStore.getState().genderForm), []);
   const [index, setIndex] = useState(0);
   const [selected, setSelected] = useState<string | null>(null);
   const [checked, setChecked] = useState(false);

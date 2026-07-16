@@ -26,8 +26,8 @@ function levenshtein(a: string, b: string): number {
 interface Question { id: string; cz: string; mn: string; }
 
 function generateQuestions(): Question[] {
-  const introduced = useAppStore.getState().progress.introducedWords;
-  return pickPracticeTargets(getA0ProductionPool(4), introduced, 10)
+  const { progress, genderForm } = useAppStore.getState();
+  return pickPracticeTargets(getA0ProductionPool(4, genderForm), progress.introducedWords, 10)
     .map((target) => ({ id: target.id, cz: target.czech, mn: target.mongolian }));
 }
 

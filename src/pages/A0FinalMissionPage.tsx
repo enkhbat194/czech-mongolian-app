@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { a0FinalMissionQuestionCount, a0FinalMissionSections, type A0FinalMissionQuestion } from '../data/a0FinalMission';
 import { speakCzech } from '../components/audio/czechSpeech';
 import { useAppStore } from '../stores/useAppStore';
+import { personalizeLearnerText } from '../utils/learnerName';
 import { usePhraseMemoryStore } from '../stores/usePhraseMemoryStore';
 
 type Feedback = 'correct' | 'wrong' | null;
@@ -36,6 +37,8 @@ function getChoicePrimaryText(question: A0FinalMissionQuestion, choice: { text: 
 }
 
 const A0FinalMissionPage: React.FC = () => {
+  const userName = useAppStore((state) => state.userName);
+  const personalize = (text: string) => personalizeLearnerText(text, userName);
   const setPage = useAppStore((state) => state.setPage);
   const addXP = useAppStore((state) => state.addXP);
   const addMinutes = useAppStore((state) => state.addMinutes);
@@ -58,7 +61,7 @@ const A0FinalMissionPage: React.FC = () => {
   );
 
   useEffect(() => {
-    if (question?.type === 'listening' && question.czech && feedback === null) speakCzech(question.czech, { rate: 0.86 });
+    if (question?.type === 'listening' && question.czech && feedback === null) speakCzech(personalize(question.czech), { rate: 0.86 });
   }, [question, feedback]);
 
   const finish = (finalScore: number) => {
@@ -78,7 +81,7 @@ const A0FinalMissionPage: React.FC = () => {
     if (!question || feedback !== null) return;
     const correct = choiceId === question.correctId;
     const chosen = question.choices?.find((choice) => choice.id === choiceId);
-    if (chosen && question.type !== 'choice') speakCzech(chosen.text);
+    if (chosen && question.type !== 'choice') speakCzech(personalize(chosen.text));
     saveAttempt(question, correct, choiceId);
     setPickedId(choiceId);
     setFeedback(correct ? 'correct' : 'wrong');
@@ -88,7 +91,7 @@ const A0FinalMissionPage: React.FC = () => {
   const submitTyping = () => {
     if (!question || feedback !== null) return;
     const correct = isTypingCorrect(question, typingValue);
-    if (question.expectedText) speakCzech(question.expectedText);
+    if (question.expectedText) speakCzech(personalize(question.expectedText));
     saveAttempt(question, correct);
     setFeedback(correct ? 'correct' : 'wrong');
     setScore((value) => value + (correct ? 1 : 0));
@@ -96,7 +99,7 @@ const A0FinalMissionPage: React.FC = () => {
 
   const revealTypingAnswer = () => {
     if (!question || feedback !== null) return;
-    if (question.expectedText) speakCzech(question.expectedText);
+    if (question.expectedText) speakCzech(personalize(question.expectedText));
     saveAttempt(question, false);
     setFeedback('wrong');
   };
@@ -169,17 +172,17 @@ const A0FinalMissionPage: React.FC = () => {
 
           {question.staffCzech && <div style={{ background: '#141416', border: '1px solid #303036', borderRadius: 16, padding: 14, marginBottom: 14 }}>
             <p style={{ margin: '0 0 5px', color: '#A0A0A8', fontSize: 12 }}>Нөхцөл</p>
-            <p style={{ margin: 0, fontSize: 18, fontWeight: 900 }}>{question.staffCzech}</p>
-            {question.staffMn && <p style={{ margin: '6px 0 0', color: '#A0A0A8', fontSize: 13 }}>{question.staffMn}</p>}
+            <p style={{ margin: 0, fontSize: 18, fontWeight: 900 }}>{personalize(question.staffCzech)}</p>
+            {question.staffMn && <p style={{ margin: '6px 0 0', color: '#A0A0A8', fontSize: 13 }}>{personalize(question.staffMn)}</p>}
           </div>}
 
           <div style={{ background: '#141416', border: '1px solid #303036', borderRadius: 16, padding: '18px 14px', marginBottom: 16 }}>
             {question.type === 'listening'
-              ? <button onClick={() => question.czech && speakCzech(question.czech, { rate: 0.86 })} style={{ display: 'flex', alignItems: 'center', gap: 10, margin: '0 auto 10px', padding: '10px 18px', borderRadius: 99, background: 'rgba(200,149,42,.14)', border: '1px solid rgba(200,149,42,.4)', color: '#F5C842', cursor: 'pointer', fontSize: 15, fontWeight: 800 }}><Volume2 size={19} /> Сонсох</button>
+              ? <button onClick={() => question.czech && speakCzech(personalize(question.czech), { rate: 0.86 })} style={{ display: 'flex', alignItems: 'center', gap: 10, margin: '0 auto 10px', padding: '10px 18px', borderRadius: 99, background: 'rgba(200,149,42,.14)', border: '1px solid rgba(200,149,42,.4)', color: '#F5C842', cursor: 'pointer', fontSize: 15, fontWeight: 800 }}><Volume2 size={19} /> Сонсох</button>
               : question.czech && question.type === 'choice'
-                ? <p style={{ margin: '0 0 10px', textAlign: 'center', fontSize: 22, fontWeight: 900 }}>{question.czech}</p>
+                ? <p style={{ margin: '0 0 10px', textAlign: 'center', fontSize: 22, fontWeight: 900 }}>{personalize(question.czech)}</p>
                 : null}
-            <p style={{ margin: 0, textAlign: 'center', color: '#FFF', fontSize: 17, fontWeight: 800, lineHeight: 1.35 }}>{question.promptMn}</p>
+            <p style={{ margin: 0, textAlign: 'center', color: '#FFF', fontSize: 17, fontWeight: 800, lineHeight: 1.35 }}>{personalize(question.promptMn)}</p>
           </div>
 
           {question.type === 'typing' ? <div>
@@ -192,12 +195,12 @@ const A0FinalMissionPage: React.FC = () => {
               const right = feedback !== null && choice.id === question.correctId;
               const wrong = feedback === 'wrong' && selected;
               const showTranslation = feedback !== null && question.type !== 'choice' && (right || selected);
-              return <button key={choice.id} onClick={() => answerChoice(choice.id)} disabled={feedback !== null} style={{ textAlign: 'left', padding: '13px 14px', borderRadius: 14, color: '#FFF', background: right ? 'rgba(34,197,94,.16)' : wrong ? 'rgba(239,68,68,.16)' : '#242428', border: right ? '1px solid rgba(34,197,94,.65)' : wrong ? '1px solid rgba(239,68,68,.65)' : '1px solid #34343A', cursor: feedback !== null ? 'default' : 'pointer', fontSize: 16 }}><span style={{ display: 'block', fontWeight: 800 }}>{getChoicePrimaryText(question, choice)}</span>{showTranslation && <span style={{ display: 'block', marginTop: 4, color: '#A0A0A8', fontSize: 12 }}>{choice.mongolian}</span>}</button>;
+              return <button key={choice.id} onClick={() => answerChoice(choice.id)} disabled={feedback !== null} style={{ textAlign: 'left', padding: '13px 14px', borderRadius: 14, color: '#FFF', background: right ? 'rgba(34,197,94,.16)' : wrong ? 'rgba(239,68,68,.16)' : '#242428', border: right ? '1px solid rgba(34,197,94,.65)' : wrong ? '1px solid rgba(239,68,68,.65)' : '1px solid #34343A', cursor: feedback !== null ? 'default' : 'pointer', fontSize: 16 }}><span style={{ display: 'block', fontWeight: 800 }}>{personalize(getChoicePrimaryText(question, choice))}</span>{showTranslation && <span style={{ display: 'block', marginTop: 4, color: '#A0A0A8', fontSize: 12 }}>{personalize(choice.mongolian)}</span>}</button>;
             })}
           </div>}
 
-          {feedback === 'correct' && <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 14, color: '#4ADE80', fontWeight: 800, fontSize: 13 }}><Check size={17} /> Зөв. {question.feedbackMn}</div>}
-          {feedback === 'wrong' && <div style={{ marginTop: 14, color: '#F87171', fontSize: 13, fontWeight: 800 }}>Буруу. {question.expectedText ? `Зөв нь: ${question.expectedText}. ` : ''}{question.feedbackMn}</div>}
+          {feedback === 'correct' && <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 14, color: '#4ADE80', fontWeight: 800, fontSize: 13 }}><Check size={17} /> Зөв. {personalize(question.feedbackMn)}</div>}
+          {feedback === 'wrong' && <div style={{ marginTop: 14, color: '#F87171', fontSize: 13, fontWeight: 800 }}>Буруу. {question.expectedText ? `Зөв нь: ${question.expectedText}. ` : ''}{personalize(question.feedbackMn)}</div>}
           {feedback !== null && <button onClick={continueMission} className="btn-gold" style={{ width: '100%', marginTop: 15, padding: 14, fontSize: 15 }}>{answeredCount >= a0FinalMissionQuestionCount ? 'Дуусгах' : 'Үргэлжлүүлэх'}</button>}
         </motion.div>
       </main>
