@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, Play, Pause, Check, X, RotateCcw } from 'lucide-react';
 import { cancelCzechSpeech, speakCzech } from '../components/audio/czechSpeech';
 import { useAppStore } from '../stores/useAppStore';
 import { Waveform, ProgressBar, XPToast } from '../components/UI/SharedComponents';
 import { isSrsEligiblePracticeTarget } from '../stores/usePhraseMemoryStore';
+import { getA0ListeningTargets, pickIntroducedPracticeTargets } from '../data/a0PracticePools';
+import type { A0MemoryTarget } from '../data/a0MemoryPlan';
 
 interface Question {
   id: string;
@@ -13,18 +15,42 @@ interface Question {
   options: string[];
 }
 
-function makeQuestions(words: any[]): Question[] {
-  return [...words].sort(() => Math.random() - 0.5).slice(0, 10).map((word) => ({
-    id: word.id,
-    czech: word.czech,
-    answer: word.mongolian,
-    options: [word.mongolian, ...words.filter((item: any) => item.id !== word.id).sort(() => Math.random() - 0.5).slice(0, 3).map((item: any) => item.mongolian)].sort(() => Math.random() - 0.5),
-  }));
+function normalizeMongolian(text: string) {
+  return text.toLocaleLowerCase('mn-MN').replace(/[.,?!…—-]/g, '').replace(/\s+/g, ' ').trim();
+}
+
+function makeQuestions(targets: readonly A0MemoryTarget[]): Question[] {
+  const shuffled = [...targets].sort(() => Math.random() - 0.5);
+  return shuffled.slice(0, 10).flatMap((target) => {
+    const answer = target.mongolian;
+    const seen = new Set([normalizeMongolian(answer)]);
+    const distractors: string[] = [];
+
+    for (const candidate of shuffled) {
+      if (candidate.id === target.id || distractors.length >= 3) continue;
+      const normalized = normalizeMongolian(candidate.mongolian);
+      if (!normalized || seen.has(normalized)) continue;
+      seen.add(normalized);
+      distractors.push(candidate.mongolian);
+    }
+
+    if (distractors.length < 1) return [];
+    return [{
+      id: target.id,
+      czech: target.czech,
+      answer,
+      options: [answer, ...distractors].sort(() => Math.random() - 0.5),
+    }];
+  });
 }
 
 const ListeningPage: React.FC = () => {
-  const { words, addXP, updateSRSCard, setPage } = useAppStore();
-  const [questions] = useState<Question[]>(() => makeQuestions(words));
+  const { addXP, updateSRSCard, setPage, progress, genderForm } = useAppStore();
+  const questions = useMemo(() => {
+    const pool = getA0ListeningTargets(genderForm);
+    const introduced = pickIntroducedPracticeTargets(pool, progress.introducedWords, 10);
+    return makeQuestions(introduced);
+  }, [genderForm, progress.introducedWords]);
   const [index, setIndex] = useState(0);
   const [selected, setSelected] = useState<string | null>(null);
   const [answered, setAnswered] = useState(false);
@@ -34,7 +60,19 @@ const ListeningPage: React.FC = () => {
   const [finished, setFinished] = useState(false);
   const question = questions[index];
 
-  if (!question) return null;
+  if (!question) {
+    return (
+      <div style={{ background: '#0C0C0E', minHeight: '100vh', padding: 20, fontFamily: 'Inter,sans-serif' }}>
+        <button onClick={() => setPage('practice')} style={{ width: 34, height: 34, borderRadius: 10, background: '#242428', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><ChevronLeft size={18} color="#A0A0A8" /></button>
+        <div style={{ marginTop: 80, background: '#1C1C1F', borderRadius: 24, padding: 28, textAlign: 'center', border: '1px solid #2A2A2F' }}>
+          <div style={{ fontSize: 48, marginBottom: 12 }}>🎧</div>
+          <h2 style={{ fontSize: 20, fontWeight: 900, color: '#FFF', marginBottom: 8 }}>Эхлээд хичээлээ үзээрэй</h2>
+          <p style={{ fontSize: 13, lineHeight: 1.6, color: '#A0A0A8', marginBottom: 20 }}>Сонсох дасгалд зөвхөн өмнө нь үзсэн Чех хэллэгүүд орно.</p>
+          <button onClick={() => setPage('path')} className="btn-gold" style={{ width: '100%', padding: 14, fontSize: 14 }}>Хичээл рүү очих</button>
+        </div>
+      </div>
+    );
+  }
 
   const play = () => {
     if (playing) {
@@ -57,8 +95,8 @@ const ListeningPage: React.FC = () => {
       setShowXP(true);
       window.setTimeout(() => setShowXP(false), 1100);
       if (isSrsEligiblePracticeTarget(question.id)) updateSRSCard(question.id, 5);
-    } else {
-      if (isSrsEligiblePracticeTarget(question.id)) updateSRSCard(question.id, 1);
+    } else if (isSrsEligiblePracticeTarget(question.id)) {
+      updateSRSCard(question.id, 1);
     }
     setScore((value) => ({ correct: value.correct + (correct ? 1 : 0), total: value.total + 1 }));
   };
