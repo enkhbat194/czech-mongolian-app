@@ -1,0 +1,47 @@
+import type { DialogueScenario } from './a0Dialogues';
+
+const choices = (items: Array<[string, string, string]>) => items.map(([id, text, mongolian]) => ({ id, text, mongolian }));
+
+export const a0FirstWeekMicroDialogues: Record<string, DialogueScenario> = {
+  'a0-15-a': {
+    id:'a0-15-a-dialogue', titleMn:'Богино яриа — шинэ хүн', contextMn:'Та эхний долоо хоногтоо шинэ хүн гэдгээ хэлж байна.',
+    steps:[
+      { id:'a15a-d1', speaker:'Нөгөө хүн', staffCzech:'Jste nový?', staffMn:'Та шинэ хүн үү?', promptMn:'Эрэгтэй хүн өөрийн тухай хариулна.', choices:choices([['a','Ano, jsem nový.','Тийм, би шинэ хүн.'],['b','Ano, jsem nová.','Тийм, би шинэ хүн.'],['c','Prší.','Бороо орж байна.']]), correctId:'a', feedbackMn:'Эрэгтэй хүн өөрийн тухай jsem nový гэж хэлнэ.' },
+      { id:'a15a-d2', speaker:'Нөгөө хүн', staffCzech:'Jste nová?', staffMn:'Та шинэ хүн үү?', promptMn:'Эмэгтэй хүн өөрийн тухай хариулна.', choices:choices([['a','Ano, jsem nová.','Тийм, би шинэ хүн.'],['b','Ano, jsem nový.','Тийм, би шинэ хүн.'],['c','Mám klíč.','Надад түлхүүр байна.']]), correctId:'a', feedbackMn:'Эмэгтэй хүн өөрийн тухай jsem nová гэж хэлнэ.' },
+    ],
+  },
+  'a0-15-b': {
+    id:'a0-15-b-dialogue', titleMn:'Богино яриа — чех хэл сурч байна', contextMn:'Та ойлгоход хэцүү үед өөрийгөө тайлбарлаж байна.',
+    steps:[
+      { id:'a15b-d1', speaker:'Нөгөө хүн', staffCzech:'Mluvíte česky?', staffMn:'Та чехээр ярьдаг уу?', promptMn:'Та бага зэрэг чехээр ярьдгаа хэлээрэй.', choices:choices([['a','Mluvím trochu česky.','Би бага зэрэг чехээр ярьдаг.'],['b','Mám teplotu.','Би халуурч байна.'],['c','Sněží.','Цас орж байна.']]), correctId:'a', feedbackMn:'Mluvím trochu česky. = Би бага зэрэг чехээр ярьдаг.' },
+      { id:'a15b-d2', speaker:'Нөгөө хүн', staffCzech:'Rozumíte?', staffMn:'Та ойлгож байна уу?', promptMn:'Та чех хэл сурч байгаагаа хэлээрэй.', choices:choices([['a','Učím se česky.','Би чех хэл сурч байна.'],['b','Jsem v pořádku.','Би зүгээр байна.'],['c','Mám děti.','Би хүүхдүүдтэй.']]), correctId:'a', feedbackMn:'Učím se česky. = Би чех хэл сурч байна.' },
+    ],
+  },
+  'a0-15-c': {
+    id:'a0-15-c-dialogue', titleMn:'Богино яриа — туслаарай', contextMn:'Та шинэ орчинд тусламж хүсэж байна.',
+    steps:[
+      { id:'a15c-d1', speaker:'Нөгөө хүн', staffCzech:'Co potřebujete?', staffMn:'Танд юу хэрэгтэй вэ?', promptMn:'Та эелдгээр тусламж хүсээрэй.', choices:choices([['a','Prosím, pomozte mi.','Надад туслаарай.'],['b','Pomoc!','Туслаарай!'],['c','Dnes je teplo.','Өнөөдөр дулаахан байна.']]), correctId:'a', feedbackMn:'Эелдгээр тусламж хүсэхдээ Prosím, pomozte mi. гэж хэлнэ.' },
+      { id:'a15c-d2', speaker:'Нөгөө хүн', staffCzech:'Dobře, pomůžu vám.', staffMn:'За, би танд тусалъя.', promptMn:'Та талархаарай.', choices:choices([['a','Děkuji.','Баярлалаа.'],['b','Mám problém.','Надад асуудал байна.'],['c','Je mi zima.','Би даарч байна.']]), correctId:'a', feedbackMn:'Тусламж авсны дараа Děkuji. гэж хэлнэ.' },
+    ],
+  },
+};
+
+export const a0FirstWeekFinalDialogue: DialogueScenario = {
+  id:'a0-15-final-dialogue', titleMn:'Төгсгөлийн амьдралын дараалал', contextMn:'Та Чехэд эхний долоо хоногтоо хамгийн хэрэгтэй хэллэгүүдийг нэг урт дараалалд ашиглаж байна.',
+  steps:[
+    { id:'a15final-d1', speaker:'Нөгөө хүн', staffCzech:'Dobrý den.', staffMn:'Сайн байна уу.', promptMn:'Та өөрийгөө танилцуулаарай.', choices:choices([['a','Dobrý den. Jmenuji se Eba. Jsem z Mongolska.','Сайн байна уу. Миний нэр Эба. Би Монголоос ирсэн.'],['b','Pomoc!','Туслаарай!'],['c','Prší.','Бороо орж байна.']]), correctId:'a', feedbackMn:'Танилцахдаа нэр, гарал орноо хэлж болно.' },
+    { id:'a15final-d2', speaker:'Нөгөө хүн', staffCzech:'Jste nový?', staffMn:'Та шинэ хүн үү?', promptMn:'Эрэгтэй хүн шинэ хүн гэдгээ хэлнэ.', choices:choices([['a','Ano, jsem nový.','Тийм, би шинэ хүн.'],['b','Ano, jsem nová.','Тийм, би шинэ хүн.'],['c','Ano, jsem tady s rodinou.','Тийм, би энд гэр бүлтэйгээ байна.']]), correctId:'a', feedbackMn:'Эрэгтэй хүн өөрийн тухай jsem nový гэж хэлнэ.' },
+    { id:'a15final-d3', speaker:'Нөгөө хүн', staffCzech:'Mluvíte česky?', staffMn:'Та чехээр ярьдаг уу?', promptMn:'Та бага зэрэг ярьдаг, чех хэл сурч байгаагаа хэлээрэй.', choices:choices([['a','Mluvím trochu česky. Učím se česky.','Би бага зэрэг чехээр ярьдаг. Би чех хэл сурч байна.'],['b','Dnes je teplo.','Өнөөдөр дулаахан байна.'],['c','Mám dítě.','Би хүүхэдтэй.']]), correctId:'a', feedbackMn:'Өөрийгөө тайлбарлах хоёр хэллэгийг хамт ашиглаж байна.' },
+    { id:'a15final-d4', speaker:'Нөгөө хүн', staffCzech:'Rozumíte?', staffMn:'Та ойлгож байна уу?', promptMn:'Та ойлгохгүй байвал удаан ярихыг хүсээрэй.', choices:choices([['a','Nerozumím. Mluvte prosím pomalu.','Би ойлгохгүй байна. Удаан ярьж өгнө үү.'],['b','Kolik to stojí? Platím kartou.','Энэ хэд вэ? Би картаар төлнө.'],['c','Bolí mě hlava.','Миний толгой өвдөж байна.']]), correctId:'a', feedbackMn:'Эхний долоо хоногт ойлгохгүй үед энэ хэллэг хамгийн их хэрэгтэй.' },
+    { id:'a15final-d5', speaker:'Нөгөө хүн', staffCzech:'Jste tady s rodinou?', staffMn:'Та энд гэр бүлтэйгээ байгаа юу?', promptMn:'Та гэр бүлтэйгээ байгаагаа хэлээрэй.', choices:choices([['a','Ano, jsem tady s rodinou. Mám děti.','Тийм, би энд гэр бүлтэйгээ байна. Би хүүхдүүдтэй.'],['b','Je mi zima.','Би даарч байна.'],['c','To je drahé.','Энэ үнэтэй байна.']]), correctId:'a', feedbackMn:'Гэр бүл, хүүхдийн хэллэгийг нэг хариултад ашиглаж байна.' },
+    { id:'a15final-d6', speaker:'Нөгөө хүн', staffCzech:'Kam jdete?', staffMn:'Та хаашаа явж байна?', promptMn:'Та утас хэрэгтэйгээ хэлээд, буудал хаана байгааг асуугаарай.', choices:choices([['a','Potřebuji telefon. Prosím, kde je zastávka?','Надад утас хэрэгтэй. Уучлаарай, буудал хаана байна?'],['b','Bolí mě hlava.','Миний толгой өвдөж байна.'],['c','Nejsem v pořádku.','Би зүгээр биш байна.']]), correctId:'a', feedbackMn:'Эхний долоо хоногт утас хэрэгтэй үед Potřebuji telefon. гэж хэлээд, дараа нь чиглэл асууж болно.' },
+    { id:'a15final-d7', speaker:'Нөгөө хүн', staffCzech:'Prší. Dnes je zima.', staffMn:'Бороо орж байна. Өнөөдөр хүйтэн байна.', promptMn:'Та даарч, хүрэм хэрэгтэйгээ хэлээрэй.', choices:choices([['a','Je mi zima. Potřebuji bundu.','Би даарч байна. Надад хүрэм хэрэгтэй.'],['b','Mám klíč.','Надад түлхүүр байна.'],['c','Dám si čaj.','Би цай авъя.']]), correctId:'a', feedbackMn:'Цаг агаарын хичээлийн хэллэг бодит нөхцөлд давтагдана.' },
+    { id:'a15final-d8', speaker:'Кафе', staffCzech:'Co si dáte?', staffMn:'Та юу авах вэ?', promptMn:'Та ус, хоол хүсээрэй.', choices:choices([['a','Chci vodu. Chci jídlo.','Би ус авъя. Би хоол авъя.'],['b','Zavolejte prosím policii.','Цагдаа дуудаж өгнө үү.'],['c','Jsem tady s rodinou.','Би энд гэр бүлтэйгээ байна.']]), correctId:'a', feedbackMn:'Кафед энгийнээр захиалахдаа Chci vodu. Chci jídlo. гэж хэлж болно.' },
+    { id:'a15final-d9', speaker:'Дэлгүүр', staffCzech:'Ještě něco?', staffMn:'Өөр зүйл авах уу?', promptMn:'Та үүнийг авахыг хүсээд, үнийг асуугаад картаар төлөхөө хэлээрэй.', choices:choices([['a','Chci tohle. Kolik to stojí? Platím kartou.','Үүнийг авъя. Энэ хэд вэ? Би картаар төлнө.'],['b','Je mi zima.','Би даарч байна.'],['c','Mám rodinu.','Би гэр бүлтэй.']]), correctId:'a', feedbackMn:'Дэлгүүрт зааж сонгоод Chci tohle. гэж хэлж болно.' },
+    { id:'a15final-d10', speaker:'Байр', staffCzech:'Jaký problém?', staffMn:'Ямар асуудал вэ?', promptMn:'Та өрөөний түлхүүр байхгүй байгаагаа хэлээрэй.', choices:choices([['a','Nemám klíč.','Өрөөний түлхүүр алга.'],['b','Prší.','Бороо орж байна.'],['c','Mám děti.','Би хүүхдүүдтэй.']]), correctId:'a', feedbackMn:'Байр, ресепшн дээр түлхүүрийн асуудлыг Nemám klíč. гэж шууд хэлж болно.' },
+    { id:'a15final-d11', speaker:'Эмийн сан', staffCzech:'Co vás bolí?', staffMn:'Юу өвдөж байна вэ?', promptMn:'Та толгой өвдөж, өвчин намдаах зүйл асуугаарай.', choices:choices([['a','Bolí mě hlava. Máte něco na bolest?','Миний толгой өвдөж байна. Өвчин намдаах юм байна уу?'],['b','Pošlete mi SMS, prosím.','Надад SMS явуулна уу.'],['c','Sněží.','Цас орж байна.']]), correctId:'a', feedbackMn:'Эмийн санд өвдөлтөө хэлээд өвчин намдаах зүйл асууж болно.' },
+    { id:'a15final-d12', speaker:'Нөгөө хүн', staffCzech:'Co se stalo?', staffMn:'Юу болсон бэ?', promptMn:'Та тусламж хэрэгтэй, зүгээр биш, эмч хэрэгтэй байгаагаа хэлээрэй.', choices:choices([['a','Potřebuji pomoc. Nejsem v pořádku. Zavolejte prosím doktora.','Надад тусламж хэрэгтэй. Би зүгээр биш байна. Эмч дуудаж өгнө үү.'],['b','Účtenku, prosím.','Баримт өгнө үү.'],['c','Dnes je teplo.','Өнөөдөр дулаахан байна.']]), correctId:'a', feedbackMn:'Аюулгүй байдлын үед эхлээд Potřebuji pomoc. гэж хэлж болно.' },
+    { id:'a15final-d13', speaker:'Нөгөө хүн', staffCzech:'Řeknu vám informace.', staffMn:'Би танд мэдээлэл хэлье.', promptMn:'Та дахин хэлүүлж, бичүүлж, SMS хүсээрэй.', choices:choices([['a','Ještě jednou, prosím. Napište mi to, prosím. Pošlete mi SMS, prosím.','Дахиад нэг удаа хэлнэ үү. Үүнийг надад бичээд өгнө үү. Надад SMS явуулна уу.'],['b','Potřebuji čepici.','Надад малгай хэрэгтэй.'],['c','Jsem nový.','Би шинэ хүн.']]), correctId:'a', feedbackMn:'Ойлгохгүй үед давтуулах, бичүүлэх, SMS хүсэх гурвыг дараалуулж ашиглаж болно.' },
+    { id:'a15final-d14', speaker:'Нөгөө хүн', staffCzech:'Dobře. Na shledanou.', staffMn:'За. Баяртай.', promptMn:'Та талархаад яриаг хаагаарай.', choices:choices([['a','Děkuji. Na shledanou.','Баярлалаа. Баяртай.'],['b','Pomoc!','Туслаарай!'],['c','Tohle, prosím.','Үүнийг авъя.']]), correctId:'a', feedbackMn:'Ямар ч нөхцөлд Děkuji. Na shledanou. гэж эелдгээр хааж болно.' },
+  ],
+};

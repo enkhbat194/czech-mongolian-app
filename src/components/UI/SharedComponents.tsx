@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Volume2, Loader2 } from 'lucide-react';
+import { cancelCzechSpeech, speakCzech } from '../audio/czechSpeech';
 
 /* ────────── AudioButton ────────── */
 export const AudioButton: React.FC<{ audioFile?:string; word:string; size?:'sm'|'md'|'lg' }> =
@@ -8,10 +9,20 @@ export const AudioButton: React.FC<{ audioFile?:string; word:string; size?:'sm'|
   const [playing,setPlaying] = useState(false);
   const [loading,setLoading] = useState(false);
   const ref = useRef<HTMLAudioElement|null>(null);
-  useEffect(() => () => { ref.current?.pause(); }, []);
+  useEffect(() => () => { ref.current?.pause(); cancelCzechSpeech(); }, []);
+
+  const tts = (text:string) => {
+    setPlaying(true);
+    speakCzech(text, { rate:.85, onFinished: () => setPlaying(false) });
+  };
 
   const play = async () => {
-    if (playing) { ref.current?.pause(); setPlaying(false); return; }
+    if (playing) {
+      ref.current?.pause();
+      cancelCzechSpeech();
+      setPlaying(false);
+      return;
+    }
     if (audioFile) {
       setLoading(true);
       try {
@@ -23,15 +34,6 @@ export const AudioButton: React.FC<{ audioFile?:string; word:string; size?:'sm'|
       } catch { tts(word); }
       finally { setLoading(false); }
     } else tts(word);
-  };
-
-  const tts = (t:string) => {
-    if (!('speechSynthesis' in window)) return;
-    const u = new SpeechSynthesisUtterance(t);
-    u.lang='cs-CZ'; u.rate=.85;
-    u.onstart = () => setPlaying(true);
-    u.onend   = () => setPlaying(false);
-    window.speechSynthesis.speak(u);
   };
 
   const sz = { sm:36, md:48, lg:56 };
@@ -58,7 +60,7 @@ export const AudioButton: React.FC<{ audioFile?:string; word:string; size?:'sm'|
         position:'absolute', inset:0, borderRadius:s/2,
         border:'2px solid rgba(200,149,42,.5)',
         animation:'pulse-ring .9s ease-out infinite',
-      }}/>}
+      }}/>} 
     </motion.button>
   );
 };

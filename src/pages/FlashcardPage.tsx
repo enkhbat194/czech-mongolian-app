@@ -3,8 +3,12 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight, RotateCcw, Check, X } from 'lucide-react';
 import { useAppStore } from '../stores/useAppStore';
 import { AudioButton, ProgressBar, XPToast } from '../components/UI/SharedComponents';
+import { isSrsEligiblePracticeTarget } from '../stores/usePhraseMemoryStore';
+import { personalizeLearnerText } from '../utils/learnerName';
 
 const FlashcardPage: React.FC = () => {
+  const userName = useAppStore((state) => state.userName);
+  const personalize = (text: string) => personalizeLearnerText(text, userName);
   const {
     currentLessonId, currentWordIndex, setCurrentWordIndex,
     getWordsForLesson, markWordLearned, addXP, addMinutes,
@@ -35,7 +39,7 @@ const FlashcardPage: React.FC = () => {
     if (!word) return;
     if (!progress.learnedWords.includes(word.id)) {
       markWordLearned(word.id); addXP(xp); addMinutes(1);
-      updateSRSCard(word.id, quality); updateStreak();
+      if (isSrsEligiblePracticeTarget(word.id)) updateSRSCard(word.id, quality); updateStreak();
       award(xp);
     }
     setTimeout(() => {
@@ -168,9 +172,9 @@ const FlashcardPage: React.FC = () => {
                 <div style={{ background:'#1C1C1F', borderRadius:14, padding:14,
                   marginTop:16, width:'100%', textAlign:'left' }}>
                   <p style={{ fontSize:13, color:'#C8952A', marginBottom:4, fontStyle:'italic' }}>
-                    "{word.example}"
+                    "{personalize(word.example)}"
                   </p>
-                  <p style={{ fontSize:12, color:'#606068' }}>{word.exampleTranslation}</p>
+                  <p style={{ fontSize:12, color:'#606068' }}>{personalize(word.exampleTranslation)}</p>
                 </div>
               </motion.div>
             )}

@@ -7,18 +7,26 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "oxlint",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "audit:a0": "node scripts/audit-a0-ready.mjs",
+    "audit:contract": "node scripts/audit-data-contract.mjs",
+    "audit:audio": "node scripts/audit-audio-architecture.mjs",
+    "audit:pronunciation": "node scripts/audit-pronunciation-integrity.mjs",
+    "audit:srs": "node scripts/audit-srs-integrity.mjs",
+    "audit:position": "node scripts/audit-answer-position.mjs",
+    "audit:offline": "node scripts/audit-offline-foundation.mjs",
+    "audit:reuse": "node scripts/audit-reuse-density.mjs",
+    "test:calendar": "node scripts/test-study-calendar.mjs",
+    "test:unit": "vitest run",
+    "audio:dry": "node scripts/synthesize-audio.mjs --dry-run",
+    "audio:generate": "node scripts/synthesize-audio.mjs",
+    "check": "npm run lint && npm run test:calendar && npm run test:unit && npm run audit:a0 && npm run audit:contract && npm run audit:audio && npm run audit:pronunciation && npm run audit:srs && npm run audit:position && npm run audit:offline && npm run audit:reuse && npm run build && npm run audio:dry"
   },
   "dependencies": {
-    "@types/howler": "^2.2.13",
-    "@types/react-router-dom": "^5.3.3",
     "framer-motion": "^12.42.0",
-    "howler": "^2.2.4",
     "lucide-react": "^1.21.0",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
-    "react-router-dom": "^7.18.0",
-    "recharts": "^3.9.0",
     "zustand": "^5.0.14"
   },
   "devDependencies": {
@@ -30,6 +38,7 @@
     "oxlint": "^1.69.0",
     "tailwindcss": "^4.3.1",
     "typescript": "~6.0.2",
-    "vite": "^8.1.0"
+    "vite": "^8.1.0",
+    "vitest": "^4.1.10"
   }
 }
