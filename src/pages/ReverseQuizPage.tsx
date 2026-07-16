@@ -3,6 +3,7 @@ import { Check, ChevronLeft, X } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ProgressBar, XPToast } from '../components/UI/SharedComponents';
 import { useAppStore } from '../stores/useAppStore';
+import { isSrsEligiblePracticeTarget } from '../stores/usePhraseMemoryStore';
 
 type Question = { id: string; czech: string; mongolian: string; options: string[] };
 
@@ -37,8 +38,8 @@ const ReverseQuizPage: React.FC = () => {
       setScore((value) => value + 1);
       setShowXP(true);
       window.setTimeout(() => setShowXP(false), 1200);
-      updateSRSCard(question.id, 5);
-    } else updateSRSCard(question.id, 1);
+      if (isSrsEligiblePracticeTarget(question.id)) updateSRSCard(question.id, 5);
+    } else if (isSrsEligiblePracticeTarget(question.id)) updateSRSCard(question.id, 1);
   };
 
   const next = () => {

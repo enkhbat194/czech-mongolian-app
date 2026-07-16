@@ -4,6 +4,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { speakCzech } from '../components/audio/czechSpeech';
 import { ProgressBar, XPToast } from '../components/UI/SharedComponents';
 import { useAppStore } from '../stores/useAppStore';
+import { isSrsEligiblePracticeTarget } from '../stores/usePhraseMemoryStore';
 
 type Question = { id: string; czech: string; mongolian: string };
 const CZECH_CHARS = ['ě', 'š', 'č', 'ř', 'ž', 'ý', 'á', 'í', 'é'];
@@ -35,9 +36,9 @@ const WritingPage: React.FC = () => {
       setScore((value) => value + 1);
       setShowXP(true);
       window.setTimeout(() => setShowXP(false), 1200);
-      updateSRSCard(question.id, 5);
+      if (isSrsEligiblePracticeTarget(question.id)) updateSRSCard(question.id, 5);
     } else {
-      updateSRSCard(question.id, 1);
+      if (isSrsEligiblePracticeTarget(question.id)) updateSRSCard(question.id, 1);
     }
   };
 

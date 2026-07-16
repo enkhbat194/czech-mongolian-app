@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight, RotateCcw, Check, X } from 'lucide-react';
 import { useAppStore } from '../stores/useAppStore';
 import { AudioButton, ProgressBar, XPToast } from '../components/UI/SharedComponents';
+import { isSrsEligiblePracticeTarget } from '../stores/usePhraseMemoryStore';
 
 const FlashcardPage: React.FC = () => {
   const {
@@ -35,7 +36,7 @@ const FlashcardPage: React.FC = () => {
     if (!word) return;
     if (!progress.learnedWords.includes(word.id)) {
       markWordLearned(word.id); addXP(xp); addMinutes(1);
-      updateSRSCard(word.id, quality); updateStreak();
+      if (isSrsEligiblePracticeTarget(word.id)) updateSRSCard(word.id, quality); updateStreak();
       award(xp);
     }
     setTimeout(() => {

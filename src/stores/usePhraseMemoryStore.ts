@@ -67,6 +67,16 @@ function getPhrases(cards: Record<string, SRSCard>) {
   return cachedPhrases;
 }
 
+// Generic practice pages draw from the global word pool, which includes items
+// the learner has never been introduced to. Mastery evidence from those would
+// corrupt tiers and reviews, so practice may only write SRS for known A0
+// memory targets the learner has actually met in a lesson.
+export function isSrsEligiblePracticeTarget(targetId: string): boolean {
+  if (!isKnownMemoryTarget(targetId)) return false;
+  const { progress } = useAppStore.getState();
+  return progress.introducedWords.includes(targetId) || (progress.srsCards[targetId]?.exposures ?? 0) > 0;
+}
+
 export type MasteryTier = 'NEW' | 'WEAK' | 'FAMILIAR' | 'STRONG' | 'MASTERED';
 
 export function getMasteryTier(memory: PhraseMemory | undefined): MasteryTier {

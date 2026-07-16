@@ -4,6 +4,7 @@ import { ChevronLeft, Volume2, Check, X } from 'lucide-react';
 import { useAppStore } from '../stores/useAppStore';
 import { ProgressBar, XPToast } from '../components/UI/SharedComponents';
 import { speakCzech } from '../components/audio/czechSpeech';
+import { isSrsEligiblePracticeTarget } from '../stores/usePhraseMemoryStore';
 
 // Simple Levenshtein distance for "almost correct" checking
 function levenshtein(a: string, b: string): number {
@@ -61,7 +62,7 @@ const DictationPage: React.FC = () => {
       setScore(s => s + 1);
       setXP(true);
       setTimeout(() => setXP(false), 1200);
-      updateSRSCard(q.id, 5);
+      if (isSrsEligiblePracticeTarget(q.id)) updateSRSCard(q.id, 5);
       setPhase('result');
     } else {
       const dist = levenshtein(target, input);
@@ -72,7 +73,7 @@ const DictationPage: React.FC = () => {
         // Completely wrong
         setIsCorrect(false);
         setSoftError(false);
-        updateSRSCard(q.id, 1);
+        if (isSrsEligiblePracticeTarget(q.id)) updateSRSCard(q.id, 1);
         setPhase('result');
       }
     }

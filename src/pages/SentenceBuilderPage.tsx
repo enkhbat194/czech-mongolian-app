@@ -4,6 +4,7 @@ import { ChevronLeft, Volume2, Check, X } from 'lucide-react';
 import { speakCzech } from '../components/audio/czechSpeech';
 import { useAppStore } from '../stores/useAppStore';
 import { ProgressBar, XPToast } from '../components/UI/SharedComponents';
+import { isSrsEligiblePracticeTarget } from '../stores/usePhraseMemoryStore';
 
 interface Question {
   id: string;
@@ -71,9 +72,9 @@ const SentenceBuilderPage: React.FC = () => {
       setScore((value) => value + 1);
       setShowXP(true);
       window.setTimeout(() => setShowXP(false), 1200);
-      updateSRSCard(question.id, 5);
+      if (isSrsEligiblePracticeTarget(question.id)) updateSRSCard(question.id, 5);
     } else {
-      updateSRSCard(question.id, 1);
+      if (isSrsEligiblePracticeTarget(question.id)) updateSRSCard(question.id, 1);
     }
     setPhase('result');
   };

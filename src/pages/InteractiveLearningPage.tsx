@@ -4,6 +4,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { speakCzech } from '../components/audio/czechSpeech';
 import { ProgressBar, XPToast } from '../components/UI/SharedComponents';
 import { useAppStore } from '../stores/useAppStore';
+import { isSrsEligiblePracticeTarget } from '../stores/usePhraseMemoryStore';
 
 type Feedback = 'good' | 'again' | null;
 
@@ -38,9 +39,9 @@ const InteractiveLearningPage: React.FC = () => {
       addXP(20);
       setShowXP(true);
       window.setTimeout(() => setShowXP(false), 1200);
-      updateSRSCard(card.id, 5);
+      if (isSrsEligiblePracticeTarget(card.id)) updateSRSCard(card.id, 5);
     } else {
-      updateSRSCard(card.id, 1);
+      if (isSrsEligiblePracticeTarget(card.id)) updateSRSCard(card.id, 1);
     }
   };
 
@@ -53,7 +54,7 @@ const InteractiveLearningPage: React.FC = () => {
   };
 
   const skip = () => {
-    updateSRSCard(card.id, 4);
+    if (isSrsEligiblePracticeTarget(card.id)) updateSRSCard(card.id, 4);
     next();
   };
 

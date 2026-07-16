@@ -4,6 +4,7 @@ import { ChevronLeft, Volume2, Check, X } from 'lucide-react';
 import { useAppStore } from '../stores/useAppStore';
 import { ProgressBar, XPToast } from '../components/UI/SharedComponents';
 import { speakCzech } from '../components/audio/czechSpeech';
+import { isSrsEligiblePracticeTarget } from '../stores/usePhraseMemoryStore';
 
 interface MCQ {
   id: string;
@@ -57,9 +58,9 @@ const WordQuizPage: React.FC = () => {
       setScore(s => s + 1);
       setXP(true);
       setTimeout(() => setXP(false), 1200);
-      updateSRSCard(q.id, 5);
+      if (isSrsEligiblePracticeTarget(q.id)) updateSRSCard(q.id, 5);
     } else {
-      updateSRSCard(q.id, 1);
+      if (isSrsEligiblePracticeTarget(q.id)) updateSRSCard(q.id, 1);
     }
     setPhase('result');
   };

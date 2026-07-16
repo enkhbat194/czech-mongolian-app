@@ -4,6 +4,7 @@ import { ChevronLeft, Play, Pause, Check, X, RotateCcw } from 'lucide-react';
 import { cancelCzechSpeech, speakCzech } from '../components/audio/czechSpeech';
 import { useAppStore } from '../stores/useAppStore';
 import { Waveform, ProgressBar, XPToast } from '../components/UI/SharedComponents';
+import { isSrsEligiblePracticeTarget } from '../stores/usePhraseMemoryStore';
 
 interface Question {
   id: string;
@@ -55,9 +56,9 @@ const ListeningPage: React.FC = () => {
       addXP(15);
       setShowXP(true);
       window.setTimeout(() => setShowXP(false), 1100);
-      updateSRSCard(question.id, 5);
+      if (isSrsEligiblePracticeTarget(question.id)) updateSRSCard(question.id, 5);
     } else {
-      updateSRSCard(question.id, 1);
+      if (isSrsEligiblePracticeTarget(question.id)) updateSRSCard(question.id, 1);
     }
     setScore((value) => ({ correct: value.correct + (correct ? 1 : 0), total: value.total + 1 }));
   };
