@@ -5,50 +5,11 @@ import { speakCzech } from '../components/audio/czechSpeech';
 import { ProgressBar, XPToast } from '../components/UI/SharedComponents';
 import { useAppStore } from '../stores/useAppStore';
 import { isSrsEligiblePracticeTarget } from '../stores/usePhraseMemoryStore';
-
-type Question = {
-  id: string;
-  text: string;
-  mongolian: string;
-  before: string;
-  answer: string;
-  after: string;
-  options: string[];
-};
-
-function createQuestions(words: any[]): Question[] {
-  const candidates = words.filter((word) => word.czech.includes(' ') || word.example).slice(0, 20);
-  const unique = [...new Map(candidates.map((word) => [word.id, word])).values()];
-
-  return [...unique].sort(() => Math.random() - 0.5).slice(0, 10).map((word) => {
-    const text = word.czech.includes(' ') ? word.czech : word.example;
-    const mongolian = word.czech.includes(' ') ? word.mongolian : word.exampleTranslation;
-    const pieces = text.split(' ').filter(Boolean);
-    const answerIndex = Math.max(0, Math.floor(Math.random() * pieces.length));
-    const answer = pieces[answerIndex] ?? text;
-    const before = pieces.slice(0, answerIndex).join(' ');
-    const after = pieces.slice(answerIndex + 1).join(' ');
-    const pool = unique
-      .filter((item) => item.id !== word.id)
-      .flatMap((item) => (item.czech.includes(' ') ? item.czech : item.example ?? '').split(' '))
-      .filter((item) => item.length > 1 && item.toLocaleLowerCase() !== answer.toLocaleLowerCase());
-    const distractors = [...pool].sort(() => Math.random() - 0.5).slice(0, 3);
-
-    return {
-      id: word.id,
-      text,
-      mongolian,
-      before,
-      answer,
-      after,
-      options: [answer, ...distractors].sort(() => Math.random() - 0.5),
-    };
-  });
-}
+import { buildA0FillBlankQuestions } from '../data/a0PracticePools';
 
 const FillBlankPage: React.FC = () => {
-  const { words, addXP, setPage, updateSRSCard } = useAppStore();
-  const questions = useMemo(() => createQuestions(words), [words]);
+  const { addXP, setPage, updateSRSCard } = useAppStore();
+  const questions = useMemo(() => buildA0FillBlankQuestions(useAppStore.getState().progress.introducedWords), []);
   const [index, setIndex] = useState(0);
   const [selected, setSelected] = useState<string | null>(null);
   const [checked, setChecked] = useState(false);
@@ -109,7 +70,7 @@ const FillBlankPage: React.FC = () => {
         <AnimatePresence>{showXP && <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }} style={{ display: 'flex', justifyContent: 'center' }}><XPToast xp={15} /></motion.div>}</AnimatePresence>
         <section style={{ padding: 22, borderRadius: 24, background: '#1C1C1F', border: '1px solid #2A2A2F' }}>
           <p style={{ color: '#A0A0A8', marginTop: 0 }}>Өгүүлбэрийг зөв үгээр нөхнө үү.</p>
-          <button onClick={() => speakCzech(question.text, { rate: 0.8 })} style={{ margin: '6px auto 20px', width: 64, height: 64, borderRadius: 32, display: 'grid', placeItems: 'center', background: 'rgba(200,149,42,.1)', border: '1px solid rgba(200,149,42,.3)', color: '#C8952A' }}><Volume2 size={28} /></button>
+          {checked && <button onClick={() => speakCzech(question.czech, { rate: 0.8 })} style={{ margin: '6px auto 20px', width: 64, height: 64, borderRadius: 32, display: 'grid', placeItems: 'center', background: 'rgba(200,149,42,.1)', border: '1px solid rgba(200,149,42,.3)', color: '#C8952A' }}><Volume2 size={28} /></button>}
           <p style={{ color: '#C8952A', textAlign: 'center', fontSize: 13 }}>{question.mongolian}</p>
           <p style={{ minHeight: 70, textAlign: 'center', fontSize: 21, lineHeight: 1.7 }}>{question.before} <span style={{ borderBottom: '2px solid #C8952A', color: '#C8952A', padding: '0 8px' }}>{selected ?? ' '}</span> {question.after}</p>
           <div style={{ display: 'grid', gap: 10 }}>

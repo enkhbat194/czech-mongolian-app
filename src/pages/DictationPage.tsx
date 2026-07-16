@@ -5,6 +5,7 @@ import { useAppStore } from '../stores/useAppStore';
 import { ProgressBar, XPToast } from '../components/UI/SharedComponents';
 import { speakCzech } from '../components/audio/czechSpeech';
 import { isSrsEligiblePracticeTarget } from '../stores/usePhraseMemoryStore';
+import { getA0ProductionPool, pickPracticeTargets } from '../data/a0PracticePools';
 
 // Simple Levenshtein distance for "almost correct" checking
 function levenshtein(a: string, b: string): number {
@@ -24,16 +25,17 @@ function levenshtein(a: string, b: string): number {
 
 interface Question { id: string; cz: string; mn: string; }
 
-function generateQuestions(words: any[]): Question[] {
-  const shuffled = [...words].sort(() => Math.random() - 0.5).slice(0, 10);
-  return shuffled.map((w) => ({ id: w.id, cz: w.czech, mn: w.mongolian }));
+function generateQuestions(): Question[] {
+  const introduced = useAppStore.getState().progress.introducedWords;
+  return pickPracticeTargets(getA0ProductionPool(4), introduced, 10)
+    .map((target) => ({ id: target.id, cz: target.czech, mn: target.mongolian }));
 }
 
 const CZECH_CHARS = ['ě', 'š', 'č', 'ř', 'ž', 'ý', 'á', 'í', 'é'];
 
 const DictationPage: React.FC = () => {
-  const { words, addXP, setPage, updateSRSCard } = useAppStore();
-  const [qs] = useState<Question[]>(() => generateQuestions(words));
+  const { addXP, setPage, updateSRSCard } = useAppStore();
+  const [qs] = useState<Question[]>(generateQuestions);
   const [idx, setIdx] = useState(0);
   const [inputVal, setInputVal] = useState('');
   const [phase, setPhase] = useState<'question' | 'result'>('question');
@@ -77,6 +79,14 @@ const DictationPage: React.FC = () => {
         setPhase('result');
       }
     }
+  };
+
+  const giveUp = () => {
+    if (!q) return;
+    setIsCorrect(false);
+    setSoftError(false);
+    if (isSrsEligiblePracticeTarget(q.id)) updateSRSCard(q.id, 1);
+    setPhase('result');
   };
 
   const next = () => {
@@ -185,9 +195,12 @@ const DictationPage: React.FC = () => {
                 </div>
               </div>
 
-              <button onClick={handleCheck} disabled={!inputVal.trim()} className="btn-gold" 
+              <button onClick={handleCheck} disabled={!inputVal.trim()} className="btn-gold"
                 style={{ width: '100%', padding: 18, fontSize: 16, marginTop: 24, opacity: inputVal.trim() ? 1 : 0.5 }}>
                 Шалгах
+              </button>
+              <button onClick={giveUp} style={{ width: '100%', padding: 11, marginTop: 10, borderRadius: 12, background: 'transparent', border: '1px solid #34343A', color: '#A0A0A8', cursor: 'pointer', fontSize: 13 }}>
+                Мэдэхгүй — хариултыг харах
               </button>
             </motion.div>
           ) : (

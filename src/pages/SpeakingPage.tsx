@@ -4,23 +4,22 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { speakCzech } from '../components/audio/czechSpeech';
 import { XPToast } from '../components/UI/SharedComponents';
 import { useAppStore } from '../stores/useAppStore';
+import { getA0PhraseIpa, getA0SpeakingPool, pickPracticeTargets } from '../data/a0PracticePools';
 
-const PHRASES = [
-  { id: 'p1', czech: 'Jak se máš?', mongolian: 'Яаж байна?', ipa: '[jak se maːʃ]' },
-  { id: 'p2', czech: 'Děkuji moc.', mongolian: 'Их баярлалаа.', ipa: '[dɛku-ji mots]' },
-  { id: 'p3', czech: 'Dobrý den.', mongolian: 'Сайн байна уу.', ipa: '[dob-riː den]' },
-  { id: 'p4', czech: 'Na shledanou.', mongolian: 'Баяртай.', ipa: '[na sxle-da-nou]' },
-  { id: 'p5', czech: 'Mluvíte česky?', mongolian: 'Та чехээр ярьдаг уу?', ipa: '[mlu-viː-te tʃeski]' },
-  { id: 'p6', czech: 'Promiňte, nerozumím.', mongolian: 'Уучлаарай, ойлгохгүй байна.', ipa: '[pro-miɲ-te]' },
-  { id: 'p7', czech: 'Kde je záchod?', mongolian: 'Жорлон хаана байна?', ipa: '[kde je zaː-xod]' },
-  { id: 'p8', czech: 'Jsem z Mongolska.', mongolian: 'Би Монголоос ирсэн.', ipa: '[jsem z moŋgol-ska]' },
-];
+const SESSION_PHRASE_COUNT = 8;
+
+function makeSessionPhrases() {
+  const introduced = useAppStore.getState().progress.introducedWords;
+  return pickPracticeTargets(getA0SpeakingPool(), introduced, SESSION_PHRASE_COUNT)
+    .map((target) => ({ id: target.id, czech: target.czech, mongolian: target.mongolian, ipa: getA0PhraseIpa(target.czech) }));
+}
 
 type Phase = 'listen' | 'selfReview' | 'result';
 type Result = 'said' | 'again' | null;
 
 const SpeakingPage: React.FC = () => {
   const { addXP, setPage } = useAppStore();
+  const [PHRASES] = useState(makeSessionPhrases);
   const [index, setIndex] = useState(0);
   const [phase, setPhase] = useState<Phase>('listen');
   const [result, setResult] = useState<Result>(null);
@@ -34,7 +33,7 @@ const SpeakingPage: React.FC = () => {
     setResult(saidIt ? 'said' : 'again');
     setPhase('result');
     if (saidIt) {
-      addXP(8);
+      addXP(4);
       setShowXP(true);
       window.setTimeout(() => setShowXP(false), 1100);
     }
@@ -67,12 +66,12 @@ const SpeakingPage: React.FC = () => {
       </header>
 
       <main style={{ padding: 16, display: 'grid', gap: 14 }}>
-        <AnimatePresence>{showXP && <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -14 }} style={{ display: 'flex', justifyContent: 'center' }}><XPToast xp={8} /></motion.div>}</AnimatePresence>
+        <AnimatePresence>{showXP && <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -14 }} style={{ display: 'flex', justifyContent: 'center' }}><XPToast xp={4} /></motion.div>}</AnimatePresence>
 
         <motion.section key={phrase.id} initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} style={{ background: '#1C1C1F', borderRadius: 24, padding: 28, textAlign: 'center', border: '1px solid #2A2A2F' }}>
           <p style={{ margin: '0 0 8px', fontSize: 12, color: '#A0A0A8' }}>Чех хэллэгийг сонсоод дагаж хэлнэ.</p>
           <h2 style={{ margin: 0, fontSize: 31, fontWeight: 900 }}>{phrase.czech}</h2>
-          <p style={{ margin: '7px 0 4px', fontFamily: 'monospace', color: '#C8952A' }}>{phrase.ipa}</p>
+          {phrase.ipa && <p style={{ margin: '7px 0 4px', fontFamily: 'monospace', color: '#C8952A' }}>{phrase.ipa}</p>}
           <p style={{ margin: 0, color: '#A0A0A8' }}>({phrase.mongolian})</p>
           <button onClick={listen} style={{ marginTop: 22, display: 'inline-flex', alignItems: 'center', gap: 8, padding: '9px 16px', borderRadius: 99, background: 'rgba(200,149,42,.12)', border: '1px solid rgba(200,149,42,.3)', color: '#C8952A' }}><Volume2 size={15} /> Жишээ сонсох</button>
         </motion.section>

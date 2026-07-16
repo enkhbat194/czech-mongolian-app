@@ -5,6 +5,7 @@ import { speakCzech } from '../components/audio/czechSpeech';
 import { useAppStore } from '../stores/useAppStore';
 import { ProgressBar, XPToast } from '../components/UI/SharedComponents';
 import { isSrsEligiblePracticeTarget } from '../stores/usePhraseMemoryStore';
+import { getA0LearnerSayTargets, pickPracticeTargets } from '../data/a0PracticePools';
 
 interface Question {
   id: string;
@@ -23,33 +24,35 @@ function formatSentence(tokens: string[]) {
   return tokens.join(' ').replace(/\s+([,.!?;:])/g, '$1');
 }
 
-function generateQuestions(words: any[]): Question[] {
-  const phrases = words.filter((word) => word.czech.includes(' '));
-  const fallbacks = words.filter((word) => word.example && word.example.split(' ').length >= 3 && word.example.split(' ').length <= 6);
-  const pool = [...new Map([...phrases, ...fallbacks].slice(0, 20).map((word) => [word.id, word])).values()];
+function generateQuestions(): Question[] {
+  const introduced = useAppStore.getState().progress.introducedWords;
+  const pool = getA0LearnerSayTargets().filter((target) => {
+    const count = target.czech.split(' ').filter(Boolean).length;
+    return count >= 2 && count <= 5;
+  });
 
-  return [...pool].sort(() => Math.random() - 0.5).slice(0, 10).map((word) => {
-    const text = word.czech.includes(' ') ? word.czech : word.example;
-    const tokens = tokenize(text);
+  return pickPracticeTargets(pool, introduced, 10).map((target) => {
+    const tokens = tokenize(target.czech);
     const otherTokens = pool
-      .filter((item) => item.id !== word.id)
-      .flatMap((item) => tokenize(item.czech.includes(' ') ? item.czech : item.example))
-      .filter((token) => token.length > 2 && /^[a-zA-Zěščřžýáíéůúťďň]+$/i.test(token));
-    const distractor = otherTokens[Math.floor(Math.random() * otherTokens.length)] ?? 'jmenu';
+      .filter((item) => item.id !== target.id)
+      .flatMap((item) => tokenize(item.czech))
+      .filter((token) => token.length > 2 && /^[a-zA-Zěščřžýáíéůúťďň]+$/i.test(token))
+      .filter((token) => !tokens.some((own) => own.toLocaleLowerCase() === token.toLocaleLowerCase()));
+    const distractor = otherTokens[Math.floor(Math.random() * otherTokens.length)] ?? 'prosím';
 
     return {
-      id: word.id,
+      id: target.id,
       czTokens: tokens,
       bank: [...tokens, distractor].sort(() => Math.random() - 0.5),
-      czFull: text,
-      mnFull: word.czech.includes(' ') ? word.mongolian : word.exampleTranslation,
+      czFull: target.czech,
+      mnFull: target.mongolian,
     };
   });
 }
 
 const SentenceBuilderPage: React.FC = () => {
-  const { words, addXP, setPage, updateSRSCard } = useAppStore();
-  const questions = useMemo(() => generateQuestions(words), [words]);
+  const { addXP, setPage, updateSRSCard } = useAppStore();
+  const questions = useMemo(() => generateQuestions(), []);
   const [index, setIndex] = useState(0);
   const [phase, setPhase] = useState<'question' | 'result'>('question');
   const [showXP, setShowXP] = useState(false);
@@ -124,7 +127,6 @@ const SentenceBuilderPage: React.FC = () => {
               <div style={{ textAlign: 'center', marginBottom: 20, marginTop: 10 }}>
                 <p style={{ fontSize: 15, color: '#FFF', marginBottom: 24, lineHeight: 1.5 }}>Үгнүүдийг зөв дарааллаар байрлуулж, өгүүлбэр бүтээнэ үү.</p>
                 <p style={{ fontSize: 13, color: '#C8952A', marginBottom: 24 }}>({question.mnFull})</p>
-                <button onClick={() => speakCzech(question.czFull, { rate: 0.8 })} style={{ width: 64, height: 64, borderRadius: 32, background: 'rgba(200,149,42,0.1)', border: '1.5px solid rgba(200,149,42,0.3)', color: '#C8952A', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto', cursor: 'pointer' }}><Volume2 size={28} /></button>
               </div>
 
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, justifyContent: 'center', marginBottom: 40 }}>
@@ -152,6 +154,7 @@ const SentenceBuilderPage: React.FC = () => {
                 {!isCorrect && <p style={{ fontSize: 14, color: '#A0A0A8' }}>Зөв хариулт: <span style={{ color: '#FFF', fontWeight: 700, fontSize: 18 }}>{question.czFull}</span></p>}
                 {!isCorrect && <p style={{ fontSize: 14, color: '#A0A0A8' }}>Таны бүрдүүлсэн: <span style={{ color: '#EF4444' }}>{formatSentence(slots.map((slot) => slot.text))}</span></p>}
                 {isCorrect && <p style={{ fontSize: 20, color: '#FFF' }}>{question.czFull}</p>}
+                <button onClick={() => speakCzech(question.czFull, { rate: 0.8 })} style={{ margin: '12px auto 0', display: 'inline-flex', alignItems: 'center', gap: 8, padding: '9px 16px', borderRadius: 99, background: 'rgba(200,149,42,.12)', border: '1px solid rgba(200,149,42,.3)', color: '#C8952A', cursor: 'pointer' }}><Volume2 size={15} /> Сонсох</button>
               </div>
               <div style={{ marginTop: 'auto', width: '100%', paddingTop: 40 }}><button onClick={next} className="btn-gold" style={{ width: '100%', padding: 18, fontSize: 16 }}>Дараах</button></div>
             </motion.div>

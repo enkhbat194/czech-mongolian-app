@@ -5,17 +5,20 @@ import { speakCzech } from '../components/audio/czechSpeech';
 import { ProgressBar, XPToast } from '../components/UI/SharedComponents';
 import { useAppStore } from '../stores/useAppStore';
 import { isSrsEligiblePracticeTarget } from '../stores/usePhraseMemoryStore';
+import { getA0ProductionPool, pickPracticeTargets } from '../data/a0PracticePools';
 
 type Question = { id: string; czech: string; mongolian: string };
 const CZECH_CHARS = ['ě', 'š', 'č', 'ř', 'ž', 'ý', 'á', 'í', 'é'];
 
-function makeQuestions(words: any[]): Question[] {
-  return [...words].sort(() => Math.random() - 0.5).slice(0, 10).map((word) => ({ id: word.id, czech: word.czech, mongolian: word.mongolian }));
+function makeQuestions(): Question[] {
+  const introduced = useAppStore.getState().progress.introducedWords;
+  return pickPracticeTargets(getA0ProductionPool(4), introduced, 10)
+    .map((target) => ({ id: target.id, czech: target.czech, mongolian: target.mongolian }));
 }
 
 const WritingPage: React.FC = () => {
-  const { words, addXP, setPage, updateSRSCard } = useAppStore();
-  const [questions] = useState<Question[]>(() => makeQuestions(words));
+  const { addXP, setPage, updateSRSCard } = useAppStore();
+  const [questions] = useState<Question[]>(makeQuestions);
   const [index, setIndex] = useState(0);
   const [answer, setAnswer] = useState('');
   const [checked, setChecked] = useState(false);
@@ -40,6 +43,12 @@ const WritingPage: React.FC = () => {
     } else {
       if (isSrsEligiblePracticeTarget(question.id)) updateSRSCard(question.id, 1);
     }
+  };
+
+  const giveUp = () => {
+    setCorrect(false);
+    setChecked(true);
+    if (isSrsEligiblePracticeTarget(question.id)) updateSRSCard(question.id, 1);
   };
 
   const next = () => {
@@ -70,12 +79,12 @@ const WritingPage: React.FC = () => {
         <section style={{ padding: 22, borderRadius: 24, background: '#1C1C1F', border: '1px solid #2A2A2F' }}>
           <p style={{ color: '#A0A0A8', textAlign: 'center' }}>Энэ утгыг Чехээр бичнэ үү.</p>
           <p style={{ minHeight: 64, margin: '14px 0', textAlign: 'center', fontSize: 25, fontWeight: 800 }}>{question.mongolian}</p>
-          <button onClick={() => speakCzech(question.czech, { rate: .8 })} style={{ margin: '0 auto 22px', width: 64, height: 64, borderRadius: 32, display: 'grid', placeItems: 'center', background: 'rgba(200,149,42,.12)', border: '1px solid rgba(200,149,42,.35)', color: '#C8952A' }}><Volume2 size={28} /></button>
+          {checked && <button onClick={() => speakCzech(question.czech, { rate: .8 })} style={{ margin: '0 auto 22px', width: 64, height: 64, borderRadius: 32, display: 'grid', placeItems: 'center', background: 'rgba(200,149,42,.12)', border: '1px solid rgba(200,149,42,.35)', color: '#C8952A' }}><Volume2 size={28} /></button>}
           <input value={answer} onChange={(event) => setAnswer(event.target.value)} disabled={checked} placeholder="Энд бичнэ үү..." spellCheck={false} style={{ width: '100%', boxSizing: 'border-box', padding: 16, borderRadius: 14, color: '#FFF', background: '#141416', border: `1.5px solid ${checked ? (correct ? '#22C55E' : '#EF4444') : '#C8952A'}`, fontSize: 18, outline: 'none' }} />
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(9, 1fr)', gap: 4, marginTop: 10 }}>
             {CZECH_CHARS.map((character) => <button key={character} disabled={checked} onClick={() => setAnswer((value) => value + character)} style={{ padding: '9px 0', borderRadius: 8, color: '#FFF', background: '#242428', border: '1px solid #34343A', fontSize: 15 }}>{character}</button>)}
           </div>
-          {!checked ? <button className="btn-gold" disabled={!answer.trim()} onClick={check} style={{ marginTop: 18, width: '100%', padding: 15, opacity: answer.trim() ? 1 : .5 }}>Шалгах</button> : <><div style={{ textAlign: 'center', padding: 16, color: correct ? '#4ADE80' : '#F87171', fontWeight: 800 }}>{correct ? <><Check size={17} style={{ verticalAlign: 'middle' }} /> Зөв байна.</> : <><X size={17} style={{ verticalAlign: 'middle' }} /> Зөв хариулт: {question.czech}</>}</div><button className="btn-gold" onClick={next} style={{ width: '100%', padding: 15 }}>{index === questions.length - 1 ? 'Дуусгах' : 'Дараах'}</button></>}
+          {!checked ? <><button className="btn-gold" disabled={!answer.trim()} onClick={check} style={{ marginTop: 18, width: '100%', padding: 15, opacity: answer.trim() ? 1 : .5 }}>Шалгах</button><button onClick={giveUp} style={{ marginTop: 10, width: '100%', padding: 11, borderRadius: 12, background: 'transparent', border: '1px solid #34343A', color: '#A0A0A8', cursor: 'pointer', fontSize: 13 }}>Мэдэхгүй — хариултыг харах</button></> : <><div style={{ textAlign: 'center', padding: 16, color: correct ? '#4ADE80' : '#F87171', fontWeight: 800 }}>{correct ? <><Check size={17} style={{ verticalAlign: 'middle' }} /> Зөв байна.</> : <><X size={17} style={{ verticalAlign: 'middle' }} /> Зөв хариулт: {question.czech}</>}</div><button className="btn-gold" onClick={next} style={{ width: '100%', padding: 15 }}>{index === questions.length - 1 ? 'Дуусгах' : 'Дараах'}</button></>}
         </section>
       </main>
     </div>
