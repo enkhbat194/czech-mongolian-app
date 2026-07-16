@@ -1,17 +1,11 @@
 import { a0ReferenceLessons } from './a0ReferenceLessons';
 import { a0MemoryTargets, type A0MemoryTarget } from './a0MemoryPlan';
+import { getA0PhraseRole } from './a0PhraseRoles';
 import { czechWords } from './czechWords';
 import { normalizeCzechForContract } from './lessonDataContract';
 
-// Practice pools are derived from what the learner actually says in the A0
-// dialogues (correct replies) plus each lesson's take-away phrases. Staff-side
-// lines are never learner production material, and gender-marked forms are
-// held back from production until a learner profile exists.
-
 export type PracticeGenderForm = 'male' | 'female' | 'neutral';
 
-// Gender-marked forms are only offered for production once the learner's
-// profile resolves which form is theirs; neutral profiles get neither.
 const GENDER_BANNED_NORMALIZED: Record<PracticeGenderForm, ReadonlySet<string>> = {
   male: new Set(['jsem nova', 'jsem tady sama']),
   female: new Set(['jsem novy', 'jsem tady sam']),
@@ -48,19 +42,28 @@ export function isBannedProductionText(czech: string, genderForm: PracticeGender
   return GENDER_BANNED_NORMALIZED[genderForm].has(normalizeCzechForContract(czech)) || containsHardcodedName(czech);
 }
 
-function isLearnerSayTarget(target: A0MemoryTarget) {
-  const normalized = normalizeCzechForContract(target.czech);
-  return learnerSayNormalized.has(normalized)
-    && !isA0StaffOnlyText(target.czech)
-    && !containsHardcodedName(target.czech);
+function isProfileTargetAllowed(target: A0MemoryTarget, genderForm: PracticeGenderForm) {
+  return getA0PhraseRole(target) !== 'profile-dependent' || !isBannedProductionText(target.czech, genderForm);
 }
 
-const learnerSayBase: readonly A0MemoryTarget[] = a0MemoryTargets.filter(
-  (target) => target.priority === 'active' && isLearnerSayTarget(target),
-);
+const activeTargets = a0MemoryTargets.filter((target) => target.priority === 'active');
 
 export function getA0LearnerSayTargets(genderForm: PracticeGenderForm = 'neutral'): readonly A0MemoryTarget[] {
-  return learnerSayBase.filter((target) => !isBannedProductionText(target.czech, genderForm));
+  return activeTargets.filter((target) => {
+    const role = getA0PhraseRole(target);
+    if (role !== 'learner-say' && role !== 'profile-dependent') return false;
+    if (!isProfileTargetAllowed(target, genderForm)) return false;
+    return !isA0StaffOnlyText(target.czech) && !containsHardcodedName(target.czech);
+  });
+}
+
+export function getA0ListeningTargets(genderForm: PracticeGenderForm = 'neutral'): readonly A0MemoryTarget[] {
+  return activeTargets.filter((target) => {
+    const role = getA0PhraseRole(target);
+    if (role === 'support-only') return false;
+    if (!isProfileTargetAllowed(target, genderForm)) return false;
+    return !containsHardcodedName(target.czech);
+  });
 }
 
 const ipaByNormalizedCzech = new Map(
@@ -75,8 +78,9 @@ function tokenCount(czech: string) {
   return normalizeCzechForContract(czech).split(' ').filter(Boolean).length;
 }
 
-// Introduced phrases first, so practice reinforces what a lesson already
-// taught; the rest fill up the session for learners who raced ahead.
+// Legacy session picker: introduced targets are first, then unknown targets may fill
+// the remainder. Use pickIntroducedPracticeTargets for practice modes that must not
+// expose content before the learner has met it in a lesson.
 export function pickPracticeTargets(
   pool: readonly A0MemoryTarget[],
   introducedIds: readonly string[],
@@ -87,6 +91,18 @@ export function pickPracticeTargets(
   const unknown = pool.filter((target) => !introduced.has(target.id));
   const order = (items: A0MemoryTarget[]) => [...items].sort(() => Math.random() - 0.5);
   return [...order(known), ...order(unknown)].slice(0, Math.max(0, limit));
+}
+
+export function pickIntroducedPracticeTargets(
+  pool: readonly A0MemoryTarget[],
+  introducedIds: readonly string[],
+  limit: number,
+): A0MemoryTarget[] {
+  const introduced = new Set(introducedIds);
+  return pool
+    .filter((target) => introduced.has(target.id))
+    .sort(() => Math.random() - 0.5)
+    .slice(0, Math.max(0, limit));
 }
 
 export function getA0SpeakingPool(genderForm: PracticeGenderForm = 'neutral'): readonly A0MemoryTarget[] {
@@ -132,8 +148,6 @@ export function buildA0FillBlankQuestions(introducedIds: readonly string[], limi
       if (!candidate) continue;
       const candidateNormalized = normalizeCzechForContract(candidate);
       if (!candidateNormalized || seen.has(candidateNormalized)) continue;
-      // A distractor must not complete the prompt into another real phrase,
-      // otherwise the question has two defensible answers.
       if (learnerSayNormalized.has(`${beforeNormalized} ${candidateNormalized}`.trim())) continue;
       seen.add(candidateNormalized);
       distractors.push(candidate.replace(/[.,!?]+$/, '') + (answer.match(/[.,!?]+$/)?.[0] ?? ''));
