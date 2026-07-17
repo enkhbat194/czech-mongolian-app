@@ -10,10 +10,11 @@ import { buildA0FillBlankQuestions } from '../data/a0PracticePools';
 
 const FillBlankPage: React.FC = () => {
   const { addXP, setPage, updateSRSCard } = useAppStore();
+  const [sessionSeed] = useState(() => `${Date.now()}-${Math.random()}`);
   const questions = useMemo(() => {
     const { progress, genderForm, userName } = useAppStore.getState();
-    return buildA0FillBlankQuestions(progress.introducedWords, 10, genderForm, userName);
-  }, []);
+    return buildA0FillBlankQuestions(progress.introducedWords, 10, genderForm, userName, sessionSeed);
+  }, [sessionSeed]);
   const [index, setIndex] = useState(0);
   const [selected, setSelected] = useState<string | null>(null);
   const [checked, setChecked] = useState(false);
