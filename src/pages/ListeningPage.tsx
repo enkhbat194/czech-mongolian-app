@@ -12,6 +12,7 @@ import {
   pickIntroducedPracticeTargets,
 } from '../data/a0PracticePools';
 import type { A0MemoryTarget } from '../data/a0MemoryPlan';
+import { stableShuffle } from '../utils/stableShuffle';
 
 interface Question {
   id: string;
@@ -24,14 +25,14 @@ function normalizeMongolian(text: string) {
   return text.toLocaleLowerCase('mn-MN').replace(/[.,?!…—-]/g, '').replace(/\s+/g, ' ').trim();
 }
 
-function makeQuestions(targets: readonly A0MemoryTarget[]): Question[] {
-  const shuffled = [...targets].sort(() => Math.random() - 0.5);
+function makeQuestions(targets: readonly A0MemoryTarget[], sessionSeed: string): Question[] {
+  const shuffled = stableShuffle(targets, `${sessionSeed}:targets`);
   return shuffled.slice(0, 10).flatMap((target) => {
     const answer = target.mongolian;
     const seen = new Set([normalizeMongolian(answer)]);
     const distractors: string[] = [];
 
-    for (const candidate of shuffled) {
+    for (const candidate of stableShuffle(shuffled, `${sessionSeed}:${target.id}:distractors`)) {
       if (candidate.id === target.id || distractors.length >= 3) continue;
       const normalized = normalizeMongolian(candidate.mongolian);
       if (!normalized || seen.has(normalized)) continue;
@@ -44,19 +45,20 @@ function makeQuestions(targets: readonly A0MemoryTarget[]): Question[] {
       id: target.id,
       czech: target.czech,
       answer,
-      options: [answer, ...distractors].sort(() => Math.random() - 0.5),
+      options: stableShuffle([answer, ...distractors], `${sessionSeed}:${target.id}:options`),
     }];
   });
 }
 
 const ListeningPage: React.FC = () => {
   const { addXP, updateSRSCard, setPage, progress, genderForm, userName } = useAppStore();
+  const [sessionSeed] = useState(() => `${Date.now()}-${Math.random()}`);
   const questions = useMemo(() => {
     const pool = getA0ListeningTargets(genderForm, userName);
     const introduced = pickIntroducedPracticeTargets(pool, progress.introducedWords, 10)
       .map((target) => personalizeA0PracticeTarget(target, userName));
-    return makeQuestions(introduced);
-  }, [genderForm, progress.introducedWords, userName]);
+    return makeQuestions(introduced, sessionSeed);
+  }, [genderForm, progress.introducedWords, sessionSeed, userName]);
   const [index, setIndex] = useState(0);
   const [selected, setSelected] = useState<string | null>(null);
   const [answered, setAnswered] = useState(false);
