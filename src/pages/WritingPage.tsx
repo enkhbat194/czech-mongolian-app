@@ -3,17 +3,28 @@ import { Check, ChevronLeft, Volume2, X } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { speakCzech } from '../components/audio/czechSpeech';
 import { ProgressBar, XPToast } from '../components/UI/SharedComponents';
+import PracticeEmptyState from '../components/practice/PracticeEmptyState';
 import { useAppStore } from '../stores/useAppStore';
 import { isSrsEligiblePracticeTarget } from '../stores/usePhraseMemoryStore';
-import { getA0ProductionPool, pickPracticeTargets } from '../data/a0PracticePools';
+import {
+  getA0ProductionPool,
+  personalizeA0PracticeTarget,
+  pickIntroducedPracticeTargets,
+} from '../data/a0PracticePools';
 
 type Question = { id: string; czech: string; mongolian: string };
 const CZECH_CHARS = ['ě', 'š', 'č', 'ř', 'ž', 'ý', 'á', 'í', 'é'];
 
 function makeQuestions(): Question[] {
-  const { progress, genderForm } = useAppStore.getState();
-  return pickPracticeTargets(getA0ProductionPool(4, genderForm), progress.introducedWords, 10)
-    .map((target) => ({ id: target.id, czech: target.czech, mongolian: target.mongolian }));
+  const { progress, genderForm, userName } = useAppStore.getState();
+  return pickIntroducedPracticeTargets(
+    getA0ProductionPool(4, genderForm, userName),
+    progress.introducedWords,
+    10,
+  ).map((target) => {
+    const personalized = personalizeA0PracticeTarget(target, userName);
+    return { id: target.id, czech: personalized.czech, mongolian: personalized.mongolian };
+  });
 }
 
 const WritingPage: React.FC = () => {
@@ -28,7 +39,16 @@ const WritingPage: React.FC = () => {
   const [finished, setFinished] = useState(false);
   const question = questions[index];
 
-  if (!question) return null;
+  if (!question) {
+    return (
+      <PracticeEmptyState
+        icon="✍️"
+        onBack={() => setPage('practice')}
+        onGoToLessons={() => setPage('path')}
+        description="Бичих дасгалд зөвхөн өмнө нь үзсэн, өөрөө хэлэх богино Чех хэллэгүүд орно."
+      />
+    );
+  }
 
   const check = () => {
     const isCorrect = answer.trim().toLocaleLowerCase() === question.czech.toLocaleLowerCase();
@@ -40,8 +60,8 @@ const WritingPage: React.FC = () => {
       setShowXP(true);
       window.setTimeout(() => setShowXP(false), 1200);
       if (isSrsEligiblePracticeTarget(question.id)) updateSRSCard(question.id, 5);
-    } else {
-      if (isSrsEligiblePracticeTarget(question.id)) updateSRSCard(question.id, 1);
+    } else if (isSrsEligiblePracticeTarget(question.id)) {
+      updateSRSCard(question.id, 1);
     }
   };
 
