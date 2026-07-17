@@ -181,6 +181,14 @@ export function getA0MemoryTargetByCzech(text: string) {
   return getA0MemoryTargetsByCzech(text)[0];
 }
 
+export function getPriorActiveTargetIds(lessonId: string) {
+  const lessonIndex = lessonOrder.indexOf(lessonId);
+  if (lessonIndex <= 0) return [];
+  return a0MemoryTargets
+    .filter((target) => target.priority === 'active' && lessonOrder.indexOf(target.lessonId) < lessonIndex)
+    .map((target) => target.id);
+}
+
 export function getA0MemoryPlanByLesson() {
   return lessonOrder.map((lessonId) => ({ lessonId, targets: a0MemoryTargets.filter((target) => target.lessonId === lessonId) }));
 }
