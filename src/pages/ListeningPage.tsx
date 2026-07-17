@@ -55,8 +55,12 @@ const ListeningPage: React.FC = () => {
   const [sessionSeed] = useState(() => `${Date.now()}-${Math.random()}`);
   const questions = useMemo(() => {
     const pool = getA0ListeningTargets(genderForm, userName);
-    const introduced = pickIntroducedPracticeTargets(pool, progress.introducedWords, 10)
-      .map((target) => personalizeA0PracticeTarget(target, userName));
+    const introduced = pickIntroducedPracticeTargets(
+      pool,
+      progress.introducedWords,
+      10,
+      `${sessionSeed}:eligible`,
+    ).map((target) => personalizeA0PracticeTarget(target, userName));
     return makeQuestions(introduced, sessionSeed);
   }, [genderForm, progress.introducedWords, sessionSeed, userName]);
   const [index, setIndex] = useState(0);
