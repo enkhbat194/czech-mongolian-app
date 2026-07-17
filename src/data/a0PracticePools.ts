@@ -4,6 +4,7 @@ import { getA0PhraseRole } from './a0PhraseRoles';
 import { allCzechWords } from './allCzechWords';
 import { normalizeCzechForContract } from './lessonDataContract';
 import { personalizeLearnerText } from '../utils/learnerName';
+import { stableShuffle } from '../utils/stableShuffle';
 
 export type PracticeGenderForm = 'male' | 'female' | 'neutral';
 
@@ -158,6 +159,7 @@ export function buildA0FillBlankQuestions(
   limit = 10,
   genderForm: PracticeGenderForm = 'neutral',
   userName = '',
+  sessionSeed = 'a0-fill-blank',
 ): A0FillBlankQuestion[] {
   const fullPool = getA0LearnerSayTargets(genderForm, userName)
     .filter((target) => tokenCount(target.czech) >= 2)
@@ -165,7 +167,7 @@ export function buildA0FillBlankQuestions(
   const introduced = new Set(introducedIds);
   const introducedPool = fullPool.filter((target) => introduced.has(target.id));
   const productionPhraseSet = new Set(fullPool.map((target) => normalizeCzechForContract(target.czech)));
-  const picked = [...introducedPool].sort(() => Math.random() - 0.5).slice(0, Math.max(0, limit));
+  const picked = stableShuffle(introducedPool, `${sessionSeed}:targets`).slice(0, Math.max(0, limit));
   const questions: A0FillBlankQuestion[] = [];
 
   for (const target of picked) {
@@ -179,7 +181,8 @@ export function buildA0FillBlankQuestions(
 
     const distractors: string[] = [];
     const seen = new Set([answerNormalized]);
-    for (const other of introducedPool) {
+    const distractorPool = stableShuffle(introducedPool, `${sessionSeed}:${target.id}:distractors`);
+    for (const other of distractorPool) {
       if (distractors.length >= 3) break;
       if (other.id === target.id) continue;
       const otherPieces = other.czech.split(' ').filter(Boolean);
@@ -201,7 +204,7 @@ export function buildA0FillBlankQuestions(
       before,
       answer,
       after: '',
-      options: [answer, ...distractors].sort(() => Math.random() - 0.5),
+      options: stableShuffle([answer, ...distractors], `${sessionSeed}:${target.id}:options`),
     });
   }
   return questions;
