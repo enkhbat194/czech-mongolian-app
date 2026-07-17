@@ -6,6 +6,7 @@ import { a0LocationFinalDialogue, a0LocationMicroDialogues } from './a0LocationD
 import { a0ReferenceNewLessons } from './a0ReferenceNewLessons';
 import { a0LessonMeta } from './a0LessonMeta';
 import { auditA0Lesson, defineA0Lesson, type A0LessonDefinition } from './a0LessonSchema';
+import { repairA0LessonLanguage } from './a0LanguageCorrections';
 import { a0VocabularyAudit } from './a0VocabularyAudit';
 
 const coreReferenceLessons: Record<'l001' | 'l002' | 'l003', A0LessonDefinition> = {
@@ -15,7 +16,7 @@ const coreReferenceLessons: Record<'l001' | 'l002' | 'l003', A0LessonDefinition>
     microDialogues: a0FirstContactCoveredMicroDialogues, finalDialogue: a0FirstContactCoveredFinalDialogue,
     xpReward: 150, completionIcon: '🏆',
     completionSummaryMn: 'Та албан ёсоор мэндэлж, нэрээ болон хаанаас ирснээ хэлж, ойлгохгүй үед яриаг удаашруулах хүсэлт тавьж чадна.',
-    completionPhrases: ['Dobrý den.', 'Jmenuji se …', 'Jsem z Mongolska.', 'Nerozumím. Mluvte prosím pomalu.', 'Na shledanou.'],
+    completionPhrases: ['Dobrý den.', 'Jmenuji se {userName}.', 'Jsem z Mongolska.', 'Nerozumím. Mluvte prosím pomalu.', 'Na shledanou.'],
   }),
   l002: defineA0Lesson({
     lessonId: 'l002', titleMn: a0LessonMeta.l002.titleMn, durationMinutes: a0LessonMeta.l002.durationMinutes,
@@ -35,7 +36,11 @@ const coreReferenceLessons: Record<'l001' | 'l002' | 'l003', A0LessonDefinition>
   }),
 };
 
-export const a0ReferenceLessons: Record<string, A0LessonDefinition> = { ...coreReferenceLessons, ...a0ReferenceNewLessons };
+const rawReferenceLessons: Record<string, A0LessonDefinition> = { ...coreReferenceLessons, ...a0ReferenceNewLessons };
+
+export const a0ReferenceLessons: Record<string, A0LessonDefinition> = Object.fromEntries(
+  Object.entries(rawReferenceLessons).map(([lessonId, lesson]) => [lessonId, repairA0LessonLanguage(lesson)]),
+);
 
 export function getA0ReferenceLesson(lessonId: string): A0LessonDefinition {
   const lesson = a0ReferenceLessons[lessonId];
