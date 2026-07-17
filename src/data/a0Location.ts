@@ -19,9 +19,9 @@ export const a0LocationMicroLessons: A0MicroLesson[] = [
       a0c0047: 'Эелдэг, бэлэн асуулт. Эхлээд энэ бүтнээр нь ашиглана.',
     },
     exercises: [
-      { id: 'a0-3-a-1', type: 'choice', titleMn: 'Сонсож таних', promptMn: 'Аудиог сонсоод зөв Монгол утгыг сонго.', audioText: 'Prosím, kde je toaleta?', choices: [{ id: 'a', text: 'Эмийн сан хаана байна?' }, { id: 'b', text: 'Уучлаарай, ариун цэврийн өрөө хаана байна?' }, { id: 'c', text: 'Би ариун цэврийн өрөө хүсэж байна.' }, { id: 'd', text: 'Ариун цэврийн өрөө энд байна.' }], correctId: 'b', feedbackMn: 'Prosím, kde je toaleta? = Уучлаарай, ариун цэврийн өрөө хаана байна?' },
-      { id: 'a0-3-a-2', type: 'fillBlank', titleMn: 'Хоосон үг нөхөх', promptMn: 'Асуултыг гүйцээ.', promptCzech: 'Kde je ___?', choices: [{ id: 'a', text: 'toaleta' }, { id: 'b', text: 'děkuji' }, { id: 'c', text: 'pomoc' }], correctId: 'a', feedbackMn: 'Kde je toaleta? = Ариун цэврийн өрөө хаана байна?' },
-      { id: 'a0-3-a-3', type: 'order', titleMn: 'Өгүүлбэр бүтээх', promptMn: 'Эелдэгээр ариун цэврийн өрөө асуух өгүүлбэрийг зөв дарааллаар байрлуул.', tokens: ['je', 'Prosím,', 'kde', 'toaleta?'], expectedText: 'Prosím, kde je toaleta?', feedbackMn: 'Prosím, kde je toaleta? = Уучлаарай, ариун цэврийн өрөө хаана байна?' },
+      { id: 'a0-3-a-1', type: 'choice', titleMn: 'Сонсож таних', promptMn: 'Аудиог сонсоод зөв Монгол утгыг сонго.', audioText: 'Prosím, kde je toaleta?', choices: [{ id: 'a', text: 'Эмийн сан хаана вэ?' }, { id: 'b', text: 'Ариун цэврийн өрөө хаана вэ?' }, { id: 'c', text: 'Ариун цэврийн өрөө нээлттэй юу?' }, { id: 'd', text: 'Ариун цэврийн өрөө энд байна.' }], correctId: 'b', feedbackMn: 'Prosím, kde je toaleta? = Ариун цэврийн өрөө хаана вэ?' },
+      { id: 'a0-3-a-2', type: 'fillBlank', titleMn: 'Хоосон үг нөхөх', promptMn: 'Асуултыг гүйцээ.', promptCzech: 'Kde je ___?', choices: [{ id: 'a', text: 'toaleta' }, { id: 'b', text: 'děkuji' }, { id: 'c', text: 'pomoc' }], correctId: 'a', feedbackMn: 'Kde je toaleta? = Ариун цэврийн өрөө хаана вэ?' },
+      { id: 'a0-3-a-3', type: 'order', titleMn: 'Өгүүлбэр бүтээх', promptMn: 'Ариун цэврийн өрөө хаана байгааг эелдгээр асуух өгүүлбэрийг зөв дарааллаар байрлуул.', tokens: ['je', 'Prosím,', 'kde', 'toaleta?'], expectedText: 'Prosím, kde je toaleta?', feedbackMn: 'Prosím, kde je toaleta? = Ариун цэврийн өрөө хаана вэ?' },
     ],
   },
   {
@@ -46,15 +46,15 @@ export const a0LocationMicroLessons: A0MicroLesson[] = [
     cardIds: ['a0c0050', 'a0c0051', 'a0c0052', 'a0c0053'],
     instructions: {
       a0c0050: 'obchod = дэлгүүр.',
-      a0c0051: 'Kde je obchod? = Дэлгүүр хаана байна?',
+      a0c0051: 'Kde je obchod? = Дэлгүүр хаана вэ?',
       a0c0052: 'lékárna = эмийн сан. Чехэд ногоон загалмайн тэмдгээр ихэвчлэн танина.',
-      a0c0053: 'Kde je lékárna? = Эмийн сан хаана байна?',
+      a0c0053: 'Kde je lékárna? = Эмийн сан хаана вэ?',
     },
     exercises: [
-      { id: 'a0-3-c-1', type: 'choice', titleMn: 'Утга таних', promptMn: 'Kde je obchod? ямар утгатай вэ?', choices: [{ id: 'a', text: 'Дэлгүүр хаана байна?' }, { id: 'b', text: 'Дэлгүүр нээлттэй юу?' }, { id: 'c', text: 'Би дэлгүүр хүсэж байна.' }, { id: 'd', text: 'Эмийн сан хаана байна?' }], correctId: 'a', feedbackMn: 'Kde je obchod? = Дэлгүүр хаана байна?' },
-      { id: 'a0-3-c-2', type: 'order', titleMn: 'Өгүүлбэр бүтээх', promptMn: '“Эмийн сан хаана байна?” гэсэн асуултыг зөв дарааллаар байрлуул.', tokens: ['je', 'Kde', 'lékárna?'], expectedText: 'Kde je lékárna?', feedbackMn: 'Kde je lékárna? = Эмийн сан хаана байна?' },
+      { id: 'a0-3-c-1', type: 'choice', titleMn: 'Утга таних', promptMn: 'Kde je obchod? ямар утгатай вэ?', choices: [{ id: 'a', text: 'Дэлгүүр хаана вэ?' }, { id: 'b', text: 'Дэлгүүр нээлттэй юу?' }, { id: 'c', text: 'Дэлгүүр энд байна.' }, { id: 'd', text: 'Эмийн сан хаана вэ?' }], correctId: 'a', feedbackMn: 'Kde je obchod? = Дэлгүүр хаана вэ?' },
+      { id: 'a0-3-c-2', type: 'order', titleMn: 'Өгүүлбэр бүтээх', promptMn: '“Эмийн сан хаана вэ?” гэсэн асуултыг зөв дарааллаар байрлуул.', tokens: ['je', 'Kde', 'lékárna?'], expectedText: 'Kde je lékárna?', feedbackMn: 'Kde je lékárna? = Эмийн сан хаана вэ?' },
       { id: 'a0-3-c-3', type: 'choice', titleMn: 'Нөхцөлд хэрэглэх', promptMn: 'Та эм авах шаардлагатай боллоо. Аль асуултыг хэлэх вэ?', choices: [{ id: 'a', text: 'Kde je lékárna?' }, { id: 'b', text: 'Kde je obchod?' }, { id: 'c', text: 'Prosím, kde je toaleta?' }], correctId: 'a', feedbackMn: 'Эмийн сан асуухдаа Kde je lékárna? гэж хэлнэ.' },
-      { id: 'a0-3-c-4-match', type: 'match', titleMn: 'Хэрэгтэй газар асуух', promptMn: 'Чех асуултыг зөв Монгол утгатай нь холбо.', pairs: [{ id: 'shop', czech: 'Kde je obchod?', mongolian: 'Дэлгүүр хаана байна?' }, { id: 'pharmacy', czech: 'Kde je lékárna?', mongolian: 'Эмийн сан хаана байна?' }], feedbackMn: 'Дэлгүүр, эмийн сан асуух хэллэгийг зөв таарууллаа.' },
+      { id: 'a0-3-c-4-match', type: 'match', titleMn: 'Хэрэгтэй газар асуух', promptMn: 'Чех асуултыг зөв Монгол утгатай нь холбо.', pairs: [{ id: 'shop', czech: 'Kde je obchod?', mongolian: 'Дэлгүүр хаана вэ?' }, { id: 'pharmacy', czech: 'Kde je lékárna?', mongolian: 'Эмийн сан хаана вэ?' }], feedbackMn: 'Дэлгүүр, эмийн сан асуух хэллэгийг зөв таарууллаа.' },
     ],
   },
   {
@@ -64,12 +64,12 @@ export const a0LocationMicroLessons: A0MicroLesson[] = [
     cardIds: ['a0c0054', 'a0c0055', 'a0c0056', 'a0c0057'],
     instructions: {
       a0c0054: 'nádraží = галт тэрэгний буудал. Хот доторх трамвай, автобусны буудал биш.',
-      a0c0055: 'Kde je nádraží? = Галт тэрэгний буудал хаана байна?',
+      a0c0055: 'Kde je nádraží? = Галт тэрэгний буудал хаана вэ?',
       a0c0056: 'nebo = эсвэл. Эхлээд Tady, nebo tam? гэсэн бэлэн хэллэгийн дотор танина.',
       a0c0057: 'Газрын зураг, заасан чиглэл ойлгомжгүй үед “Энд үү, тэнд үү?” гэж тодруулна.',
     },
     exercises: [
-      { id: 'a0-3-d-1', type: 'choice', titleMn: 'Сонсож таних', promptMn: 'Аудиог сонсоод зөв Монгол утгыг сонго.', audioText: 'Kde je nádraží?', choices: [{ id: 'a', text: 'Галт тэрэгний буудал хаана байна?' }, { id: 'b', text: 'Би буудал руу явж байна.' }, { id: 'c', text: 'Буудал энд байна.' }, { id: 'd', text: 'Дэлгүүр хаана байна?' }], correctId: 'a', feedbackMn: 'Kde je nádraží? = Галт тэрэгний буудал хаана байна?' },
+      { id: 'a0-3-d-1', type: 'choice', titleMn: 'Сонсож таних', promptMn: 'Аудиог сонсоод зөв Монгол утгыг сонго.', audioText: 'Kde je nádraží?', choices: [{ id: 'a', text: 'Галт тэрэгний буудал хаана вэ?' }, { id: 'b', text: 'Би буудал руу явж байна.' }, { id: 'c', text: 'Буудал энд байна.' }, { id: 'd', text: 'Дэлгүүр хаана вэ?' }], correctId: 'a', feedbackMn: 'Kde je nádraží? = Галт тэрэгний буудал хаана вэ?' },
       { id: 'a0-3-d-2', type: 'fillBlank', titleMn: 'Хоосон үг нөхөх', promptMn: '“Энд үү, тэнд үү?” гэсэн асуултыг гүйцээ.', promptCzech: 'Tady, ___ tam?', choices: [{ id: 'a', text: 'nebo' }, { id: 'b', text: 'prosím' }, { id: 'c', text: 'děkuji' }], correctId: 'a', feedbackMn: 'Tady, nebo tam? = Энд үү, тэнд үү?' },
       { id: 'a0-3-d-3', type: 'order', titleMn: 'Өгүүлбэр бүтээх', promptMn: 'Зааж буй чиглэлийг тодруулах асуултыг зөв дарааллаар байрлуул.', tokens: ['nebo', 'Tady,', 'tam?'], expectedText: 'Tady, nebo tam?', feedbackMn: 'Tady, nebo tam? = Энд үү, тэнд үү?' },
       { id: 'a0-3-d-4', type: 'choice', titleMn: 'Хамгаалах хэллэгээ сэргээх', promptMn: 'Ажилтан байрлалыг хурдан тайлбарлалаа. Та ойлгохгүй бол юу гэж хэлэх вэ?', choices: [{ id: 'a', text: 'Nerozumím. Mluvte prosím pomalu.' }, { id: 'b', text: 'Kde je nádraží?' }, { id: 'c', text: 'Tam.' }], correctId: 'a', feedbackMn: 'Ойлгохгүй бол эхлээд Nerozumím. гэж хэлээд, удаан ярихыг хүснэ.' },
