@@ -1,8 +1,9 @@
 import { a0ReferenceLessons } from './a0ReferenceLessons';
 import { a0MemoryTargets, type A0MemoryTarget } from './a0MemoryPlan';
 import { getA0PhraseRole } from './a0PhraseRoles';
-import { czechWords } from './czechWords';
+import { allCzechWords } from './allCzechWords';
 import { normalizeCzechForContract } from './lessonDataContract';
+import { personalizeLearnerText } from '../utils/learnerName';
 
 export type PracticeGenderForm = 'male' | 'female' | 'neutral';
 
@@ -14,6 +15,11 @@ const GENDER_BANNED_NORMALIZED: Record<PracticeGenderForm, ReadonlySet<string>> 
 
 function containsHardcodedName(czech: string) {
   return /\beba\b/.test(normalizeCzechForContract(czech));
+}
+
+function hasUsableLearnerName(userName: string) {
+  const value = userName.trim();
+  return Boolean(value && value !== 'Суралцагч');
 }
 
 const learnerSayNormalized = new Set<string>();
@@ -42,36 +48,53 @@ export function isBannedProductionText(czech: string, genderForm: PracticeGender
   return GENDER_BANNED_NORMALIZED[genderForm].has(normalizeCzechForContract(czech)) || containsHardcodedName(czech);
 }
 
-function isProfileTargetAllowed(target: A0MemoryTarget, genderForm: PracticeGenderForm) {
-  return getA0PhraseRole(target) !== 'profile-dependent' || !isBannedProductionText(target.czech, genderForm);
+function isProfileTargetAllowed(target: A0MemoryTarget, genderForm: PracticeGenderForm, userName: string) {
+  if (getA0PhraseRole(target) !== 'profile-dependent') return true;
+  if (target.czech.includes('{userName}')) return hasUsableLearnerName(userName);
+  return !isBannedProductionText(target.czech, genderForm);
 }
 
 const activeTargets = a0MemoryTargets.filter((target) => target.priority === 'active');
 
-export function getA0LearnerSayTargets(genderForm: PracticeGenderForm = 'neutral'): readonly A0MemoryTarget[] {
+export function getA0LearnerSayTargets(
+  genderForm: PracticeGenderForm = 'neutral',
+  userName = '',
+): readonly A0MemoryTarget[] {
   return activeTargets.filter((target) => {
     const role = getA0PhraseRole(target);
     if (role !== 'learner-say' && role !== 'profile-dependent') return false;
-    if (!isProfileTargetAllowed(target, genderForm)) return false;
+    if (!isProfileTargetAllowed(target, genderForm, userName)) return false;
     return !isA0StaffOnlyText(target.czech) && !containsHardcodedName(target.czech);
   });
 }
 
-export function getA0ListeningTargets(genderForm: PracticeGenderForm = 'neutral'): readonly A0MemoryTarget[] {
+export function getA0ListeningTargets(
+  genderForm: PracticeGenderForm = 'neutral',
+  userName = '',
+): readonly A0MemoryTarget[] {
   return activeTargets.filter((target) => {
     const role = getA0PhraseRole(target);
     if (role === 'support-only') return false;
-    if (!isProfileTargetAllowed(target, genderForm)) return false;
+    if (!isProfileTargetAllowed(target, genderForm, userName)) return false;
     return !containsHardcodedName(target.czech);
   });
 }
 
 const ipaByNormalizedCzech = new Map(
-  czechWords.filter((word) => word.ipa).map((word) => [normalizeCzechForContract(word.czech), word.ipa]),
+  allCzechWords.filter((word) => word.ipa).map((word) => [normalizeCzechForContract(word.czech), word.ipa]),
 );
 
 export function getA0PhraseIpa(czech: string): string {
   return ipaByNormalizedCzech.get(normalizeCzechForContract(czech)) ?? '';
+}
+
+export function personalizeA0PracticeTarget(target: A0MemoryTarget, userName: string): A0MemoryTarget {
+  return {
+    ...target,
+    czech: personalizeLearnerText(target.czech, userName),
+    mongolian: personalizeLearnerText(target.mongolian, userName),
+    aliases: target.aliases?.map((alias) => personalizeLearnerText(alias, userName)),
+  };
 }
 
 function tokenCount(czech: string) {
@@ -79,8 +102,7 @@ function tokenCount(czech: string) {
 }
 
 // Legacy session picker: introduced targets are first, then unknown targets may fill
-// the remainder. Use pickIntroducedPracticeTargets for practice modes that must not
-// expose content before the learner has met it in a lesson.
+// the remainder. New learner-facing practice pages must use pickIntroducedPracticeTargets.
 export function pickPracticeTargets(
   pool: readonly A0MemoryTarget[],
   introducedIds: readonly string[],
@@ -105,13 +127,20 @@ export function pickIntroducedPracticeTargets(
     .slice(0, Math.max(0, limit));
 }
 
-export function getA0SpeakingPool(genderForm: PracticeGenderForm = 'neutral'): readonly A0MemoryTarget[] {
-  return getA0LearnerSayTargets(genderForm);
+export function getA0SpeakingPool(
+  genderForm: PracticeGenderForm = 'neutral',
+  userName = '',
+): readonly A0MemoryTarget[] {
+  return getA0LearnerSayTargets(genderForm, userName);
 }
 
 // Short phrases only: production typing must not dead-end a beginner.
-export function getA0ProductionPool(maxTokens = 4, genderForm: PracticeGenderForm = 'neutral'): readonly A0MemoryTarget[] {
-  return getA0LearnerSayTargets(genderForm).filter((target) => tokenCount(target.czech) <= maxTokens);
+export function getA0ProductionPool(
+  maxTokens = 4,
+  genderForm: PracticeGenderForm = 'neutral',
+  userName = '',
+): readonly A0MemoryTarget[] {
+  return getA0LearnerSayTargets(genderForm, userName).filter((target) => tokenCount(target.czech) <= maxTokens);
 }
 
 export interface A0FillBlankQuestion {
@@ -124,9 +153,16 @@ export interface A0FillBlankQuestion {
   options: string[];
 }
 
-export function buildA0FillBlankQuestions(introducedIds: readonly string[], limit = 10, genderForm: PracticeGenderForm = 'neutral'): A0FillBlankQuestion[] {
-  const pool = getA0LearnerSayTargets(genderForm).filter((target) => tokenCount(target.czech) >= 2);
-  const picked = pickPracticeTargets(pool, introducedIds, limit);
+export function buildA0FillBlankQuestions(
+  introducedIds: readonly string[],
+  limit = 10,
+  genderForm: PracticeGenderForm = 'neutral',
+  userName = '',
+): A0FillBlankQuestion[] {
+  const fullPool = getA0LearnerSayTargets(genderForm, userName).filter((target) => tokenCount(target.czech) >= 2);
+  const introducedPool = pickIntroducedPracticeTargets(fullPool, introducedIds, fullPool.length)
+    .map((target) => personalizeA0PracticeTarget(target, userName));
+  const picked = [...introducedPool].sort(() => Math.random() - 0.5).slice(0, Math.max(0, limit));
   const questions: A0FillBlankQuestion[] = [];
 
   for (const target of picked) {
@@ -140,7 +176,7 @@ export function buildA0FillBlankQuestions(introducedIds: readonly string[], limi
 
     const distractors: string[] = [];
     const seen = new Set([answerNormalized]);
-    for (const other of pool) {
+    for (const other of introducedPool) {
       if (distractors.length >= 3) break;
       if (other.id === target.id) continue;
       const otherPieces = other.czech.split(' ').filter(Boolean);
