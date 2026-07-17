@@ -64,13 +64,26 @@ globalCounts.forEach((count, position) => {
   }
 }
 
-// 2. Static checks: review surfaces must compose their shuffle seeds with a
-// session seed, and the shuffle implementation must have a single source.
-const [today, carryover, dialogueRunner, lessonEngine] = await Promise.all([
+// 2. Static checks: every learner-facing answer-order surface must compose
+// its shuffle seed with a session seed, and the shuffle implementation must have one source.
+const [
+  today,
+  carryover,
+  dialogueRunner,
+  lessonEngine,
+  listening,
+  sentenceBuilder,
+  fillBlankPage,
+  practicePools,
+] = await Promise.all([
   readFile('src/pages/TodayReviewPage.tsx', 'utf8'),
   readFile('src/components/lessons/A0CarryoverReview.tsx', 'utf8'),
   readFile('src/components/lessons/DialogueRunner.tsx', 'utf8'),
   readFile('src/components/lessons/A0LessonEngineV5.tsx', 'utf8'),
+  readFile('src/pages/ListeningPage.tsx', 'utf8'),
+  readFile('src/pages/SentenceBuilderPage.tsx', 'utf8'),
+  readFile('src/pages/FillBlankPage.tsx', 'utf8'),
+  readFile('src/data/a0PracticePools.ts', 'utf8'),
 ]);
 
 if (!/stableShuffle\([^)]*`\$\{sessionSeed\}/.test(today)) {
@@ -84,6 +97,39 @@ if (!/`\$\{sessionSeed\}:/.test(dialogueRunner)) {
 }
 if (!/shuffle\(exercise\.choices,\s*`\$\{sessionSeed\}/.test(lessonEngine)) {
   failures.push('A0LessonEngineV5 must include sessionSeed in its exercise choice seed.');
+}
+if (!/pickIntroducedPracticeTargets\([\s\S]*?`\$\{sessionSeed\}:eligible`/.test(listening)
+  || !/stableShuffle\([\s\S]*?`\$\{sessionSeed\}:targets`/.test(listening)
+  || !/options:\s*stableShuffle\([\s\S]*?`\$\{sessionSeed\}:\$\{target\.id\}:options`/.test(listening)) {
+  failures.push('ListeningPage must seed target selection, target order, and answer option order with sessionSeed.');
+}
+if (!/pickIntroducedPracticeTargets\([\s\S]*?`\$\{sessionSeed\}:eligible`/.test(sentenceBuilder)
+  || !/stableShuffle\([\s\S]*?`\$\{sessionSeed\}:targets`/.test(sentenceBuilder)
+  || !/bank:\s*stableShuffle\([\s\S]*?`\$\{sessionSeed\}:\$\{target\.id\}:bank`/.test(sentenceBuilder)) {
+  failures.push('SentenceBuilderPage must seed target selection and token-bank order with sessionSeed.');
+}
+if (!/buildA0FillBlankQuestions\([\s\S]*?sessionSeed\s*\)/.test(fillBlankPage)) {
+  failures.push('FillBlankPage must pass its sessionSeed into buildA0FillBlankQuestions.');
+}
+if (!/export function pickIntroducedPracticeTargets[\s\S]*?sessionSeed\?: string[\s\S]*?stableShuffle\(eligible, sessionSeed\)/.test(practicePools)) {
+  failures.push('pickIntroducedPracticeTargets must support deterministic session-seeded selection.');
+}
+const fillBlankBuilderSource = practicePools.slice(practicePools.indexOf('export function buildA0FillBlankQuestions'));
+if (!/picked\s*=\s*stableShuffle\([\s\S]*?`\$\{sessionSeed\}:targets`/.test(fillBlankBuilderSource)
+  || !/options:\s*stableShuffle\([\s\S]*?`\$\{sessionSeed\}:\$\{target\.id\}:options`/.test(fillBlankBuilderSource)) {
+  failures.push('buildA0FillBlankQuestions must seed question and option order with sessionSeed.');
+}
+
+const randomSortPattern = /\.sort\(\(\)\s*=>\s*Math\.random\(\)\s*-\s*0\.5\)/;
+for (const [name, source] of [
+  ['ListeningPage', listening],
+  ['SentenceBuilderPage', sentenceBuilder],
+  ['FillBlankPage', fillBlankPage],
+  ['buildA0FillBlankQuestions', fillBlankBuilderSource],
+]) {
+  if (randomSortPattern.test(source)) {
+    failures.push(`${name} must not use sort(() => Math.random() - 0.5) for learner answer order.`);
+  }
 }
 
 const { execSync } = await import('node:child_process');
