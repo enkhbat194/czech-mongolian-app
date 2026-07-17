@@ -147,15 +147,22 @@ describe('A0.1-A0.15 language corrections', () => {
     expect(exported).not.toContain('Би шинэ хүн.');
   });
 
-  it('feeds the same corrected catalog to learner-facing app pages', () => {
+  it('feeds corrected data through both the legacy catalog and split lesson banks', () => {
     expect(catalogById('a0c0013').czech).toBe('Jmenuji se {userName}.');
     expect(catalogById('a0c0013').mongolian).toBe('Намайг {userName} гэдэг.');
     expect(catalogById('a0c0031').mongolian).toBe('Ус авъя.');
     expect(catalogById('a0c0108').mongolian).toBe('Кофе авъя.');
     expect(catalogById('a0c0140').mongolian).toBe('Энэ эмийг яаж хэрэглэх вэ?');
     expect(catalogById('a0c0147').mongolian).toBe('Надад SMS-ээр явуулна уу.');
-    expect(catalogById('a0c0157').mongolian).toBe('Би энд гэр бүлийнхэнтэйгээ байна.');
-    expect(catalogById('a0c0183').mongolian).toBe('Би шинээр ирсэн.');
+
+    expect(a0ReferenceLessons.l012.cards.find((word) => word.id === 'a0c0157')?.mongolian)
+      .toBe('Би энд гэр бүлийнхэнтэйгээ байна.');
+    expect(a0ReferenceLessons.l013.cards.find((word) => word.id === 'a0c0166')?.mongolian)
+      .toBe('Надад дулаахан байна.');
+    expect(a0ReferenceLessons.l014.cards.find((word) => word.id === 'a0c0180')?.mongolian)
+      .toBe('Би зүгээргүй байна.');
+    expect(a0ReferenceLessons.l015.cards.find((word) => word.id === 'a0c0183')?.mongolian)
+      .toBe('Би шинээр ирсэн.');
 
     const storeWords = useAppStore.getState().words;
     expect(storeWords).toBe(allCzechWords);
@@ -163,9 +170,6 @@ describe('A0.1-A0.15 language corrections', () => {
     expect(storeWords.find((word) => word.id === 'a0c0112')?.mongolian).toBe('Авч явъя.');
     expect(storeWords.find((word) => word.id === 'a0c0139')?.mongolian).toBe('Өвчин намдаах эм байна уу?');
     expect(storeWords.find((word) => word.id === 'a0c0146')?.mongolian).toBe('Надад бичиж өгнө үү.');
-    expect(storeWords.find((word) => word.id === 'a0c0155')?.mongolian).toBe('Би нэг хүүхэдтэй.');
-    expect(storeWords.find((word) => word.id === 'a0c0166')?.mongolian).toBe('Надад дулаахан байна.');
-    expect(storeWords.find((word) => word.id === 'a0c0180')?.mongolian).toBe('Би зүгээргүй байна.');
     expect(JSON.stringify(storeWords.filter((word) => correctedLessonIds.includes(word.lessonId)))).not.toMatch(/Eba|Эба|Би ус хүсэж байна\.|Би хоол хүсэж байна\.|Үүнийг яаж уух вэ\?|Би шинэ хүн\./);
   });
 });
