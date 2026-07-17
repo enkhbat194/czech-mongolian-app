@@ -159,9 +159,12 @@ export function buildA0FillBlankQuestions(
   genderForm: PracticeGenderForm = 'neutral',
   userName = '',
 ): A0FillBlankQuestion[] {
-  const fullPool = getA0LearnerSayTargets(genderForm, userName).filter((target) => tokenCount(target.czech) >= 2);
-  const introducedPool = pickIntroducedPracticeTargets(fullPool, introducedIds, fullPool.length)
+  const fullPool = getA0LearnerSayTargets(genderForm, userName)
+    .filter((target) => tokenCount(target.czech) >= 2)
     .map((target) => personalizeA0PracticeTarget(target, userName));
+  const introduced = new Set(introducedIds);
+  const introducedPool = fullPool.filter((target) => introduced.has(target.id));
+  const productionPhraseSet = new Set(fullPool.map((target) => normalizeCzechForContract(target.czech)));
   const picked = [...introducedPool].sort(() => Math.random() - 0.5).slice(0, Math.max(0, limit));
   const questions: A0FillBlankQuestion[] = [];
 
@@ -184,7 +187,8 @@ export function buildA0FillBlankQuestions(
       if (!candidate) continue;
       const candidateNormalized = normalizeCzechForContract(candidate);
       if (!candidateNormalized || seen.has(candidateNormalized)) continue;
-      if (learnerSayNormalized.has(`${beforeNormalized} ${candidateNormalized}`.trim())) continue;
+      const completed = `${beforeNormalized} ${candidateNormalized}`.trim();
+      if (productionPhraseSet.has(completed)) continue;
       seen.add(candidateNormalized);
       distractors.push(candidate.replace(/[.,!?]+$/, '') + (answer.match(/[.,!?]+$/)?.[0] ?? ''));
     }
