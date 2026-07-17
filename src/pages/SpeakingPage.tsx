@@ -3,15 +3,32 @@ import { Check, ChevronLeft, ChevronRight, Mic, RefreshCw, Volume2, X } from 'lu
 import { AnimatePresence, motion } from 'framer-motion';
 import { speakCzech } from '../components/audio/czechSpeech';
 import { XPToast } from '../components/UI/SharedComponents';
+import PracticeEmptyState from '../components/practice/PracticeEmptyState';
 import { useAppStore } from '../stores/useAppStore';
-import { getA0PhraseIpa, getA0SpeakingPool, pickPracticeTargets } from '../data/a0PracticePools';
+import {
+  getA0PhraseIpa,
+  getA0SpeakingPool,
+  personalizeA0PracticeTarget,
+  pickIntroducedPracticeTargets,
+} from '../data/a0PracticePools';
 
 const SESSION_PHRASE_COUNT = 8;
 
 function makeSessionPhrases() {
-  const { progress, genderForm } = useAppStore.getState();
-  return pickPracticeTargets(getA0SpeakingPool(genderForm), progress.introducedWords, SESSION_PHRASE_COUNT)
-    .map((target) => ({ id: target.id, czech: target.czech, mongolian: target.mongolian, ipa: getA0PhraseIpa(target.czech) }));
+  const { progress, genderForm, userName } = useAppStore.getState();
+  return pickIntroducedPracticeTargets(
+    getA0SpeakingPool(genderForm, userName),
+    progress.introducedWords,
+    SESSION_PHRASE_COUNT,
+  ).map((target) => {
+    const personalized = personalizeA0PracticeTarget(target, userName);
+    return {
+      id: target.id,
+      czech: personalized.czech,
+      mongolian: personalized.mongolian,
+      ipa: getA0PhraseIpa(target.czech),
+    };
+  });
 }
 
 type Phase = 'listen' | 'selfReview' | 'result';
@@ -25,7 +42,17 @@ const SpeakingPage: React.FC = () => {
   const [result, setResult] = useState<Result>(null);
   const [showXP, setShowXP] = useState(false);
   const phrase = PHRASES[index];
-  if (!phrase) return null;
+
+  if (!phrase) {
+    return (
+      <PracticeEmptyState
+        icon="🗣️"
+        onBack={() => setPage('practice')}
+        onGoToLessons={() => setPage('path')}
+        description="Ярих дасгалд зөвхөн өмнө нь үзсэн, өөрөө хэлэх Чех хэллэгүүд орно."
+      />
+    );
+  }
 
   const listen = () => speakCzech(phrase.czech, { rate: 0.78 });
 
