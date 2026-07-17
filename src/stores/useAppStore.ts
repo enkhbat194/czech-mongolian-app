@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { czechWords } from '../data/czechWords';
+import { allCzechWords } from '../data/allCzechWords';
 import type { CzechWord } from '../data/czechWords';
 import { lessons } from '../data/lessons';
 import type { Lesson } from '../data/lessons';
@@ -212,7 +212,7 @@ function isDue(card: SRSCard) {
 export const useAppStore = create<AppState>()(
   persist(
     (set, get) => ({
-      words: czechWords,
+      words: allCzechWords,
       lessons,
       currentPage: 'home',
       currentLessonId: null,
