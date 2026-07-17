@@ -22,21 +22,21 @@ export const a0DirectionsMicroDialogues: Record<string, DialogueScenario> = {
     steps: [
       {
         id: 'a04b-d1', speaker: 'Явган зорчигч', staffCzech: 'Dobrý den.', staffMn: 'Сайн байна уу.',
-        promptMn: 'Та буудал хаана байгааг асуугаарай.',
+        promptMn: 'Та нийтийн тээврийн буудал хаана байгааг асуугаарай.',
         choices: [
-          { id: 'a', text: 'Kde je zastávka?', mongolian: 'Буудал хаана байна?' },
-          { id: 'b', text: 'Kde je nádraží?', mongolian: 'Галт тэрэгний буудал хаана байна?' },
+          { id: 'a', text: 'Kde je zastávka?', mongolian: 'Нийтийн тээврийн буудал хаана вэ?' },
+          { id: 'b', text: 'Kde je nádraží?', mongolian: 'Галт тэрэгний буудал хаана вэ?' },
           { id: 'c', text: 'Kam jedete?', mongolian: 'Та хаашаа явж байна?' },
-        ], correctId: 'a', feedbackMn: 'Kde je zastávka? = Буудал хаана байна?'
+        ], correctId: 'a', feedbackMn: 'Kde je zastávka? = Нийтийн тээврийн буудал хаана вэ?'
       },
       {
         id: 'a04b-d2', speaker: 'Явган зорчигч', staffCzech: 'Autobus, nebo tramvaj?', staffMn: 'Автобус уу, трамвай юу?',
-        promptMn: 'Та трамвайгаар явах хүсэлтэйгээ товч хэлээрэй.',
+        promptMn: 'Та трамвайгаар явахаа хэлээрэй.',
         choices: [
-          { id: 'a', text: 'Autobus, prosím.', mongolian: 'Автобус, гуйя.' },
-          { id: 'b', text: 'Tramvaj, prosím.', mongolian: 'Трамвай, гуйя.' },
-          { id: 'c', text: 'Zastávka, prosím.', mongolian: 'Буудал, гуйя.' },
-        ], correctId: 'b', feedbackMn: 'tramvaj = трамвай. Богино хариултаар Tramvaj, prosím. гэж хэлж болно.'
+          { id: 'a', text: 'Autobusem, prosím.', mongolian: 'Автобусаар явъя.' },
+          { id: 'b', text: 'Tramvají, prosím.', mongolian: 'Трамвайгаар явъя.' },
+          { id: 'c', text: 'Zastávka, prosím.', mongolian: 'Буудал хэрэгтэй байна.' },
+        ], correctId: 'b', feedbackMn: 'Трамвайгаар явахаа Tramvají, prosím. гэж хэлж болно.'
       },
     ],
   },
@@ -63,7 +63,7 @@ export const a0DirectionsMicroDialogues: Record<string, DialogueScenario> = {
       promptMn: 'Та буух газраа ойлгосон бол эелдгээр хариулаарай.',
       choices: [
         { id: 'a', text: 'Děkuji.', mongolian: 'Баярлалаа.' },
-        { id: 'b', text: 'Kde je zastávka?', mongolian: 'Буудал хаана байна?' },
+        { id: 'b', text: 'Kde je zastávka?', mongolian: 'Нийтийн тээврийн буудал хаана вэ?' },
         { id: 'c', text: 'Kam jedete?', mongolian: 'Та хаашаа явж байна?' },
       ], correctId: 'a', feedbackMn: 'Vystupte tady. = Энд буугаарай. Талархаад Děkuji. гэж хэлж болно.'
     }],
@@ -91,12 +91,12 @@ export const a0DirectionsFinalDialogue: DialogueScenario = {
   steps: [
     {
       id: 'a04final-d1', speaker: 'Явган зорчигч', staffCzech: 'Dobrý den.', staffMn: 'Сайн байна уу.',
-      promptMn: 'Та трамвайн буудал хаана байгааг асуугаарай.',
+      promptMn: 'Та нийтийн тээврийн буудал хаана байгааг асуугаарай.',
       choices: [
-        { id: 'a', text: 'Kde je zastávka?', mongolian: 'Буудал хаана байна?' },
-        { id: 'b', text: 'Kde je lékárna?', mongolian: 'Эмийн сан хаана байна?' },
+        { id: 'a', text: 'Kde je zastávka?', mongolian: 'Нийтийн тээврийн буудал хаана вэ?' },
+        { id: 'b', text: 'Kde je lékárna?', mongolian: 'Эмийн сан хаана вэ?' },
         { id: 'c', text: 'Kam jedete?', mongolian: 'Та хаашаа явж байна?' },
-      ], correctId: 'a', feedbackMn: 'Эхлээд Kde je zastávka? гэж буудлаа асууна.'
+      ], correctId: 'a', feedbackMn: 'Эхлээд Kde je zastávka? гэж нийтийн тээврийн буудлаа асууна.'
     },
     {
       id: 'a04final-d2', speaker: 'Явган зорчигч', staffCzech: 'Zastávka je tam. Jděte rovně.', staffMn: 'Буудал тэнд байна. Шулуун яваарай.',
@@ -112,7 +112,7 @@ export const a0DirectionsFinalDialogue: DialogueScenario = {
       promptMn: 'Та галт тэрэгний буудал руу явж байгаагаа хэлээрэй.',
       choices: [
         { id: 'a', text: 'Jdu na nádraží.', mongolian: 'Би галт тэрэгний буудал руу явж байна.' },
-        { id: 'b', text: 'Kde je zastávka?', mongolian: 'Буудал хаана байна?' },
+        { id: 'b', text: 'Kde je zastávka?', mongolian: 'Нийтийн тээврийн буудал хаана вэ?' },
         { id: 'c', text: 'Jeďte tramvají.', mongolian: 'Трамвайгаар яваарай.' },
       ], correctId: 'a', feedbackMn: 'Jdu na nádraží. = Би галт тэрэгний буудал руу явж байна.'
     },
