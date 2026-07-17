@@ -8,6 +8,7 @@ import {
   getA0SpeakingPool,
   isA0StaffOnlyText,
   isBannedProductionText,
+  personalizeA0PracticeTarget,
   pickIntroducedPracticeTargets,
   pickPracticeTargets,
 } from '../../src/data/a0PracticePools';
@@ -63,6 +64,17 @@ describe('A0 practice pools', () => {
     expect(pool.some((target) => /eba/i.test(target.czech))).toBe(false);
   });
 
+  it('only enables the learner-name phrase after a real profile name exists', () => {
+    expect(getA0LearnerSayTargets('neutral').some((target) => target.czech.includes('{userName}'))).toBe(false);
+    expect(getA0LearnerSayTargets('neutral', 'Суралцагч').some((target) => target.czech.includes('{userName}'))).toBe(false);
+
+    const namedTarget = getA0LearnerSayTargets('neutral', 'Бат')
+      .find((target) => target.czech.includes('{userName}'));
+    expect(namedTarget).toBeDefined();
+    expect(personalizeA0PracticeTarget(namedTarget!, 'Бат').czech).toBe('Jmenuji se Бат.');
+    expect(personalizeA0PracticeTarget(namedTarget!, 'Бат').mongolian).toBe('Намайг Бат гэдэг.');
+  });
+
   it('keeps production typing pools short', () => {
     const pool = getA0ProductionPool(4);
     expect(pool.length).toBeGreaterThan(5);
@@ -89,11 +101,21 @@ describe('A0 practice pools', () => {
 });
 
 describe('buildA0FillBlankQuestions', () => {
-  const questions = buildA0FillBlankQuestions([], 30);
+  const fillPool = getA0LearnerSayTargets().filter(
+    (target) => normalizeCzechForContract(target.czech).split(' ').filter(Boolean).length >= 2,
+  );
+  const introducedIds = fillPool.map((target) => target.id);
+  const questions = buildA0FillBlankQuestions(introducedIds, 30);
 
-  it('produces real phrase-pattern blanks', () => {
+  it('returns no questions before the learner has introduced material', () => {
+    expect(buildA0FillBlankQuestions([], 10)).toEqual([]);
+  });
+
+  it('produces real phrase-pattern blanks from introduced material only', () => {
     expect(questions.length).toBeGreaterThan(5);
+    const introduced = new Set(introducedIds);
     for (const question of questions) {
+      expect(introduced.has(question.id)).toBe(true);
       expect(question.before.length).toBeGreaterThan(0);
       expect(question.options).toContain(question.answer);
       expect(question.options.length).toBeGreaterThanOrEqual(3);
