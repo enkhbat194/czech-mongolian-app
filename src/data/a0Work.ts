@@ -24,7 +24,7 @@ export const a0WorkMicroLessons: A0MicroLesson[] = [
     cardIds:['a0c0089','a0c0090','a0c0091'],
     instructions:{ a0c0089:'začínáme = бид эхэлнэ.', a0c0090:'Začínáme v osm. = Бид найман цагт эхэлнэ.', a0c0091:'Kdy končíme? = Бид хэзээ тарах вэ?' },
     exercises:[
-      { id:'a0-6-b-1', type:'choice', titleMn:'Сонсож таних', promptMn:'Аудиог сонсоод зөв Монгол утгыг сонго.', audioText:'Začínáme v osm.', choices:[{id:'a',text:'Бид найман цагт эхэлнэ.'},{id:'b',text:'Бид найман цагт тарах болно.'},{id:'c',text:'Бид найман цагт уулзалттай.'}], correctId:'a', feedbackMn:'Začínáme v osm. = Бид найман цагт эхэлнэ.' },
+      { id:'a0-6-b-1', type:'choice', titleMn:'Сонсож таних', promptMn:'Аудиог сонсоод зөв Монгол утгыг сонго.', audioText:'Začínáme v osm.', choices:[{id:'a',text:'Бид найман цагт эхэлнэ.'},{id:'b',text:'Бид найман цагт тарна.'},{id:'c',text:'Бид найман цагт уулзалттай.'}], correctId:'a', feedbackMn:'Začínáme v osm. = Бид найман цагт эхэлнэ.' },
       { id:'a0-6-b-2', type:'choice', titleMn:'Асуулт сонгох', promptMn:'Та ажил хэзээ тарахыг асуух хэрэгтэй. Аль нь зөв бэ?', choices:[{id:'a',text:'Kdy končíme?'},{id:'b',text:'Kdy je přestávka?'},{id:'c',text:'Pracujete tady?'}], correctId:'a', feedbackMn:'Kdy končíme? = Бид хэзээ тарах вэ?' },
       { id:'a0-6-b-3', type:'order', titleMn:'Өгүүлбэр бүтээх', promptMn:'Ажил эхлэх цагийг зөв дарааллаар байрлуул.', tokens:['v osm.','Začínáme'], expectedText:'Začínáme v osm.', feedbackMn:'Začínáme v osm. = Бид найман цагт эхэлнэ.' },
     ],
@@ -42,22 +42,22 @@ export const a0WorkMicroLessons: A0MicroLesson[] = [
   {
     id:'a0-6-d', titleMn:'4/5 — Шинэ даалгавар', canDoMn:'Шинэ даалгавар ирэхэд юу хийхээ асууж, нөгөө хүний тусламжийн хариуг ойлгож чадна.',
     cardIds:['a0c0103','a0c0096','a0c0104'],
-    instructions:{ a0c0103:'Nový úkol. = Шинэ даалгавар.', a0c0096:'Co mám dělat? = Би юу хийх вэ?', a0c0104:'Ukážu vám. = Би танд үзүүлж өгнө.' },
+    instructions:{ a0c0103:'Nový úkol. = Шинэ даалгавар.', a0c0096:'Co mám dělat? = Би юу хийх ёстой вэ?', a0c0104:'Ukážu vám. = Би танд үзүүлье.' },
     exercises:[
       { id:'a0-6-d-1', type:'choice', titleMn:'Сонсож таних', promptMn:'Аудиог сонсоод зөв Монгол утгыг сонго.', audioText:'Nový úkol.', choices:[{id:'a',text:'Шинэ даалгавар.'},{id:'b',text:'Ажил дууссан.'},{id:'c',text:'Завсарлага эхэллээ.'}], correctId:'a', feedbackMn:'Nový úkol. = Шинэ даалгавар.' },
-      { id:'a0-6-d-2', type:'choice', titleMn:'Яаралтай хэрэглэх', promptMn:'Та шинэ ажил дээрээ юу хийхээ мэдэхгүй байна. Аль өгүүлбэрийг хэлэх вэ?', choices:[{id:'a',text:'Co mám dělat?'},{id:'b',text:'Pracujete tady?'},{id:'c',text:'Kdy končíme?'}], correctId:'a', feedbackMn:'Co mám dělat? = Би юу хийх вэ?' },
-      { id:'a0-6-d-3', type:'choice', titleMn:'Хариулт ойлгох', promptMn:'Ukážu vám. ямар утгатай вэ?', choices:[{id:'a',text:'Би танд үзүүлж өгнө.'},{id:'b',text:'Та надад үзүүлж өгнө үү.'},{id:'c',text:'Би ажиллаж байна.'}], correctId:'a', feedbackMn:'Ukážu vám. = Би танд үзүүлж өгнө.' },
-      { id:'a0-6-d-4', type:'order', titleMn:'Асуулт бүтээх', promptMn:'“Би юу хийх вэ?” гэсэн асуултыг зөв дарааллаар байрлуул.', tokens:['dělat?','mám','Co'], expectedText:'Co mám dělat?', feedbackMn:'Co mám dělat? = Би юу хийх вэ?' },
+      { id:'a0-6-d-2', type:'choice', titleMn:'Яаралтай хэрэглэх', promptMn:'Та шинэ ажил дээрээ юу хийхээ мэдэхгүй байна. Аль өгүүлбэрийг хэлэх вэ?', choices:[{id:'a',text:'Co mám dělat?'},{id:'b',text:'Pracujete tady?'},{id:'c',text:'Kdy končíme?'}], correctId:'a', feedbackMn:'Co mám dělat? = Би юу хийх ёстой вэ?' },
+      { id:'a0-6-d-3', type:'choice', titleMn:'Хариулт ойлгох', promptMn:'Ukážu vám. ямар утгатай вэ?', choices:[{id:'a',text:'Би танд үзүүлье.'},{id:'b',text:'Та надад үзүүлнэ үү.'},{id:'c',text:'Би ажиллаж байна.'}], correctId:'a', feedbackMn:'Ukážu vám. = Би танд үзүүлье.' },
+      { id:'a0-6-d-4', type:'order', titleMn:'Асуулт бүтээх', promptMn:'“Би юу хийх ёстой вэ?” гэсэн асуултыг зөв дарааллаар байрлуул.', tokens:['dělat?','mám','Co'], expectedText:'Co mám dělat?', feedbackMn:'Co mám dělat? = Би юу хийх ёстой вэ?' },
     ],
   },
   {
-    id:'a0-6-e', titleMn:'5/5 — Дууссан уу, надад үзүүлж өгнө үү', canDoMn:'Ажил дууссан эсэхийг асуухад ойлгохгүй байвал үзүүлж өгөхийг хүсэж чадна.',
+    id:'a0-6-e', titleMn:'5/5 — Дууссан уу, надад үзүүлнэ үү', canDoMn:'Ажил дууссан эсэхийг асуухад ойлгохгүй байвал үзүүлж өгөхийг хүсэж чадна.',
     cardIds:['a0c0097','a0c0098','a0c0099'],
-    instructions:{ a0c0097:'hotovo = дууссан.', a0c0098:'Je hotovo? = Дууссан уу?', a0c0099:'Ukažte mi, prosím. = Надад үзүүлж өгнө үү.' },
+    instructions:{ a0c0097:'hotovo = дууссан.', a0c0098:'Je hotovo? = Дууссан уу?', a0c0099:'Ukažte mi, prosím. = Надад үзүүлнэ үү.' },
     exercises:[
       { id:'a0-6-e-1', type:'choice', titleMn:'Утга таних', promptMn:'Je hotovo? ямар утгатай вэ?', choices:[{id:'a',text:'Дууссан уу?'},{id:'b',text:'Та хаана байна?'},{id:'c',text:'Завсарлага хэзээ вэ?'}], correctId:'a', feedbackMn:'Je hotovo? = Дууссан уу?' },
-      { id:'a0-6-e-2', type:'choice', titleMn:'Тусламжийг тодруулах', promptMn:'Та ойлгохгүй байгаа тул нөгөө хүнээр биеэр нь үзүүлүүлэх хэрэгтэй. Аль өгүүлбэрийг хэлэх вэ?', choices:[{id:'a',text:'Ukažte mi, prosím.'},{id:'b',text:'Mám směnu.'},{id:'c',text:'Je hotovo?'}], correctId:'a', feedbackMn:'Ukažte mi, prosím. = Надад үзүүлж өгнө үү.' },
-      { id:'a0-6-e-3', type:'order', titleMn:'Хүсэлт бүтээх', promptMn:'“Надад үзүүлж өгнө үү” гэсэн хүсэлтийг зөв дарааллаар байрлуул.', tokens:['mi,','Ukažte','prosím.'], expectedText:'Ukažte mi, prosím.', feedbackMn:'Ukažte mi, prosím. = Надад үзүүлж өгнө үү.' },
+      { id:'a0-6-e-2', type:'choice', titleMn:'Тусламжийг тодруулах', promptMn:'Та ойлгохгүй байгаа тул нөгөө хүнээр биеэр нь үзүүлүүлэх хэрэгтэй. Аль өгүүлбэрийг хэлэх вэ?', choices:[{id:'a',text:'Ukažte mi, prosím.'},{id:'b',text:'Mám směnu.'},{id:'c',text:'Je hotovo?'}], correctId:'a', feedbackMn:'Ukažte mi, prosím. = Надад үзүүлнэ үү.' },
+      { id:'a0-6-e-3', type:'order', titleMn:'Хүсэлт бүтээх', promptMn:'“Надад үзүүлнэ үү” гэсэн хүсэлтийг зөв дарааллаар байрлуул.', tokens:['mi,','Ukažte','prosím.'], expectedText:'Ukažte mi, prosím.', feedbackMn:'Ukažte mi, prosím. = Надад үзүүлнэ үү.' },
     ],
   },
 ];
