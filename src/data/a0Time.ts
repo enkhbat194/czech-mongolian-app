@@ -43,7 +43,7 @@ export const a0TimeMicroLessons: A0MicroLesson[] = [
     cardIds:['a0c0079','a0c0080','a0c0081','a0c0082'],
     instructions:{ a0c0079:'Kdy? = Хэзээ?', a0c0080:'Kdy máte čas? = Та хэзээ завтай вэ?', a0c0081:'Mám čas. = Би завтай.', a0c0082:'Nemám čas. = Би завгүй.' },
     exercises:[
-      { id:'a0-5-c-1', type:'choice', titleMn:'Асуулт ойлгох', promptMn:'Kdy máte čas? гэж асуувал юу гэсэн үг вэ?', choices:[{id:'a',text:'Та хэдэн цагт явна вэ?'},{id:'b',text:'Та хэзээ завтай вэ?'},{id:'c',text:'Та хаана ажилладаг вэ?'}], correctId:'b', feedbackMn:'Kdy máte čas? = Та хэзээ завтай вэ?' },
+      { id:'a0-5-c-1', type:'choice', titleMn:'Асуулт ойлгох', promptMn:'Kdy máte čas? гэж асуувал юу гэсэн үг вэ?', choices:[{id:'a',text:'Та хэдэн цагт явах вэ?'},{id:'b',text:'Та хэзээ завтай вэ?'},{id:'c',text:'Та хаана ажилладаг вэ?'}], correctId:'b', feedbackMn:'Kdy máte čas? = Та хэзээ завтай вэ?' },
       { id:'a0-5-c-2', type:'choice', titleMn:'Хариулт сонгох', promptMn:'Та одоо завгүй байна. Аль хариулт тохирох вэ?', choices:[{id:'a',text:'Mám čas.'},{id:'b',text:'Nemám čas.'},{id:'c',text:'Kdy?'}], correctId:'b', feedbackMn:'Nemám čas. = Би завгүй.' },
       { id:'a0-5-c-3-match', type:'match', titleMn:'Завтай эсэхээ хэлэх', promptMn:'Хоёр хариултыг зөв Монгол утгатай нь холбо.', pairs:[{id:'have-time',czech:'Mám čas.',mongolian:'Би завтай.'},{id:'no-time',czech:'Nemám čas.',mongolian:'Би завгүй.'}], feedbackMn:'Завтай болон завгүй гэсэн хоёр хариултыг зөв ялгалаа.' },
     ],
