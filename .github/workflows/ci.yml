@@ -72,7 +72,19 @@ jobs:
         run: npm run audit:reuse
 
       - name: Build
-        run: npm run build
+        shell: bash
+        run: |
+          set -o pipefail
+          npm run build 2>&1 | tee build-results.txt
+
+      - name: Upload build report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-report
+          path: build-results.txt
+          if-no-files-found: warn
+          retention-days: 7
 
       - name: Audio dry run
         run: npm run audio:dry
