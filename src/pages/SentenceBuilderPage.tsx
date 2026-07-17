@@ -4,8 +4,13 @@ import { ChevronLeft, Volume2, Check, X } from 'lucide-react';
 import { speakCzech } from '../components/audio/czechSpeech';
 import { useAppStore } from '../stores/useAppStore';
 import { ProgressBar, XPToast } from '../components/UI/SharedComponents';
+import PracticeEmptyState from '../components/practice/PracticeEmptyState';
 import { isSrsEligiblePracticeTarget } from '../stores/usePhraseMemoryStore';
-import { getA0LearnerSayTargets, pickPracticeTargets } from '../data/a0PracticePools';
+import {
+  getA0LearnerSayTargets,
+  personalizeA0PracticeTarget,
+  pickIntroducedPracticeTargets,
+} from '../data/a0PracticePools';
 
 interface Question {
   id: string;
@@ -25,26 +30,30 @@ function formatSentence(tokens: string[]) {
 }
 
 function generateQuestions(): Question[] {
-  const { progress, genderForm } = useAppStore.getState();
-  const introduced = progress.introducedWords;
-  const pool = getA0LearnerSayTargets(genderForm).filter((target) => {
+  const { progress, genderForm, userName } = useAppStore.getState();
+  const eligiblePool = getA0LearnerSayTargets(genderForm, userName).filter((target) => {
     const count = target.czech.split(' ').filter(Boolean).length;
     return count >= 2 && count <= 5;
   });
+  const introducedPool = pickIntroducedPracticeTargets(
+    eligiblePool,
+    progress.introducedWords,
+    eligiblePool.length,
+  ).map((target) => personalizeA0PracticeTarget(target, userName));
 
-  return pickPracticeTargets(pool, introduced, 10).map((target) => {
+  return [...introducedPool].sort(() => Math.random() - 0.5).slice(0, 10).map((target) => {
     const tokens = tokenize(target.czech);
-    const otherTokens = pool
+    const otherTokens = introducedPool
       .filter((item) => item.id !== target.id)
       .flatMap((item) => tokenize(item.czech))
       .filter((token) => token.length > 2 && /^[a-zA-Zěščřžýáíéůúťďň]+$/i.test(token))
-      .filter((token) => !tokens.some((own) => own.toLocaleLowerCase() === token.toLocaleLowerCase()));
-    const distractor = otherTokens[Math.floor(Math.random() * otherTokens.length)] ?? 'prosím';
+      .filter((token) => !tokens.some((own) => own.toLocaleLowerCase('cs-CZ') === token.toLocaleLowerCase('cs-CZ')));
+    const distractor = otherTokens[Math.floor(Math.random() * otherTokens.length)];
 
     return {
       id: target.id,
       czTokens: tokens,
-      bank: [...tokens, distractor].sort(() => Math.random() - 0.5),
+      bank: [...tokens, ...(distractor ? [distractor] : [])].sort(() => Math.random() - 0.5),
       czFull: target.czech,
       mnFull: target.mongolian,
     };
@@ -63,7 +72,16 @@ const SentenceBuilderPage: React.FC = () => {
   const [slots, setSlots] = useState<{ bankIndex: number; text: string }[]>([]);
   const question = questions[index];
 
-  if (!question) return null;
+  if (!question) {
+    return (
+      <PracticeEmptyState
+        icon="🧱"
+        onBack={() => setPage('practice')}
+        onGoToLessons={() => setPage('path')}
+        description="Өгүүлбэр бүтээх дасгалд зөвхөн өмнө нь үзсэн Чех хэллэг болон үгс орно."
+      />
+    );
+  }
 
   const checkAnswer = () => {
     const userSentence = formatSentence(slots.map((slot) => slot.text));
@@ -77,8 +95,8 @@ const SentenceBuilderPage: React.FC = () => {
       setShowXP(true);
       window.setTimeout(() => setShowXP(false), 1200);
       if (isSrsEligiblePracticeTarget(question.id)) updateSRSCard(question.id, 5);
-    } else {
-      if (isSrsEligiblePracticeTarget(question.id)) updateSRSCard(question.id, 1);
+    } else if (isSrsEligiblePracticeTarget(question.id)) {
+      updateSRSCard(question.id, 1);
     }
     setPhase('result');
   };
