@@ -98,6 +98,19 @@ describe('A0 practice pools', () => {
     const picked = pickIntroducedPracticeTargets(pool, introduced, 10);
     expect(picked.map((target) => target.id).sort()).toEqual([...introduced].sort());
   });
+
+  it('keeps introduced target order stable within one seeded session', () => {
+    const pool = getA0ListeningTargets();
+    const introduced = pool.slice(0, 12).map((target) => target.id);
+    const first = pickIntroducedPracticeTargets(pool, introduced, 10, 'session-a').map((target) => target.id);
+    const repeat = pickIntroducedPracticeTargets(pool, introduced, 10, 'session-a').map((target) => target.id);
+    expect(repeat).toEqual(first);
+
+    const alternatives = ['session-b', 'session-c', 'session-d'].map((seed) =>
+      pickIntroducedPracticeTargets(pool, introduced, 10, seed).map((target) => target.id),
+    );
+    expect(alternatives.some((order) => JSON.stringify(order) !== JSON.stringify(first))).toBe(true);
+  });
 });
 
 describe('buildA0FillBlankQuestions', () => {
@@ -141,5 +154,16 @@ describe('buildA0FillBlankQuestions', () => {
       const duplicates = new Set(question.options.map((option) => normalizeCzechForContract(option)));
       expect(duplicates.size).toBe(question.options.length);
     }
+  });
+
+  it('keeps question and option order stable for the same session seed', () => {
+    const first = buildA0FillBlankQuestions(introducedIds, 30, 'neutral', '', 'fill-session-a');
+    const repeat = buildA0FillBlankQuestions(introducedIds, 30, 'neutral', '', 'fill-session-a');
+    expect(repeat).toEqual(first);
+
+    const alternatives = ['fill-session-b', 'fill-session-c', 'fill-session-d'].map((seed) =>
+      buildA0FillBlankQuestions(introducedIds, 30, 'neutral', '', seed),
+    );
+    expect(alternatives.some((set) => JSON.stringify(set) !== JSON.stringify(first))).toBe(true);
   });
 });
