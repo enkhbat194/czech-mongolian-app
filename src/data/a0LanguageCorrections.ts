@@ -48,6 +48,9 @@ export function repairA0LanguageText(text: string): string {
 function patchKnownItem(value: Record<string, unknown>): Record<string, unknown> {
   const id = typeof value.id === 'string' ? value.id : '';
 
+  if (id === 'a0c0017') return { ...value, mongolian: 'Сайн байна.' };
+  if (id === 'a0c0018') return { ...value, mongolian: 'Муу байна.' };
+
   if (id === 'a0-1-a-3') {
     const { promptCzech: _promptCzech, ...rest } = value;
     return {
