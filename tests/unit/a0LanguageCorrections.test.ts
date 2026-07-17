@@ -1,12 +1,20 @@
 import '../helpers/localStorageStub';
 import { describe, expect, it } from 'vitest';
+import { allCzechWords } from '../../src/data/allCzechWords';
 import { a0MemoryTargets } from '../../src/data/a0MemoryPlan';
 import { a0ReferenceLessons } from '../../src/data/a0ReferenceLessons';
+import { useAppStore } from '../../src/stores/useAppStore';
 
 const byId = (id: string) => {
   const target = a0MemoryTargets.find((item) => item.id === id);
   if (!target) throw new Error(`Missing memory target: ${id}`);
   return target;
+};
+
+const catalogById = (id: string) => {
+  const word = allCzechWords.find((item) => item.id === id);
+  if (!word) throw new Error(`Missing catalog word: ${id}`);
+  return word;
 };
 
 describe('A0.1-A0.5 language corrections', () => {
@@ -61,5 +69,16 @@ describe('A0.1-A0.5 language corrections', () => {
     expect(exported).not.toContain('Би ус хүсэж байна.');
     expect(exported).not.toContain('Би хоол хүсэж байна.');
     expect(exported).not.toContain('Таны нэр хэн бэ?');
+  });
+
+  it('feeds the same corrected catalog to learner-facing app pages', () => {
+    expect(catalogById('a0c0013').czech).toBe('Jmenuji se {userName}.');
+    expect(catalogById('a0c0013').mongolian).toBe('Намайг {userName} гэдэг.');
+    expect(catalogById('a0c0031').mongolian).toBe('Ус авъя.');
+
+    const storeWords = useAppStore.getState().words;
+    expect(storeWords).toBe(allCzechWords);
+    expect(storeWords.find((word) => word.id === 'a0c0033')?.mongolian).toBe('Хоол авъя.');
+    expect(JSON.stringify(storeWords.filter((word) => ['l001', 'l002', 'l003', 'l004', 'l005'].includes(word.lessonId)))).not.toMatch(/Eba|Эба|Би ус хүсэж байна\.|Би хоол хүсэж байна\./);
   });
 });
