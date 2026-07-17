@@ -36,7 +36,16 @@ jobs:
         run: npm run test:calendar
 
       - name: Unit tests
-        run: npm run test:unit
+        run: npm run test:unit -- --reporter=json --outputFile=vitest-results.json
+
+      - name: Upload unit test report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: unit-test-report
+          path: vitest-results.json
+          if-no-files-found: warn
+          retention-days: 7
 
       - name: Audit A0 data
         run: npm run audit:a0
