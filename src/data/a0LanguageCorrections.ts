@@ -3,7 +3,7 @@ const BATCH_4B_LESSONS = new Set(['l001', 'l002', 'l003', 'l004', 'l005']);
 const replacements: ReadonlyArray<readonly [string, string]> = [
   ['Jmenuji se …', 'Jmenuji se {userName}.'],
   ['Миний нэр {userName}.', 'Намайг {userName} гэдэг.'],
-  ['Миний нэр …', 'Намайг … гэдэг.'],
+  ['Миний нэр …', 'Намайг {userName} гэдэг.'],
   ['Таны нэр хэн бэ?', 'Таныг хэн гэдэг вэ?'],
   ['Та сайн уу?', 'Та сайн байна уу?'],
   ['Гуйя; зүгээр; энд байна', 'Гуйя.'],
