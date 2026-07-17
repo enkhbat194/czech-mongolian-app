@@ -40,6 +40,7 @@ function generateQuestions(sessionSeed: string): Question[] {
     eligiblePool,
     progress.introducedWords,
     eligiblePool.length,
+    `${sessionSeed}:eligible`,
   ).map((target) => personalizeA0PracticeTarget(target, userName));
 
   return stableShuffle(introducedPool, `${sessionSeed}:targets`).slice(0, 10).map((target) => {
