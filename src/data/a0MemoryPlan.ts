@@ -1,5 +1,6 @@
 import { czechWords } from './czechWords';
 import { a0FirstWeekWords } from './a0FirstWeekWords';
+import { repairA0AliasLanguage, repairA0WordLanguage } from './a0LanguageCorrections';
 import { a0PeopleWords } from './a0PeopleWords';
 import { a0SafetyWords } from './a0SafetyWords';
 import { a0WeatherWords } from './a0WeatherWords';
@@ -59,7 +60,7 @@ const aliasMap: Record<string, string[]> = {
   a0c0005: ['Děkuji.', 'Děkuji. Na shledanou.'],
   a0c0006: ['Ano.', 'Ano, děkuji.', 'Ano, prosím.'],
   a0c0007: ['Ne.', 'Ne, děkuji.'],
-  a0c0013: ['Jmenuji se Eba.', 'Dobrý den. Jmenuji se Eba.'],
+  a0c0013: ['Jmenuji se {userName}.', 'Dobrý den. Jmenuji se {userName}.'],
   a0c0017: ['Dobře, děkuji.'],
   a0c0019: ['Odkud jste?', 'Odkud?'],
   a0c0027: ['Ano, potřebuji vodu.'],
@@ -71,8 +72,8 @@ const aliasMap: Record<string, string[]> = {
   a0c0053: ['Prosím, kde je lékárna?'],
   a0c0055: ['Prosím, kde je nádraží?'],
   a0c0063: ['Prosím, kde je zastávka?'],
-  a0c0064: ['Autobus, prosím.'],
-  a0c0065: ['Tramvaj, prosím.'],
+  a0c0064: ['Autobusem, prosím.'],
+  a0c0065: ['Tramvají, prosím.'],
   a0c0081: ['Dnes mám čas.', 'Zítra večer mám čas.'],
   a0c0082: ['Teď nemám čas.'],
   a0c0099: ['Nerozumím. Ukažte mi, prosím.'],
@@ -132,11 +133,13 @@ function containsTokenSequence(text: string, candidate: string) {
   ));
 }
 
-const allMemoryWords = [...czechWords, ...a0PeopleWords, ...a0WeatherWords, ...a0SafetyWords, ...a0FirstWeekWords];
+const allMemoryWords = [...czechWords, ...a0PeopleWords, ...a0WeatherWords, ...a0SafetyWords, ...a0FirstWeekWords]
+  .map((word) => repairA0WordLanguage(word));
 
 export const a0MemoryTargets: A0MemoryTarget[] = allMemoryWords.map((word) => {
   const priority: MemoryPriority = explicitActiveIds.has(word.id) || activeCategories.has(word.category) ? 'active' : 'support';
-  return { id: word.id, lessonId: word.lessonId, czech: word.czech, mongolian: word.mongolian, priority, aliases: aliasMap[word.id], requiredCoverage: priority === 'active' ? activeCoverage : supportCoverage };
+  const aliases = aliasMap[word.id]?.map((alias) => repairA0AliasLanguage(alias, word.lessonId));
+  return { id: word.id, lessonId: word.lessonId, czech: word.czech, mongolian: word.mongolian, priority, aliases, requiredCoverage: priority === 'active' ? activeCoverage : supportCoverage };
 });
 
 const lessonOrder = ['l001', 'l002', 'l003', 'l004', 'l005', 'l006', 'l007', 'l008', 'l009', 'l010', 'l011', 'l012', 'l013', 'l014', 'l015'];
@@ -178,10 +181,6 @@ export function getA0MemoryTargetByCzech(text: string) {
   return getA0MemoryTargetsByCzech(text)[0];
 }
 
-export function getPriorActiveTargetIds(lessonId: string) {
-  const lessonIndex = lessonOrder.indexOf(lessonId);
-  if (lessonIndex <= 0) return [];
-  return a0MemoryTargets
-    .filter((target) => target.priority === 'active' && lessonOrder.indexOf(target.lessonId) < lessonIndex)
-    .map((target) => target.id);
+export function getA0MemoryPlanByLesson() {
+  return lessonOrder.map((lessonId) => ({ lessonId, targets: a0MemoryTargets.filter((target) => target.lessonId === lessonId) }));
 }
