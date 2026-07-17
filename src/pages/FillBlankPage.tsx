@@ -1,27 +1,53 @@
-import React, { useMemo, useState } from 'react';
-import { ChevronLeft, Volume2 } from 'lucide-react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { ChevronLeft, RotateCcw, Volume2 } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { speakCzech } from '../components/audio/czechSpeech';
 import { ProgressBar, XPToast } from '../components/UI/SharedComponents';
 import PracticeEmptyState from '../components/practice/PracticeEmptyState';
 import { useAppStore } from '../stores/useAppStore';
 import { isSrsEligiblePracticeTarget } from '../stores/usePhraseMemoryStore';
-import { buildA0FillBlankQuestions } from '../data/a0PracticePools';
+import { buildA0FillBlankQuestions, type A0FillBlankQuestion } from '../data/a0PracticePools';
+import {
+  appendSinglePracticeRetry,
+  claimPracticeKey,
+  createPracticeSessionSeed,
+} from '../utils/practiceSession';
 
 const FillBlankPage: React.FC = () => {
-  const { addXP, setPage, updateSRSCard } = useAppStore();
-  const [sessionSeed] = useState(() => `${Date.now()}-${Math.random()}`);
-  const questions = useMemo(() => {
-    const { progress, genderForm, userName } = useAppStore.getState();
-    return buildA0FillBlankQuestions(progress.introducedWords, 10, genderForm, userName, sessionSeed);
-  }, [sessionSeed]);
+  const { addXP, setPage, updateSRSCard, progress, genderForm, userName } = useAppStore();
+  const [sessionSeed, setSessionSeed] = useState(() => createPracticeSessionSeed('fill-blank'));
+  const baseQuestions = useMemo(
+    () => buildA0FillBlankQuestions(progress.introducedWords, 10, genderForm, userName, sessionSeed),
+    [genderForm, progress.introducedWords, sessionSeed, userName],
+  );
+  const [questions, setQuestions] = useState<A0FillBlankQuestion[]>(baseQuestions);
   const [index, setIndex] = useState(0);
   const [selected, setSelected] = useState<string | null>(null);
   const [checked, setChecked] = useState(false);
   const [score, setScore] = useState(0);
   const [showXP, setShowXP] = useState(false);
   const [finished, setFinished] = useState(false);
+  const originalCountRef = useRef(baseQuestions.length);
+  const attemptedRef = useRef(new Set<string>());
+  const retryQueuedRef = useRef(new Set<string>());
+  const rewardedRef = useRef(new Set<string>());
+  const masteredRef = useRef(new Set<string>());
   const question = questions[index];
+
+  useEffect(() => {
+    setQuestions(baseQuestions);
+    setIndex(0);
+    setSelected(null);
+    setChecked(false);
+    setScore(0);
+    setShowXP(false);
+    setFinished(false);
+    originalCountRef.current = baseQuestions.length;
+    attemptedRef.current.clear();
+    retryQueuedRef.current.clear();
+    rewardedRef.current.clear();
+    masteredRef.current.clear();
+  }, [baseQuestions]);
 
   if (!question) {
     return (
@@ -35,6 +61,7 @@ const FillBlankPage: React.FC = () => {
   }
 
   const correct = selected === question.answer;
+
   const continueLesson = () => {
     if (index >= questions.length - 1) {
       setFinished(true);
@@ -46,28 +73,38 @@ const FillBlankPage: React.FC = () => {
   };
 
   const checkAnswer = () => {
-    if (!selected) return;
+    if (!selected || checked || !claimPracticeKey(attemptedRef.current, `${index}:${question.id}`)) return;
+
     if (correct) {
-      addXP(15);
-      setScore((value) => value + 1);
-      setShowXP(true);
-      window.setTimeout(() => setShowXP(false), 1200);
+      if (claimPracticeKey(masteredRef.current, question.id)) setScore((value) => value + 1);
+      if (claimPracticeKey(rewardedRef.current, question.id)) {
+        addXP(15);
+        setShowXP(true);
+        window.setTimeout(() => setShowXP(false), 1200);
+      }
       if (isSrsEligiblePracticeTarget(question.id)) updateSRSCard(question.id, 5);
-    } else if (isSrsEligiblePracticeTarget(question.id)) {
-      updateSRSCard(question.id, 1);
+    } else {
+      setQuestions((current) => appendSinglePracticeRetry(current, question, retryQueuedRef.current));
+      if (isSrsEligiblePracticeTarget(question.id)) updateSRSCard(question.id, 1);
     }
     setChecked(true);
   };
 
+  const restart = () => setSessionSeed(createPracticeSessionSeed('fill-blank'));
+
   if (finished) {
-    const percent = questions.length ? Math.round((score / questions.length) * 100) : 0;
+    const originalCount = originalCountRef.current;
+    const percent = originalCount ? Math.round((score / originalCount) * 100) : 0;
+    const retryCount = Math.max(0, questions.length - originalCount);
     return (
       <div style={{ background: '#0C0C0E', minHeight: '100vh', color: '#FFF', display: 'grid', placeItems: 'center', padding: 24, fontFamily: 'Inter,sans-serif' }}>
         <div style={{ width: '100%', maxWidth: 430, padding: 28, borderRadius: 24, textAlign: 'center', background: '#1C1C1F', border: '1px solid #2A2A2F' }}>
           <div style={{ fontSize: 52 }}>{percent >= 70 ? '🏆' : '👍'}</div>
           <h1 style={{ fontSize: 24 }}>Дасгал дууслаа</h1>
-          <p style={{ color: '#A0A0A8' }}>{score} / {questions.length} зөв хариулсан</p>
-          <button className="btn-gold" onClick={() => setPage('practice')} style={{ width: '100%', padding: 15 }}>Буцах</button>
+          <p style={{ color: '#A0A0A8' }}>{score} / {originalCount} хэллэгийг зөв нөхсөн</p>
+          {retryCount > 0 && <p style={{ color: '#606068', fontSize: 13 }}>Алдсан {retryCount} хэллэгийг төгсгөлд нэг удаа давтлаа.</p>}
+          <button className="btn-gold" onClick={restart} style={{ width: '100%', padding: 15, marginBottom: 10 }}><RotateCcw size={15} style={{ verticalAlign: 'middle', marginRight: 6 }} />Шинэ дасгал эхлэх</button>
+          <button className="btn-outline" onClick={() => setPage('practice')} style={{ width: '100%', padding: 15 }}>Буцах</button>
         </div>
       </div>
     );
