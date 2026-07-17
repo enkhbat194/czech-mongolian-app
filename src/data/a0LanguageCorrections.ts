@@ -1,4 +1,7 @@
-const BATCH_4B_LESSONS = new Set(['l001', 'l002', 'l003', 'l004', 'l005']);
+const LANGUAGE_REPAIR_LESSONS = new Set([
+  'l001', 'l002', 'l003', 'l004', 'l005',
+  'l006', 'l007', 'l008', 'l009', 'l010',
+]);
 
 const replacements: ReadonlyArray<readonly [string, string]> = [
   ['Jmenuji se …', 'Jmenuji se {userName}.'],
@@ -30,6 +33,36 @@ const replacements: ReadonlyArray<readonly [string, string]> = [
   ['За. Орой?', 'За, орой юу?'],
   ['Удаан ярьж өгнө үү.', 'Удаан ярина уу.'],
   ['Муу.', 'Муу байна.'],
+
+  // A0.6 — work
+  ['Би юу хийх вэ?', 'Би юу хийх ёстой вэ?'],
+  ['Би танд үзүүлж өгнө.', 'Би танд үзүүлье.'],
+  ['Надад үзүүлж өгнө үү.', 'Надад үзүүлнэ үү.'],
+
+  // A0.7-A0.8 — cafe and shopping
+  ['Би кофе авъя, гуйя.', 'Кофе авъя.'],
+  ['Би цай авъя, гуйя.', 'Цай авъя.'],
+  ['Би шөл авъя, гуйя.', 'Шөл авъя.'],
+  ['Би кофе авъя.', 'Кофе авъя.'],
+  ['Би цай авъя.', 'Цай авъя.'],
+  ['Би шөл авъя.', 'Шөл авъя.'],
+  ['Авч явна, гуйя.', 'Авч явъя.'],
+  ['Авч явъя, гуйя.', 'Авч явъя.'],
+  ['Би картаар төлнө.', 'Картаар төлнө.'],
+  ['Би бэлнээр төлнө.', 'Бэлнээр төлнө.'],
+  ['Уут авах уу?', 'Уут хэрэгтэй юу?'],
+  ['Баримт авах уу?', 'Баримт хэрэгтэй юу?'],
+
+  // A0.10 — health and pharmacy
+  ['Тийм, би халуурч байна.', 'Тийм, халуурч байна.'],
+  ['Миний толгой өвдөж байна.', 'Толгой өвдөж байна.'],
+  ['Миний гэдэс өвдөж байна.', 'Гэдэс өвдөж байна.'],
+  ['Миний хоолой өвдөж байна.', 'Хоолой өвдөж байна.'],
+  ['Миний ... өвдөж байна.', '... өвдөж байна.'],
+  ['Би халуурч байна.', 'Халуурч байна.'],
+  ['Өвчин намдаах юм байна уу?', 'Өвчин намдаах эм байна уу?'],
+  ['Үүнийг яаж уух вэ?', 'Энэ эмийг яаж хэрэглэх вэ?'],
+  ['Энэ эм байна.', 'Эм нь энэ байна.'],
 ];
 
 function replaceIdentity(text: string) {
@@ -120,13 +153,13 @@ function repairUnknown<T>(value: T): T {
 }
 
 export function repairA0LessonLanguage<T extends { lessonId: string }>(lesson: T): T {
-  return BATCH_4B_LESSONS.has(lesson.lessonId) ? repairUnknown(lesson) : lesson;
+  return LANGUAGE_REPAIR_LESSONS.has(lesson.lessonId) ? repairUnknown(lesson) : lesson;
 }
 
 export function repairA0WordLanguage<T extends { lessonId: string }>(word: T): T {
-  return BATCH_4B_LESSONS.has(word.lessonId) ? repairUnknown(word) : word;
+  return LANGUAGE_REPAIR_LESSONS.has(word.lessonId) ? repairUnknown(word) : word;
 }
 
 export function repairA0AliasLanguage(alias: string, lessonId: string): string {
-  return BATCH_4B_LESSONS.has(lessonId) ? repairA0LanguageText(alias) : alias;
+  return LANGUAGE_REPAIR_LESSONS.has(lessonId) ? repairA0LanguageText(alias) : alias;
 }
