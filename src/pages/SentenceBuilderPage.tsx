@@ -11,6 +11,7 @@ import {
   personalizeA0PracticeTarget,
   pickIntroducedPracticeTargets,
 } from '../data/a0PracticePools';
+import { stableShuffle } from '../utils/stableShuffle';
 
 interface Question {
   id: string;
@@ -29,7 +30,7 @@ function formatSentence(tokens: string[]) {
   return tokens.join(' ').replace(/\s+([,.!?;:])/g, '$1');
 }
 
-function generateQuestions(): Question[] {
+function generateQuestions(sessionSeed: string): Question[] {
   const { progress, genderForm, userName } = useAppStore.getState();
   const eligiblePool = getA0LearnerSayTargets(genderForm, userName).filter((target) => {
     const count = target.czech.split(' ').filter(Boolean).length;
@@ -41,19 +42,19 @@ function generateQuestions(): Question[] {
     eligiblePool.length,
   ).map((target) => personalizeA0PracticeTarget(target, userName));
 
-  return [...introducedPool].sort(() => Math.random() - 0.5).slice(0, 10).map((target) => {
+  return stableShuffle(introducedPool, `${sessionSeed}:targets`).slice(0, 10).map((target) => {
     const tokens = tokenize(target.czech);
     const otherTokens = introducedPool
       .filter((item) => item.id !== target.id)
       .flatMap((item) => tokenize(item.czech))
       .filter((token) => token.length > 2 && /^[a-zA-Zěščřžýáíéůúťďň]+$/i.test(token))
       .filter((token) => !tokens.some((own) => own.toLocaleLowerCase('cs-CZ') === token.toLocaleLowerCase('cs-CZ')));
-    const distractor = otherTokens[Math.floor(Math.random() * otherTokens.length)];
+    const distractor = stableShuffle(otherTokens, `${sessionSeed}:${target.id}:distractors`)[0];
 
     return {
       id: target.id,
       czTokens: tokens,
-      bank: [...tokens, ...(distractor ? [distractor] : [])].sort(() => Math.random() - 0.5),
+      bank: stableShuffle([...tokens, ...(distractor ? [distractor] : [])], `${sessionSeed}:${target.id}:bank`),
       czFull: target.czech,
       mnFull: target.mongolian,
     };
@@ -62,7 +63,8 @@ function generateQuestions(): Question[] {
 
 const SentenceBuilderPage: React.FC = () => {
   const { addXP, setPage, updateSRSCard } = useAppStore();
-  const questions = useMemo(() => generateQuestions(), []);
+  const [sessionSeed] = useState(() => `${Date.now()}-${Math.random()}`);
+  const questions = useMemo(() => generateQuestions(sessionSeed), [sessionSeed]);
   const [index, setIndex] = useState(0);
   const [phase, setPhase] = useState<'question' | 'result'>('question');
   const [showXP, setShowXP] = useState(false);
