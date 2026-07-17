@@ -120,12 +120,14 @@ export function pickIntroducedPracticeTargets(
   pool: readonly A0MemoryTarget[],
   introducedIds: readonly string[],
   limit: number,
+  sessionSeed?: string,
 ): A0MemoryTarget[] {
   const introduced = new Set(introducedIds);
-  return pool
-    .filter((target) => introduced.has(target.id))
-    .sort(() => Math.random() - 0.5)
-    .slice(0, Math.max(0, limit));
+  const eligible = pool.filter((target) => introduced.has(target.id));
+  const ordered = sessionSeed
+    ? stableShuffle(eligible, sessionSeed)
+    : [...eligible].sort(() => Math.random() - 0.5);
+  return ordered.slice(0, Math.max(0, limit));
 }
 
 export function getA0SpeakingPool(
