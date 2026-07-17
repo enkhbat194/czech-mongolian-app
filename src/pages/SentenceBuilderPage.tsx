@@ -1,6 +1,6 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronLeft, Volume2, Check, X } from 'lucide-react';
+import { ChevronLeft, Volume2, Check, RotateCcw, X } from 'lucide-react';
 import { speakCzech } from '../components/audio/czechSpeech';
 import { useAppStore } from '../stores/useAppStore';
 import { ProgressBar, XPToast } from '../components/UI/SharedComponents';
@@ -12,6 +12,11 @@ import {
   pickIntroducedPracticeTargets,
 } from '../data/a0PracticePools';
 import { stableShuffle } from '../utils/stableShuffle';
+import {
+  appendSinglePracticeRetry,
+  claimPracticeKey,
+  createPracticeSessionSeed,
+} from '../utils/practiceSession';
 
 interface Question {
   id: string;
@@ -30,15 +35,19 @@ function formatSentence(tokens: string[]) {
   return tokens.join(' ').replace(/\s+([,.!?;:])/g, '$1');
 }
 
-function generateQuestions(sessionSeed: string): Question[] {
-  const { progress, genderForm, userName } = useAppStore.getState();
+function generateQuestions(
+  introducedWords: readonly string[],
+  genderForm: 'male' | 'female' | 'neutral',
+  userName: string,
+  sessionSeed: string,
+): Question[] {
   const eligiblePool = getA0LearnerSayTargets(genderForm, userName).filter((target) => {
     const count = target.czech.split(' ').filter(Boolean).length;
     return count >= 2 && count <= 5;
   });
   const introducedPool = pickIntroducedPracticeTargets(
     eligiblePool,
-    progress.introducedWords,
+    introducedWords,
     eligiblePool.length,
     `${sessionSeed}:eligible`,
   ).map((target) => personalizeA0PracticeTarget(target, userName));
@@ -63,9 +72,13 @@ function generateQuestions(sessionSeed: string): Question[] {
 }
 
 const SentenceBuilderPage: React.FC = () => {
-  const { addXP, setPage, updateSRSCard } = useAppStore();
-  const [sessionSeed] = useState(() => `${Date.now()}-${Math.random()}`);
-  const questions = useMemo(() => generateQuestions(sessionSeed), [sessionSeed]);
+  const { addXP, setPage, updateSRSCard, progress, genderForm, userName } = useAppStore();
+  const [sessionSeed, setSessionSeed] = useState(() => createPracticeSessionSeed('sentence-builder'));
+  const baseQuestions = useMemo(
+    () => generateQuestions(progress.introducedWords, genderForm, userName, sessionSeed),
+    [genderForm, progress.introducedWords, sessionSeed, userName],
+  );
+  const [questions, setQuestions] = useState<Question[]>(baseQuestions);
   const [index, setIndex] = useState(0);
   const [phase, setPhase] = useState<'question' | 'result'>('question');
   const [showXP, setShowXP] = useState(false);
@@ -73,7 +86,28 @@ const SentenceBuilderPage: React.FC = () => {
   const [finished, setFinished] = useState(false);
   const [isCorrect, setIsCorrect] = useState(false);
   const [slots, setSlots] = useState<{ bankIndex: number; text: string }[]>([]);
+  const originalCountRef = useRef(baseQuestions.length);
+  const attemptedRef = useRef(new Set<string>());
+  const retryQueuedRef = useRef(new Set<string>());
+  const rewardedRef = useRef(new Set<string>());
+  const masteredRef = useRef(new Set<string>());
   const question = questions[index];
+
+  useEffect(() => {
+    setQuestions(baseQuestions);
+    setIndex(0);
+    setPhase('question');
+    setShowXP(false);
+    setScore(0);
+    setFinished(false);
+    setIsCorrect(false);
+    setSlots([]);
+    originalCountRef.current = baseQuestions.length;
+    attemptedRef.current.clear();
+    retryQueuedRef.current.clear();
+    rewardedRef.current.clear();
+    masteredRef.current.clear();
+  }, [baseQuestions]);
 
   if (!question) {
     return (
@@ -87,19 +121,23 @@ const SentenceBuilderPage: React.FC = () => {
   }
 
   const checkAnswer = () => {
+    if (phase === 'result' || slots.length === 0 || !claimPracticeKey(attemptedRef.current, `${index}:${question.id}`)) return;
     const userSentence = formatSentence(slots.map((slot) => slot.text));
     const targetSentence = formatSentence(question.czTokens);
     const correct = userSentence === targetSentence;
 
     setIsCorrect(correct);
     if (correct) {
-      addXP(20);
-      setScore((value) => value + 1);
-      setShowXP(true);
-      window.setTimeout(() => setShowXP(false), 1200);
+      if (claimPracticeKey(masteredRef.current, question.id)) setScore((value) => value + 1);
+      if (claimPracticeKey(rewardedRef.current, question.id)) {
+        addXP(20);
+        setShowXP(true);
+        window.setTimeout(() => setShowXP(false), 1200);
+      }
       if (isSrsEligiblePracticeTarget(question.id)) updateSRSCard(question.id, 5);
-    } else if (isSrsEligiblePracticeTarget(question.id)) {
-      updateSRSCard(question.id, 1);
+    } else {
+      setQuestions((current) => appendSinglePracticeRetry(current, question, retryQueuedRef.current));
+      if (isSrsEligiblePracticeTarget(question.id)) updateSRSCard(question.id, 1);
     }
     setPhase('result');
   };
@@ -115,15 +153,21 @@ const SentenceBuilderPage: React.FC = () => {
     setPhase('question');
   };
 
+  const restart = () => setSessionSeed(createPracticeSessionSeed('sentence-builder'));
+
   if (finished) {
-    const percent = questions.length ? Math.round((score / questions.length) * 100) : 0;
+    const originalCount = originalCountRef.current;
+    const percent = originalCount ? Math.round((score / originalCount) * 100) : 0;
+    const retryCount = Math.max(0, questions.length - originalCount);
     return (
       <div style={{ background: '#0C0C0E', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24, fontFamily: 'Inter,sans-serif' }}>
         <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} style={{ background: '#1C1C1F', borderRadius: 28, padding: 32, textAlign: 'center', border: '1px solid #2A2A2F', width: '100%' }}>
           <div style={{ fontSize: 56, marginBottom: 12 }}>{percent >= 70 ? '🏆' : '👍'}</div>
           <h2 style={{ fontSize: 24, fontWeight: 900, color: '#FFF', marginBottom: 6 }}>Дасгал дууслаа!</h2>
-          <p style={{ fontSize: 14, color: '#A0A0A8', marginBottom: 20 }}>{score} / {questions.length} зөв хариулсан</p>
-          <button onClick={() => setPage('practice')} className="btn-gold" style={{ width: '100%', padding: 16, fontSize: 16 }}>Буцах</button>
+          <p style={{ fontSize: 14, color: '#A0A0A8', marginBottom: 8 }}>{score} / {originalCount} өгүүлбэрийг зөв бүтээсэн</p>
+          {retryCount > 0 && <p style={{ fontSize: 13, color: '#606068', marginBottom: 20 }}>Алдсан {retryCount} өгүүлбэрийг төгсгөлд нэг удаа давтлаа.</p>}
+          <button onClick={restart} className="btn-gold" style={{ width: '100%', padding: 16, fontSize: 16, marginBottom: 10 }}><RotateCcw size={15} style={{ verticalAlign: 'middle', marginRight: 6 }} />Шинэ дасгал эхлэх</button>
+          <button onClick={() => setPage('practice')} className="btn-outline" style={{ width: '100%', padding: 16, fontSize: 16 }}>Буцах</button>
         </motion.div>
       </div>
     );
@@ -145,7 +189,7 @@ const SentenceBuilderPage: React.FC = () => {
       <div style={{ flex: 1, padding: '24px 24px 40px', display: 'flex', flexDirection: 'column', position: 'relative' }}>
         <AnimatePresence mode="wait">
           {phase === 'question' ? (
-            <motion.div key="question" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+            <motion.div key={`question-${index}`} initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
               <div style={{ textAlign: 'center', marginBottom: 20, marginTop: 10 }}>
                 <p style={{ fontSize: 15, color: '#FFF', marginBottom: 24, lineHeight: 1.5 }}>Үгнүүдийг зөв дарааллаар байрлуулж, өгүүлбэр бүтээнэ үү.</p>
                 <p style={{ fontSize: 13, color: '#C8952A', marginBottom: 24 }}>({question.mnFull})</p>
@@ -169,7 +213,7 @@ const SentenceBuilderPage: React.FC = () => {
               </div>
             </motion.div>
           ) : (
-            <motion.div key="result" initial={{ opacity: 0, scale: 0.9 }} animate={{ scale: 1, opacity: 1 }} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center' }}>
+            <motion.div key={`result-${index}`} initial={{ opacity: 0, scale: 0.9 }} animate={{ scale: 1, opacity: 1 }} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center' }}>
               <div style={{ width: 120, height: 120, borderRadius: 60, border: `4px solid ${isCorrect ? '#22C55E' : '#EF4444'}`, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 32 }}>{isCorrect ? <Check size={64} color="#22C55E" /> : <X size={64} color="#EF4444" />}</div>
               <h2 style={{ fontSize: 24, fontWeight: 800, color: isCorrect ? '#22C55E' : '#EF4444', marginBottom: 16 }}>{isCorrect ? 'Зөв байна!' : 'Буруу байна!'}</h2>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
@@ -178,7 +222,7 @@ const SentenceBuilderPage: React.FC = () => {
                 {isCorrect && <p style={{ fontSize: 20, color: '#FFF' }}>{question.czFull}</p>}
                 <button onClick={() => speakCzech(question.czFull, { rate: 0.8 })} style={{ margin: '12px auto 0', display: 'inline-flex', alignItems: 'center', gap: 8, padding: '9px 16px', borderRadius: 99, background: 'rgba(200,149,42,.12)', border: '1px solid rgba(200,149,42,.3)', color: '#C8952A', cursor: 'pointer' }}><Volume2 size={15} /> Сонсох</button>
               </div>
-              <div style={{ marginTop: 'auto', width: '100%', paddingTop: 40 }}><button onClick={next} className="btn-gold" style={{ width: '100%', padding: 18, fontSize: 16 }}>Дараах</button></div>
+              <div style={{ marginTop: 'auto', width: '100%', paddingTop: 40 }}><button onClick={next} className="btn-gold" style={{ width: '100%', padding: 18, fontSize: 16 }}>{index === questions.length - 1 ? 'Дуусгах' : 'Дараах'}</button></div>
             </motion.div>
           )}
         </AnimatePresence>
