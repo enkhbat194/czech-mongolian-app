@@ -8,6 +8,7 @@ import { useAppStore } from '../../src/stores/useAppStore';
 const correctedLessonIds = [
   'l001', 'l002', 'l003', 'l004', 'l005',
   'l006', 'l007', 'l008', 'l009', 'l010',
+  'l011', 'l012', 'l013', 'l014', 'l015',
 ];
 
 const byId = (id: string) => {
@@ -22,7 +23,7 @@ const catalogById = (id: string) => {
   return word;
 };
 
-describe('A0.1-A0.10 language corrections', () => {
+describe('A0.1-A0.15 language corrections', () => {
   it('uses the learner-name template and natural Mongolian self-introduction', () => {
     expect(byId('a0c0013').czech).toBe('Jmenuji se {userName}.');
     expect(byId('a0c0013').mongolian).toBe('Намайг {userName} гэдэг.');
@@ -87,7 +88,48 @@ describe('A0.1-A0.10 language corrections', () => {
     expect(byId('a0c0140').mongolian).toBe('Энэ эмийг яаж хэрэглэх вэ?');
   });
 
-  it('removes sample names and retired translations from exported A0.1-A0.10 lessons', () => {
+  it('uses direct clarification requests in A0.11', () => {
+    expect(byId('a0c0143').mongolian).toBe('Таныг сонсож байна.');
+    expect(byId('a0c0145').mongolian).toBe('Давтаж хэлж болох уу?');
+    expect(byId('a0c0146').mongolian).toBe('Надад бичиж өгнө үү.');
+    expect(byId('a0c0147').mongolian).toBe('Надад SMS-ээр явуулна уу.');
+  });
+
+  it('keeps child count and family-company meanings distinct in A0.12', () => {
+    expect(byId('a0c0155').mongolian).toBe('Би нэг хүүхэдтэй.');
+    expect(byId('a0c0156').mongolian).toBe('Би хүүхэдтэй.');
+    expect(byId('a0c0157').mongolian).toBe('Би энд гэр бүлийнхэнтэйгээ байна.');
+  });
+
+  it('turns the fixed male production exercise into two-form recognition', () => {
+    const exercises = a0ReferenceLessons.l012.microLessons.flatMap((micro) => micro.exercises);
+    const genderRecognition = exercises.find((exercise) => exercise.id === 'a0-12-d-3');
+    const serialized = JSON.stringify(genderRecognition);
+
+    expect(genderRecognition?.type).toBe('match');
+    expect(serialized).toContain('Jsem tady sám.');
+    expect(serialized).toContain('Jsem tady sama.');
+    expect(serialized).not.toContain('expectedText');
+  });
+
+  it('uses natural weather, safety and first-week Mongolian', () => {
+    expect(byId('a0c0166').mongolian).toBe('Надад дулаахан байна.');
+    expect(byId('a0c0180').mongolian).toBe('Би зүгээргүй байна.');
+    expect(byId('a0c0182').mongolian).toBe('Би шинээр ирсэн.');
+    expect(byId('a0c0183').mongolian).toBe('Би шинээр ирсэн.');
+    expect(byId('a0c0185').mongolian).toBe('Би чехээр бага зэрэг ярьдаг.');
+  });
+
+  it('removes the fixed male answer from the A0.15 final survival sequence', () => {
+    const step = a0ReferenceLessons.l015.finalDialogue.steps.find((item) => item.id === 'a15final-d2');
+
+    expect(step?.staffCzech).toBe('Potřebujete pomoc?');
+    expect(step?.choices.find((choice) => choice.id === step.correctId)?.text).toBe('Prosím, pomozte mi.');
+    expect(JSON.stringify(step)).not.toContain('Jsem nový');
+    expect(JSON.stringify(step)).not.toContain('Jsem nová');
+  });
+
+  it('removes sample names and retired translations from exported A0.1-A0.15 lessons', () => {
     const exported = JSON.stringify(correctedLessonIds.map((lessonId) => a0ReferenceLessons[lessonId]));
     expect(exported).not.toMatch(/Eba|Эба/);
     expect(exported).toContain('Jmenuji se {userName}.');
@@ -99,6 +141,10 @@ describe('A0.1-A0.10 language corrections', () => {
     expect(exported).not.toContain('Авч явъя, гуйя.');
     expect(exported).not.toContain('Миний толгой өвдөж байна.');
     expect(exported).not.toContain('Үүнийг яаж уух вэ?');
+    expect(exported).not.toContain('Би таныг сонсож байна.');
+    expect(exported).not.toContain('Би хүүхдүүдтэй.');
+    expect(exported).not.toContain('Би энд гэр бүлтэйгээ байна.');
+    expect(exported).not.toContain('Би шинэ хүн.');
   });
 
   it('feeds the same corrected catalog to learner-facing app pages', () => {
@@ -107,12 +153,19 @@ describe('A0.1-A0.10 language corrections', () => {
     expect(catalogById('a0c0031').mongolian).toBe('Ус авъя.');
     expect(catalogById('a0c0108').mongolian).toBe('Кофе авъя.');
     expect(catalogById('a0c0140').mongolian).toBe('Энэ эмийг яаж хэрэглэх вэ?');
+    expect(catalogById('a0c0147').mongolian).toBe('Надад SMS-ээр явуулна уу.');
+    expect(catalogById('a0c0157').mongolian).toBe('Би энд гэр бүлийнхэнтэйгээ байна.');
+    expect(catalogById('a0c0183').mongolian).toBe('Би шинээр ирсэн.');
 
     const storeWords = useAppStore.getState().words;
     expect(storeWords).toBe(allCzechWords);
     expect(storeWords.find((word) => word.id === 'a0c0033')?.mongolian).toBe('Хоол авъя.');
     expect(storeWords.find((word) => word.id === 'a0c0112')?.mongolian).toBe('Авч явъя.');
     expect(storeWords.find((word) => word.id === 'a0c0139')?.mongolian).toBe('Өвчин намдаах эм байна уу?');
-    expect(JSON.stringify(storeWords.filter((word) => correctedLessonIds.includes(word.lessonId)))).not.toMatch(/Eba|Эба|Би ус хүсэж байна\.|Би хоол хүсэж байна\.|Үүнийг яаж уух вэ\?/);
+    expect(storeWords.find((word) => word.id === 'a0c0146')?.mongolian).toBe('Надад бичиж өгнө үү.');
+    expect(storeWords.find((word) => word.id === 'a0c0155')?.mongolian).toBe('Би нэг хүүхэдтэй.');
+    expect(storeWords.find((word) => word.id === 'a0c0166')?.mongolian).toBe('Надад дулаахан байна.');
+    expect(storeWords.find((word) => word.id === 'a0c0180')?.mongolian).toBe('Би зүгээргүй байна.');
+    expect(JSON.stringify(storeWords.filter((word) => correctedLessonIds.includes(word.lessonId)))).not.toMatch(/Eba|Эба|Би ус хүсэж байна\.|Би хоол хүсэж байна\.|Үүнийг яаж уух вэ\?|Би шинэ хүн\./);
   });
 });
