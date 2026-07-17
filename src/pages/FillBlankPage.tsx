@@ -3,13 +3,17 @@ import { ChevronLeft, Volume2 } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { speakCzech } from '../components/audio/czechSpeech';
 import { ProgressBar, XPToast } from '../components/UI/SharedComponents';
+import PracticeEmptyState from '../components/practice/PracticeEmptyState';
 import { useAppStore } from '../stores/useAppStore';
 import { isSrsEligiblePracticeTarget } from '../stores/usePhraseMemoryStore';
 import { buildA0FillBlankQuestions } from '../data/a0PracticePools';
 
 const FillBlankPage: React.FC = () => {
   const { addXP, setPage, updateSRSCard } = useAppStore();
-  const questions = useMemo(() => buildA0FillBlankQuestions(useAppStore.getState().progress.introducedWords, 10, useAppStore.getState().genderForm), []);
+  const questions = useMemo(() => {
+    const { progress, genderForm, userName } = useAppStore.getState();
+    return buildA0FillBlankQuestions(progress.introducedWords, 10, genderForm, userName);
+  }, []);
   const [index, setIndex] = useState(0);
   const [selected, setSelected] = useState<string | null>(null);
   const [checked, setChecked] = useState(false);
@@ -18,7 +22,16 @@ const FillBlankPage: React.FC = () => {
   const [finished, setFinished] = useState(false);
   const question = questions[index];
 
-  if (!question) return null;
+  if (!question) {
+    return (
+      <PracticeEmptyState
+        icon="🧩"
+        onBack={() => setPage('practice')}
+        onGoToLessons={() => setPage('path')}
+        description="Өгүүлбэр нөхөх дасгалд зөвхөн өмнө нь үзсэн Чех хэллэг болон үгс орно."
+      />
+    );
+  }
 
   const correct = selected === question.answer;
   const continueLesson = () => {
@@ -39,8 +52,8 @@ const FillBlankPage: React.FC = () => {
       setShowXP(true);
       window.setTimeout(() => setShowXP(false), 1200);
       if (isSrsEligiblePracticeTarget(question.id)) updateSRSCard(question.id, 5);
-    } else {
-      if (isSrsEligiblePracticeTarget(question.id)) updateSRSCard(question.id, 1);
+    } else if (isSrsEligiblePracticeTarget(question.id)) {
+      updateSRSCard(question.id, 1);
     }
     setChecked(true);
   };
