@@ -21,7 +21,7 @@ export const a0DirectionsMicroLessons: A0MicroLesson[] = [
       a0c0061: 'Jděte rovně. = Шулуун яваарай. Танихгүй газар хамгийн хэрэгтэй зааврын нэг.',
     },
     exercises: [
-      { id:'a0-4-a-1', type:'choice', titleMn:'Сонсож таних', promptMn:'Аудиог сонсоод зөв Монгол утгыг сонго.', audioText:'Jděte rovně.', choices:[{id:'a',text:'Зүүн тийш эргэ.'},{id:'b',text:'Шулуун яваарай.'},{id:'c',text:'Энд буугаарай.'}], correctId:'b', feedbackMn:'Jděte rovně. = Шулуун яваарай.' },
+      { id:'a0-4-a-1', type:'choice', titleMn:'Сонсож таних', promptMn:'Аудиог сонсоод зөв Монгол утгыг сонго.', audioText:'Jděte rovně.', choices:[{id:'a',text:'Зүүн тийш эргээрэй.'},{id:'b',text:'Шулуун яваарай.'},{id:'c',text:'Энд буугаарай.'}], correctId:'b', feedbackMn:'Jděte rovně. = Шулуун яваарай.' },
       { id:'a0-4-a-2', type:'choice', titleMn:'Чиглэл ялгах', promptMn:'Ажилтан баруун гар тийш заалаа. Аль үг тохирох вэ?', choices:[{id:'a',text:'doleva'},{id:'b',text:'rovně'},{id:'c',text:'doprava'}], correctId:'c', feedbackMn:'doprava = баруун тийш.' },
       { id:'a0-4-a-3-match', type:'match', titleMn:'Чиглэл тааруулах', promptMn:'Чех чиглэлийг зөв Монгол утгатай нь холбо.', pairs:[{id:'straight',czech:'rovně',mongolian:'шулуун'},{id:'left',czech:'doleva',mongolian:'зүүн тийш'},{id:'right',czech:'doprava',mongolian:'баруун тийш'}], feedbackMn:'Гурван суурь чиглэлийг зөв ялгалаа.' },
     ],
@@ -29,18 +29,18 @@ export const a0DirectionsMicroLessons: A0MicroLesson[] = [
   {
     id: 'a0-4-b',
     titleMn: '2/5 — Буудал, автобус, трамвай',
-    canDoMn: 'Буудал хаана байгааг асууж, автобус ба трамвайг ялгаж чадна.',
+    canDoMn: 'Нийтийн тээврийн буудал хаана байгааг асууж, автобус ба трамвайг ялгаж чадна.',
     cardIds: ['a0c0062', 'a0c0063', 'a0c0064', 'a0c0065'],
     instructions: {
-      a0c0062: 'zastávka = автобус, трамвайн буудал.',
-      a0c0063: 'Kde je zastávka? = Буудал хаана байна?',
+      a0c0062: 'zastávka = автобус, трамвайн нийтийн тээврийн буудал.',
+      a0c0063: 'Kde je zastávka? = Нийтийн тээврийн буудал хаана вэ?',
       a0c0064: 'autobus = автобус.',
       a0c0065: 'tramvaj = трамвай.',
     },
     exercises: [
-      { id:'a0-4-b-1', type:'choice', titleMn:'Асуулт ойлгох', promptMn:'Kde je zastávka? ямар утгатай вэ?', choices:[{id:'a',text:'Галт тэрэгний буудал хаана байна?'},{id:'b',text:'Буудал хаана байна?'},{id:'c',text:'Би буудал руу явж байна.'}], correctId:'b', feedbackMn:'Kde je zastávka? = Буудал хаана байна?' },
-      { id:'a0-4-b-2', type:'choice', titleMn:'Тээвэр ялгах', promptMn:'Зам дээрх утастай төмөр замаар явдаг тээвэр аль нь вэ?', choices:[{id:'a',text:'autobus'},{id:'b',text:'tramvaj'},{id:'c',text:'zastávka'}], correctId:'b', feedbackMn:'tramvaj = трамвай.' },
-      { id:'a0-4-b-3-match', type:'match', titleMn:'Тээвэр тааруулах', promptMn:'Чех үгийг зөв Монгол утгатай нь холбо.', pairs:[{id:'stop',czech:'zastávka',mongolian:'буудал'},{id:'bus',czech:'autobus',mongolian:'автобус'},{id:'tram',czech:'tramvaj',mongolian:'трамвай'}], feedbackMn:'Буудал болон хоёр тээврийн төрлийг зөв таарууллаа.' },
+      { id:'a0-4-b-1', type:'choice', titleMn:'Асуулт ойлгох', promptMn:'Kde je zastávka? ямар утгатай вэ?', choices:[{id:'a',text:'Галт тэрэгний буудал хаана вэ?'},{id:'b',text:'Нийтийн тээврийн буудал хаана вэ?'},{id:'c',text:'Би буудал руу явж байна.'}], correctId:'b', feedbackMn:'Kde je zastávka? = Нийтийн тээврийн буудал хаана вэ?' },
+      { id:'a0-4-b-2', type:'choice', titleMn:'Тээвэр ялгах', promptMn:'Цахилгааны утастай төмөр замаар явдаг тээврийн хэрэгсэл аль нь вэ?', choices:[{id:'a',text:'autobus'},{id:'b',text:'tramvaj'},{id:'c',text:'zastávka'}], correctId:'b', feedbackMn:'tramvaj = трамвай.' },
+      { id:'a0-4-b-3-match', type:'match', titleMn:'Тээвэр тааруулах', promptMn:'Чех үгийг зөв Монгол утгатай нь холбо.', pairs:[{id:'stop',czech:'zastávka',mongolian:'нийтийн тээврийн буудал'},{id:'bus',czech:'autobus',mongolian:'автобус'},{id:'tram',czech:'tramvaj',mongolian:'трамвай'}], feedbackMn:'Буудал болон хоёр тээврийн төрлийг зөв таарууллаа.' },
     ],
   },
   {
@@ -85,7 +85,7 @@ export const a0DirectionsMicroLessons: A0MicroLesson[] = [
     exercises: [
       { id:'a0-4-e-1', type:'choice', titleMn:'Асуулт ойлгох', promptMn:'Kam jedete? гэж асуувал юу гэсэн үг вэ?', choices:[{id:'a',text:'Та хаана байна?'},{id:'b',text:'Та хаашаа явж байна?'},{id:'c',text:'Та хэзээ явах вэ?'}], correctId:'b', feedbackMn:'Kam jedete? = Та хаашаа явж байна?' },
       { id:'a0-4-e-2', type:'order', titleMn:'Өгүүлбэр бүтээх', promptMn:'“Би галт тэрэгний буудал руу явж байна” гэсэн өгүүлбэрийг зөв дарааллаар байрлуул.', tokens:['na nádraží.','Jdu'], expectedText:'Jdu na nádraží.', feedbackMn:'Jdu na nádraží. = Би галт тэрэгний буудал руу явж байна.' },
-      { id:'a0-4-e-3', type:'choice', titleMn:'Бодит хариулт', promptMn:'Ажилтан Kam jedete? гэж асуулаа. Та буудал руу явж байна. Аль хариулт зөв бэ?', choices:[{id:'a',text:'Jdu na nádraží.'},{id:'b',text:'Vystupte tady.'},{id:'c',text:'Jeďte autobusem.'}], correctId:'a', feedbackMn:'Jdu na nádraží. = Би галт тэрэгний буудал руу явж байна.' },
+      { id:'a0-4-e-3', type:'choice', titleMn:'Бодит хариулт', promptMn:'Ажилтан Kam jedete? гэж асуулаа. Та галт тэрэгний буудал руу явж байна. Аль хариулт зөв бэ?', choices:[{id:'a',text:'Jdu na nádraží.'},{id:'b',text:'Vystupte tady.'},{id:'c',text:'Jeďte autobusem.'}], correctId:'a', feedbackMn:'Jdu na nádraží. = Би галт тэрэгний буудал руу явж байна.' },
     ],
   },
 ];
