@@ -4,8 +4,13 @@ import { ChevronLeft, Play, Pause, Check, X, RotateCcw } from 'lucide-react';
 import { cancelCzechSpeech, speakCzech } from '../components/audio/czechSpeech';
 import { useAppStore } from '../stores/useAppStore';
 import { Waveform, ProgressBar, XPToast } from '../components/UI/SharedComponents';
+import PracticeEmptyState from '../components/practice/PracticeEmptyState';
 import { isSrsEligiblePracticeTarget } from '../stores/usePhraseMemoryStore';
-import { getA0ListeningTargets, pickIntroducedPracticeTargets } from '../data/a0PracticePools';
+import {
+  getA0ListeningTargets,
+  personalizeA0PracticeTarget,
+  pickIntroducedPracticeTargets,
+} from '../data/a0PracticePools';
 import type { A0MemoryTarget } from '../data/a0MemoryPlan';
 
 interface Question {
@@ -45,12 +50,13 @@ function makeQuestions(targets: readonly A0MemoryTarget[]): Question[] {
 }
 
 const ListeningPage: React.FC = () => {
-  const { addXP, updateSRSCard, setPage, progress, genderForm } = useAppStore();
+  const { addXP, updateSRSCard, setPage, progress, genderForm, userName } = useAppStore();
   const questions = useMemo(() => {
-    const pool = getA0ListeningTargets(genderForm);
-    const introduced = pickIntroducedPracticeTargets(pool, progress.introducedWords, 10);
+    const pool = getA0ListeningTargets(genderForm, userName);
+    const introduced = pickIntroducedPracticeTargets(pool, progress.introducedWords, 10)
+      .map((target) => personalizeA0PracticeTarget(target, userName));
     return makeQuestions(introduced);
-  }, [genderForm, progress.introducedWords]);
+  }, [genderForm, progress.introducedWords, userName]);
   const [index, setIndex] = useState(0);
   const [selected, setSelected] = useState<string | null>(null);
   const [answered, setAnswered] = useState(false);
@@ -62,15 +68,12 @@ const ListeningPage: React.FC = () => {
 
   if (!question) {
     return (
-      <div style={{ background: '#0C0C0E', minHeight: '100vh', padding: 20, fontFamily: 'Inter,sans-serif' }}>
-        <button onClick={() => setPage('practice')} style={{ width: 34, height: 34, borderRadius: 10, background: '#242428', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><ChevronLeft size={18} color="#A0A0A8" /></button>
-        <div style={{ marginTop: 80, background: '#1C1C1F', borderRadius: 24, padding: 28, textAlign: 'center', border: '1px solid #2A2A2F' }}>
-          <div style={{ fontSize: 48, marginBottom: 12 }}>🎧</div>
-          <h2 style={{ fontSize: 20, fontWeight: 900, color: '#FFF', marginBottom: 8 }}>Эхлээд хичээлээ үзээрэй</h2>
-          <p style={{ fontSize: 13, lineHeight: 1.6, color: '#A0A0A8', marginBottom: 20 }}>Сонсох дасгалд зөвхөн өмнө нь үзсэн Чех хэллэгүүд орно.</p>
-          <button onClick={() => setPage('path')} className="btn-gold" style={{ width: '100%', padding: 14, fontSize: 14 }}>Хичээл рүү очих</button>
-        </div>
-      </div>
+      <PracticeEmptyState
+        icon="🎧"
+        onBack={() => setPage('practice')}
+        onGoToLessons={() => setPage('path')}
+        description="Сонсох дасгалд зөвхөн өмнө нь үзсэн Чех хэллэгүүд орно."
+      />
     );
   }
 
