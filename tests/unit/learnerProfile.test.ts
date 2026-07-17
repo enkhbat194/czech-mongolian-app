@@ -9,15 +9,20 @@ import {
 import { normalizeCzechForContract } from '../../src/data/lessonDataContract';
 
 describe('personalizeLearnerText', () => {
-  it('replaces the sample name with the learner name in Czech and Mongolian', () => {
+  it('replaces the canonical userName token in Czech and Mongolian', () => {
+    expect(personalizeLearnerText('Jmenuji se {userName}.', 'Enkhbat')).toBe('Jmenuji se Enkhbat.');
+    expect(personalizeLearnerText('Jste {userName}?', 'Enkhbat')).toBe('Jste Enkhbat?');
+    expect(personalizeLearnerText('Намайг {userName} гэдэг.', 'Enkhbat')).toBe('Намайг Enkhbat гэдэг.');
+  });
+
+  it('keeps legacy Eba content compatible during migration', () => {
     expect(personalizeLearnerText('Jmenuji se Eba.', 'Enkhbat')).toBe('Jmenuji se Enkhbat.');
-    expect(personalizeLearnerText('Jste Eba?', 'Enkhbat')).toBe('Jste Enkhbat?');
     expect(personalizeLearnerText('Миний нэр Эба.', 'Enkhbat')).toBe('Миний нэр Enkhbat.');
   });
 
   it('falls back to an ellipsis when the name is empty or the default', () => {
-    expect(personalizeLearnerText('Jmenuji se Eba.', '')).toBe('Jmenuji se ….');
-    expect(personalizeLearnerText('Jmenuji se Eba.', 'Суралцагч')).toBe('Jmenuji se ….');
+    expect(personalizeLearnerText('Jmenuji se {userName}.', '')).toBe('Jmenuji se ….');
+    expect(personalizeLearnerText('Jmenuji se {userName}.', 'Суралцагч')).toBe('Jmenuji se ….');
     expect(resolveLearnerName('  ')).toBe('…');
   });
 
