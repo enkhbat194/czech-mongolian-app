@@ -50,7 +50,7 @@ export const a0FoodMicroLessons: A0MicroLesson[] = [
     exercises:[
       { id:'a0-7-c-1', type:'choice', titleMn:'Ажилтны асуулт ойлгох', promptMn:'Tady, nebo s sebou? ямар утгатай вэ?', choices:[{id:'a',text:'Энд идэх үү, авч явах уу?'},{id:'b',text:'Картаар төлөх үү?'},{id:'c',text:'Та юу авах вэ?'}], correctId:'a', feedbackMn:'Tady, nebo s sebou? = Энд идэх үү, авч явах уу?' },
       { id:'a0-7-c-2', type:'choice', titleMn:'Авч явах', promptMn:'Та авч явах гэж байна. Аль хариулт зөв вэ?', choices:[{id:'a',text:'S sebou, prosím.'},{id:'b',text:'Dám si kávu.'},{id:'c',text:'Kolik to stojí?'}], correctId:'a', feedbackMn:'S sebou, prosím. = Авч явъя.' },
-      { id:'a0-7-c-3', type:'order', titleMn:'Хариулт бүтээх', promptMn:'“Авч явна, гуйя” гэсэн хариултыг зөв дарааллаар байрлуул.', tokens:['prosím.','sebou,','S'], expectedText:'S sebou, prosím.', feedbackMn:'S sebou, prosím. = Авч явъя.' },
+      { id:'a0-7-c-3', type:'order', titleMn:'Хариулт бүтээх', promptMn:'“Авч явъя” гэсэн хариултыг зөв дарааллаар байрлуул.', tokens:['prosím.','sebou,','S'], expectedText:'S sebou, prosím.', feedbackMn:'S sebou, prosím. = Авч явъя.' },
     ],
   },
   {
