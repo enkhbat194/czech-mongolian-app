@@ -44,7 +44,7 @@ export const a0HomeMicroLessons: A0MicroLesson[] = [
       a0c0131:'Neteče voda. = Ус гарахгүй байна. Усны асуудал гарсан үед ингэж хэлнэ. “Ус” гэдэг үг энд voda гэж сонсогдоно.',
     },
     exercises:[
-      { id:'a0-9-c-1', type:'choice', titleMn:'Утга таних', promptMn:'Neteče voda. ямар утгатай вэ?', choices:[{id:'a',text:'Ус гарахгүй байна.'},{id:'b',text:'Хүйтэн байна.'},{id:'c',text:'Би картаар төлнө.'}], correctId:'a', feedbackMn:'Neteče voda. = Ус гарахгүй байна.' },
+      { id:'a0-9-c-1', type:'choice', titleMn:'Утга таних', promptMn:'Neteče voda. ямар утгатай вэ?', choices:[{id:'a',text:'Ус гарахгүй байна.'},{id:'b',text:'Хүйтэн байна.'},{id:'c',text:'Картаар төлнө.'}], correctId:'a', feedbackMn:'Neteče voda. = Ус гарахгүй байна.' },
       { id:'a0-9-c-2', type:'choice', titleMn:'Усны асуудал', promptMn:'Ус гарахгүй байвал аль өгүүлбэрийг хэлэх вэ?', choices:[{id:'a',text:'Neteče voda.'},{id:'b',text:'Mám teplotu.'},{id:'c',text:'Tohle, prosím.'}], correctId:'a', feedbackMn:'Усны асуудал бол Neteče voda. гэж хэлнэ.' },
       { id:'a0-9-c-3', type:'order', titleMn:'Өгүүлбэр бүтээх', promptMn:'“Ус гарахгүй байна” гэсэн өгүүлбэрийг зөв дарааллаар байрлуул.', tokens:['voda.','Neteče'], expectedText:'Neteče voda.', feedbackMn:'Neteče voda. = Ус гарахгүй байна.' },
     ],
