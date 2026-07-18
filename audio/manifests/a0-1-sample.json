@@ -1,0 +1,57 @@
+{
+  "version": 1,
+  "lessonId": "l001",
+  "locale": "cs-CZ",
+  "defaultVoice": "cs-CZ-VlastaNeural",
+  "outputFormat": "audio-24khz-48kbitrate-mono-mp3",
+  "items": [
+    {
+      "id": "a0c0001",
+      "text": "Dobrý den",
+      "file": "words/a0c0001.mp3",
+      "kind": "card"
+    },
+    {
+      "id": "a0c0002",
+      "text": "Ahoj",
+      "file": "words/a0c0002.mp3",
+      "kind": "card"
+    },
+    {
+      "id": "a0c0003",
+      "text": "Na shledanou",
+      "file": "words/a0c0003.mp3",
+      "kind": "card"
+    },
+    {
+      "id": "a0c0005",
+      "text": "Děkuji",
+      "file": "words/a0c0005.mp3",
+      "kind": "card"
+    },
+    {
+      "id": "a0c0012",
+      "text": "Jak se jmenujete?",
+      "file": "words/a0c0012.mp3",
+      "kind": "card"
+    },
+    {
+      "id": "a0c0021",
+      "text": "Jsem z Mongolska.",
+      "file": "words/a0c0021.mp3",
+      "kind": "card"
+    },
+    {
+      "id": "a0c0326",
+      "text": "Nerozumím.",
+      "file": "words/a0c0326.mp3",
+      "kind": "card"
+    },
+    {
+      "id": "a0c0327",
+      "text": "Mluvte prosím pomalu.",
+      "file": "words/a0c0327.mp3",
+      "kind": "card"
+    }
+  ]
+}

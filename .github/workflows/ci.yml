@@ -1,0 +1,90 @@
+name: Quality Gate
+
+on:
+  pull_request:
+  push:
+    branches:
+      - feat/a0-1-first-contact
+
+permissions:
+  contents: read
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      # The current lockfile needs a local refresh. Keep the build gate active
+      # instead of silently skipping lint/build while that maintenance is done.
+      - name: Install dependencies
+        run: npm install --legacy-peer-deps --ignore-scripts --no-audit --no-fund
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Test study calendar
+        run: npm run test:calendar
+
+      - name: Unit tests
+        run: npm run test:unit -- --reporter=json --outputFile=vitest-results.json
+
+      - name: Upload unit test report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: unit-test-report
+          path: vitest-results.json
+          if-no-files-found: warn
+          retention-days: 7
+
+      - name: Audit A0 data
+        run: npm run audit:a0
+
+      - name: Audit data contract
+        run: npm run audit:contract
+
+      - name: Audit audio architecture
+        run: npm run audit:audio
+
+      - name: Audit pronunciation
+        run: npm run audit:pronunciation
+
+      - name: Audit SRS
+        run: npm run audit:srs
+
+      - name: Audit answer position
+        run: npm run audit:position
+
+      - name: Audit offline foundation
+        run: npm run audit:offline
+
+      - name: Audit reuse density
+        run: npm run audit:reuse
+
+      - name: Build
+        shell: bash
+        run: |
+          set -o pipefail
+          npm run build 2>&1 | tee build-results.txt
+
+      - name: Upload build report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-report
+          path: build-results.txt
+          if-no-files-found: warn
+          retention-days: 7
+
+      - name: Audio dry run
+        run: npm run audio:dry
