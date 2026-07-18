@@ -42,7 +42,7 @@ export const a0ShopMicroLessons: A0MicroLesson[] = [
       a0c0123:'Tohle, prosím. = Үүнийг авъя. Бараа зааж авахдаа ингэж богино, эелдгээр хэлнэ.',
     },
     exercises:[
-      { id:'a0-8-c-1', type:'choice', titleMn:'Утга таних', promptMn:'Tohle, prosím. ямар утгатай вэ?', choices:[{id:'a',text:'Үүнийг авъя.'},{id:'b',text:'Би завгүй.'},{id:'c',text:'Авч явна, гуйя.'}], correctId:'a', feedbackMn:'Tohle, prosím. = Үүнийг авъя.' },
+      { id:'a0-8-c-1', type:'choice', titleMn:'Утга таних', promptMn:'Tohle, prosím. ямар утгатай вэ?', choices:[{id:'a',text:'Үүнийг авъя.'},{id:'b',text:'Би завгүй.'},{id:'c',text:'Авч явъя.'}], correctId:'a', feedbackMn:'Tohle, prosím. = Үүнийг авъя.' },
       { id:'a0-8-c-2', type:'choice', titleMn:'Бараа заах', promptMn:'Та бараа заагаад “үүнийг авъя” гэж хэлэх хэрэгтэй. Аль нь зөв вэ?', choices:[{id:'a',text:'Tohle, prosím.'},{id:'b',text:'Kdy máte čas?'},{id:'c',text:'Je hotovo?'}], correctId:'a', feedbackMn:'Бараа зааж авахдаа Tohle, prosím. гэж хэлнэ.' },
       { id:'a0-8-c-3', type:'order', titleMn:'Хүсэлт бүтээх', promptMn:'“Үүнийг авъя” гэсэн хүсэлтийг зөв дарааллаар байрлуул.', tokens:['prosím.','Tohle,'], expectedText:'Tohle, prosím.', feedbackMn:'Tohle, prosím. = Үүнийг авъя.' },
     ],
@@ -54,7 +54,7 @@ export const a0ShopMicroLessons: A0MicroLesson[] = [
       a0c0124:'To je drahé. = Энэ үнэтэй байна. Үнэ таалагдахгүй үед ингэж хэлж болно.',
     },
     exercises:[
-      { id:'a0-8-d-1', type:'choice', titleMn:'Утга таних', promptMn:'To je drahé. ямар утгатай вэ?', choices:[{id:'a',text:'Энэ үнэтэй байна.'},{id:'b',text:'Энэ хаана байна?'},{id:'c',text:'Би картаар төлнө.'}], correctId:'a', feedbackMn:'To je drahé. = Энэ үнэтэй байна.' },
+      { id:'a0-8-d-1', type:'choice', titleMn:'Утга таних', promptMn:'To je drahé. ямар утгатай вэ?', choices:[{id:'a',text:'Энэ үнэтэй байна.'},{id:'b',text:'Энэ хаана байна?'},{id:'c',text:'Картаар төлнө.'}], correctId:'a', feedbackMn:'To je drahé. = Энэ үнэтэй байна.' },
       { id:'a0-8-d-2', type:'choice', titleMn:'Үнэ өндөр байна', promptMn:'Үнэ өндөр санагдвал аль өгүүлбэрийг хэлэх вэ?', choices:[{id:'a',text:'To je drahé.'},{id:'b',text:'Menu, prosím.'},{id:'c',text:'Pracuji tady.'}], correctId:'a', feedbackMn:'Үнэ өндөр санагдвал To je drahé. гэж хэлж болно.' },
       { id:'a0-8-d-3', type:'order', titleMn:'Өгүүлбэр бүтээх', promptMn:'“Энэ үнэтэй байна” гэсэн өгүүлбэрийг зөв дарааллаар байрлуул.', tokens:['drahé.','je','To'], expectedText:'To je drahé.', feedbackMn:'To je drahé. = Энэ үнэтэй байна.' },
     ],
