@@ -18,7 +18,7 @@ export const a0FoodMicroLessons: A0MicroLesson[] = [
       a0c0117:'Co si dáte? = Та юу авах вэ? Энэ бол ажилтны асуулт. Сонсоод захиалгаа хэлнэ.',
     },
     exercises:[
-      { id:'a0-7-a-1', type:'choice', titleMn:'Сонсож таних', promptMn:'Menu, prosím. ямар утгатай вэ?', choices:[{id:'a',text:'Цэс өгнө үү.'},{id:'b',text:'Би кофе авъя.'},{id:'c',text:'Баяртай.'}], correctId:'a', feedbackMn:'Menu, prosím. = Цэс өгнө үү.' },
+      { id:'a0-7-a-1', type:'choice', titleMn:'Сонсож таних', promptMn:'Menu, prosím. ямар утгатай вэ?', choices:[{id:'a',text:'Цэс өгнө үү.'},{id:'b',text:'Кофе авъя.'},{id:'c',text:'Баяртай.'}], correctId:'a', feedbackMn:'Menu, prosím. = Цэс өгнө үү.' },
       { id:'a0-7-a-2', type:'choice', titleMn:'Ажилтны асуулт', promptMn:'Co si dáte? гэж сонсвол ажилтан танаас юу асууж байна вэ?', choices:[{id:'a',text:'Та юу авах вэ?'},{id:'b',text:'Та хаашаа явах вэ?'},{id:'c',text:'Та хэзээ завтай вэ?'}], correctId:'a', feedbackMn:'Co si dáte? = Та юу авах вэ?' },
       { id:'a0-7-a-3', type:'order', titleMn:'Хүсэлт бүтээх', promptMn:'“Цэс өгнө үү” гэсэн богино хүсэлтийг зөв дарааллаар байрлуул.', tokens:['prosím.','Menu,'], expectedText:'Menu, prosím.', feedbackMn:'Menu, prosím. = Цэс өгнө үү.' },
     ],
@@ -28,15 +28,15 @@ export const a0FoodMicroLessons: A0MicroLesson[] = [
     cardIds:['a0c0107','a0c0108','a0c0109','a0c0110'],
     instructions:{
       a0c0107:'Dám si … = Би … авъя. Захиалга өгөхдөө энэ хэлбэрийг ашиглана.',
-      a0c0108:'Dám si kávu. = Би кофе авъя.',
-      a0c0109:'Dám si čaj. = Би цай авъя.',
-      a0c0110:'Dám si polévku. = Би шөл авъя. polévka нь өгүүлбэрт polévku болж өөрчлөгдөнө.',
+      a0c0108:'Dám si kávu. = Кофе авъя.',
+      a0c0109:'Dám si čaj. = Цай авъя.',
+      a0c0110:'Dám si polévku. = Шөл авъя. polévka нь өгүүлбэрт polévku болж өөрчлөгдөнө.',
     },
     exercises:[
-      { id:'a0-7-b-1', type:'choice', titleMn:'Утга таних', promptMn:'Dám si kávu. ямар утгатай вэ?', choices:[{id:'a',text:'Би кофе авъя.'},{id:'b',text:'Би цай авъя.'},{id:'c',text:'Би шөл авъя.'}], correctId:'a', feedbackMn:'Dám si kávu. = Би кофе авъя.' },
-      { id:'a0-7-b-2', type:'choice', titleMn:'Захиалга сонгох', promptMn:'Та шөл авах гэж байна. Аль өгүүлбэр зөв вэ?', choices:[{id:'a',text:'Dám si čaj.'},{id:'b',text:'Dám si polévku.'},{id:'c',text:'Menu, prosím.'}], correctId:'b', feedbackMn:'Dám si polévku. = Би шөл авъя.' },
-      { id:'a0-7-b-3', type:'order', titleMn:'Өгүүлбэр бүтээх', promptMn:'“Би цай авъя” гэсэн өгүүлбэрийг зөв дарааллаар байрлуул.', tokens:['čaj.','si','Dám'], expectedText:'Dám si čaj.', feedbackMn:'Dám si čaj. = Би цай авъя.' },
-      { id:'a0-7-b-4-match', type:'match', titleMn:'Захиалга тааруулах', promptMn:'Захиалгын хэллэгүүдийг зөв Монгол утгатай нь холбо.', pairs:[{id:'coffee',czech:'Dám si kávu.',mongolian:'Би кофе авъя.'},{id:'tea',czech:'Dám si čaj.',mongolian:'Би цай авъя.'},{id:'soup',czech:'Dám si polévku.',mongolian:'Би шөл авъя.'}], feedbackMn:'Dám si ... хэлбэрээр кофе, цай, шөл захиалж чадна.' },
+      { id:'a0-7-b-1', type:'choice', titleMn:'Утга таних', promptMn:'Dám si kávu. ямар утгатай вэ?', choices:[{id:'a',text:'Кофе авъя.'},{id:'b',text:'Цай авъя.'},{id:'c',text:'Шөл авъя.'}], correctId:'a', feedbackMn:'Dám si kávu. = Кофе авъя.' },
+      { id:'a0-7-b-2', type:'choice', titleMn:'Захиалга сонгох', promptMn:'Та шөл авах гэж байна. Аль өгүүлбэр зөв вэ?', choices:[{id:'a',text:'Dám si čaj.'},{id:'b',text:'Dám si polévku.'},{id:'c',text:'Menu, prosím.'}], correctId:'b', feedbackMn:'Dám si polévku. = Шөл авъя.' },
+      { id:'a0-7-b-3', type:'order', titleMn:'Өгүүлбэр бүтээх', promptMn:'“Би цай авъя” гэсэн өгүүлбэрийг зөв дарааллаар байрлуул.', tokens:['čaj.','si','Dám'], expectedText:'Dám si čaj.', feedbackMn:'Dám si čaj. = Цай авъя.' },
+      { id:'a0-7-b-4-match', type:'match', titleMn:'Захиалга тааруулах', promptMn:'Захиалгын хэллэгүүдийг зөв Монгол утгатай нь холбо.', pairs:[{id:'coffee',czech:'Dám si kávu.',mongolian:'Кофе авъя.'},{id:'tea',czech:'Dám si čaj.',mongolian:'Цай авъя.'},{id:'soup',czech:'Dám si polévku.',mongolian:'Шөл авъя.'}], feedbackMn:'Dám si ... хэлбэрээр кофе, цай, шөл захиалж чадна.' },
     ],
   },
   {
@@ -44,13 +44,13 @@ export const a0FoodMicroLessons: A0MicroLesson[] = [
     cardIds:['a0c0111','a0c0112','a0c0113'],
     instructions:{
       a0c0111:'s sebou = авч явах. Кафе, түргэн хоол, талх нарийн боовны газарт их сонсогдоно.',
-      a0c0112:'S sebou, prosím. = Авч явна, гуйя. Захиалгаа авч явах үед ингэж хэлнэ.',
+      a0c0112:'S sebou, prosím. = Авч явъя. Захиалгаа авч явах үед ингэж хэлнэ.',
       a0c0113:'Tady, nebo s sebou? = Энд идэх үү, авч явах уу? Энэ бол ажилтны асуулт.',
     },
     exercises:[
       { id:'a0-7-c-1', type:'choice', titleMn:'Ажилтны асуулт ойлгох', promptMn:'Tady, nebo s sebou? ямар утгатай вэ?', choices:[{id:'a',text:'Энд идэх үү, авч явах уу?'},{id:'b',text:'Картаар төлөх үү?'},{id:'c',text:'Та юу авах вэ?'}], correctId:'a', feedbackMn:'Tady, nebo s sebou? = Энд идэх үү, авч явах уу?' },
-      { id:'a0-7-c-2', type:'choice', titleMn:'Авч явах', promptMn:'Та авч явах гэж байна. Аль хариулт зөв вэ?', choices:[{id:'a',text:'S sebou, prosím.'},{id:'b',text:'Dám si kávu.'},{id:'c',text:'Kolik to stojí?'}], correctId:'a', feedbackMn:'S sebou, prosím. = Авч явна, гуйя.' },
-      { id:'a0-7-c-3', type:'order', titleMn:'Хариулт бүтээх', promptMn:'“Авч явна, гуйя” гэсэн хариултыг зөв дарааллаар байрлуул.', tokens:['prosím.','sebou,','S'], expectedText:'S sebou, prosím.', feedbackMn:'S sebou, prosím. = Авч явна, гуйя.' },
+      { id:'a0-7-c-2', type:'choice', titleMn:'Авч явах', promptMn:'Та авч явах гэж байна. Аль хариулт зөв вэ?', choices:[{id:'a',text:'S sebou, prosím.'},{id:'b',text:'Dám si kávu.'},{id:'c',text:'Kolik to stojí?'}], correctId:'a', feedbackMn:'S sebou, prosím. = Авч явъя.' },
+      { id:'a0-7-c-3', type:'order', titleMn:'Хариулт бүтээх', promptMn:'“Авч явна, гуйя” гэсэн хариултыг зөв дарааллаар байрлуул.', tokens:['prosím.','sebou,','S'], expectedText:'S sebou, prosím.', feedbackMn:'S sebou, prosím. = Авч явъя.' },
     ],
   },
   {
@@ -58,14 +58,14 @@ export const a0FoodMicroLessons: A0MicroLesson[] = [
     cardIds:['a0c0114','a0c0115','a0c0116','a0c0118'],
     instructions:{
       a0c0114:'Kolik to stojí? = Энэ хэд вэ? Үнэ асуух хамгийн хэрэгтэй богино асуулт.',
-      a0c0115:'Platím kartou. = Би картаар төлнө.',
-      a0c0116:'Platím hotově. = Би бэлнээр төлнө.',
+      a0c0115:'Platím kartou. = Картаар төлнө.',
+      a0c0116:'Platím hotově. = Бэлнээр төлнө.',
       a0c0118:'Platíte kartou? = Та картаар төлөх үү? Энэ бол ажилтны асуулт.',
     },
     exercises:[
       { id:'a0-7-d-1', type:'choice', titleMn:'Үнэ асуух', promptMn:'Та үнэ асуух хэрэгтэй. Аль өгүүлбэр зөв вэ?', choices:[{id:'a',text:'Kolik to stojí?'},{id:'b',text:'Co si dáte?'},{id:'c',text:'S sebou, prosím.'}], correctId:'a', feedbackMn:'Kolik to stojí? = Энэ хэд вэ?' },
-      { id:'a0-7-d-2', type:'choice', titleMn:'Картаар төлөх', promptMn:'Та картаар төлөхөө хэлэх хэрэгтэй. Аль нь зөв вэ?', choices:[{id:'a',text:'Platím hotově.'},{id:'b',text:'Platím kartou.'},{id:'c',text:'Nemám kartu.'}], correctId:'b', feedbackMn:'Platím kartou. = Би картаар төлнө.' },
-      { id:'a0-7-d-3', type:'choice', titleMn:'Бэлнээр төлөх', promptMn:'Та бэлнээр төлөхөө хэлэх хэрэгтэй. Аль нь зөв вэ?', choices:[{id:'a',text:'Platím hotově.'},{id:'b',text:'Platíte kartou?'},{id:'c',text:'Dám si kávu.'}], correctId:'a', feedbackMn:'Platím hotově. = Би бэлнээр төлнө.' },
+      { id:'a0-7-d-2', type:'choice', titleMn:'Картаар төлөх', promptMn:'Та картаар төлөхөө хэлэх хэрэгтэй. Аль нь зөв вэ?', choices:[{id:'a',text:'Platím hotově.'},{id:'b',text:'Platím kartou.'},{id:'c',text:'Nemám kartu.'}], correctId:'b', feedbackMn:'Platím kartou. = Картаар төлнө.' },
+      { id:'a0-7-d-3', type:'choice', titleMn:'Бэлнээр төлөх', promptMn:'Та бэлнээр төлөхөө хэлэх хэрэгтэй. Аль нь зөв вэ?', choices:[{id:'a',text:'Platím hotově.'},{id:'b',text:'Platíte kartou?'},{id:'c',text:'Dám si kávu.'}], correctId:'a', feedbackMn:'Platím hotově. = Бэлнээр төлнө.' },
       { id:'a0-7-d-4', type:'order', titleMn:'Үнэ асуух асуулт', promptMn:'“Энэ хэд вэ?” гэсэн асуултыг зөв дарааллаар байрлуул.', tokens:['to','stojí?','Kolik'], expectedText:'Kolik to stojí?', feedbackMn:'Kolik to stojí? = Энэ хэд вэ?' },
     ],
   },
