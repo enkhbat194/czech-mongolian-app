@@ -3,6 +3,11 @@ import type { CzechWord } from '../data/czechWords';
 import type { Lesson } from '../data/lessons';
 import { stableShuffle } from './stableShuffle';
 
+const finalMissionTargetOverrides: Record<string, string[]> = {
+  'a0-final-type-understand': ['a0c0326'],
+  'a0-final-survival-slow': ['a0c0006', 'a0c0326', 'a0c0327'],
+};
+
 export function getIntroducedPracticeWords(words: CzechWord[], introducedWordIds: string[]) {
   const introduced = new Set(introducedWordIds);
   return words.filter((word) => introduced.has(word.id));
@@ -45,11 +50,8 @@ export function isFinalMissionUnlocked(lessons: Lesson[], completedLessonIds: st
 }
 
 export function getFinalMissionTargetIds(question: A0FinalMissionQuestion) {
-  const ids = question.targetIds?.length
-    ? question.targetIds
-    : question.targetId
-      ? [question.targetId]
-      : [];
+  const ids = finalMissionTargetOverrides[question.id]
+    ?? (question.targetId ? [question.targetId] : []);
   return [...new Set(ids)];
 }
 
