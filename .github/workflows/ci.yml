@@ -4,7 +4,9 @@ on:
   pull_request:
   push:
     branches:
+      - main
       - feat/a0-1-first-contact
+      - 'fix/**'
 
 permissions:
   contents: read
