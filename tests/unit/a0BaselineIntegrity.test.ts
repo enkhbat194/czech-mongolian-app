@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { a0FinalMissionSections } from '../../src/data/a0FinalMission';
 import { a0MemoryTargets } from '../../src/data/a0MemoryPlan';
@@ -35,8 +36,9 @@ describe('A0 baseline integrity', () => {
 
   it('keeps the Final Mission locked until every ready A0 lesson is complete', () => {
     const allLessonIds = lessons.filter((lesson) => lesson.status === 'ready').map((lesson) => lesson.id);
+    const finalLessonId = allLessonIds[allLessonIds.length - 1];
     expect(isFinalMissionUnlocked(lessons, allLessonIds.slice(0, -1))).toBe(false);
-    expect(getMissingFinalMissionLessonIds(lessons, allLessonIds.slice(0, -1))).toEqual([allLessonIds.at(-1)]);
+    expect(getMissingFinalMissionLessonIds(lessons, allLessonIds.slice(0, -1))).toEqual([finalLessonId]);
     expect(isFinalMissionUnlocked(lessons, allLessonIds)).toBe(true);
   });
 
@@ -72,5 +74,12 @@ describe('A0 baseline integrity', () => {
     ));
     expect(correctPositions.every((position) => position >= 0)).toBe(true);
     expect(new Set(correctPositions).size).toBeGreaterThan(1);
+  });
+
+  it('does not write a successful SRS review when interactive practice is skipped', () => {
+    const source = readFileSync(new URL('../../src/pages/InteractiveLearningPage.tsx', import.meta.url), 'utf8');
+    const skipBody = source.match(/const skip = \(\) => \{([\s\S]*?)\n  \};/)?.[1] ?? '';
+    expect(skipBody).not.toContain('updateSRSCard');
+    expect(skipBody).toContain('next()');
   });
 });
