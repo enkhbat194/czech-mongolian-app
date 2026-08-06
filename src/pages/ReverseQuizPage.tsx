@@ -4,6 +4,8 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { ProgressBar, XPToast } from '../components/UI/SharedComponents';
 import { useAppStore } from '../stores/useAppStore';
 import { isSrsEligiblePracticeTarget } from '../stores/usePhraseMemoryStore';
+import PracticeEmptyState from '../components/practice/PracticeEmptyState';
+import { getIntroducedPracticeWords } from '../utils/a0BaselineIntegrity';
 
 type Question = { id: string; czech: string; mongolian: string; options: string[] };
 
@@ -17,8 +19,9 @@ function makeQuestions(words: any[]): Question[] {
 }
 
 const ReverseQuizPage: React.FC = () => {
-  const { words, addXP, setPage, updateSRSCard } = useAppStore();
-  const [questions] = useState<Question[]>(() => makeQuestions(words));
+  const { words, progress, addXP, setPage, updateSRSCard } = useAppStore();
+  const [eligibleWords] = useState(() => getIntroducedPracticeWords(words, progress.introducedWords));
+  const [questions] = useState<Question[]>(() => makeQuestions(eligibleWords));
   const [index, setIndex] = useState(0);
   const [selected, setSelected] = useState<string | null>(null);
   const [checked, setChecked] = useState(false);
@@ -26,6 +29,16 @@ const ReverseQuizPage: React.FC = () => {
   const [showXP, setShowXP] = useState(false);
   const [finished, setFinished] = useState(false);
   const question = questions[index];
+
+  if (eligibleWords.length < 2) {
+    return (
+      <PracticeEmptyState
+        onBack={() => setPage('practice')}
+        onGoToLessons={() => setPage('path')}
+        description="Урвуу сонгох дасгалд өмнө нь үзсэн дор хаяж 2 карт хэрэгтэй."
+      />
+    );
+  }
 
   if (!question) return null;
 

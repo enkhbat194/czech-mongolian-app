@@ -5,6 +5,8 @@ import { useAppStore } from '../stores/useAppStore';
 import { ProgressBar, XPToast } from '../components/UI/SharedComponents';
 import { speakCzech } from '../components/audio/czechSpeech';
 import { isSrsEligiblePracticeTarget } from '../stores/usePhraseMemoryStore';
+import PracticeEmptyState from '../components/practice/PracticeEmptyState';
+import { getIntroducedPracticeWords } from '../utils/a0BaselineIntegrity';
 
 interface MCQ {
   id: string;
@@ -29,8 +31,9 @@ function generateQuestions(words: any[]): MCQ[] {
 }
 
 const WordQuizPage: React.FC = () => {
-  const { words, addXP, setPage, updateSRSCard } = useAppStore();
-  const [qs] = useState<MCQ[]>(() => generateQuestions(words));
+  const { words, progress, addXP, setPage, updateSRSCard } = useAppStore();
+  const [eligibleWords] = useState(() => getIntroducedPracticeWords(words, progress.introducedWords));
+  const [qs] = useState<MCQ[]>(() => generateQuestions(eligibleWords));
   const [idx, setIdx] = useState(0);
   const [sel, setSel] = useState<string | null>(null);
   const [phase, setPhase] = useState<'question' | 'result'>('question');
@@ -74,6 +77,16 @@ const WordQuizPage: React.FC = () => {
       setDone(true);
     }
   };
+
+  if (eligibleWords.length < 2) {
+    return (
+      <PracticeEmptyState
+        onBack={() => setPage('practice')}
+        onGoToLessons={() => setPage('path')}
+        description="Үг сонгох дасгалд өмнө нь үзсэн дор хаяж 2 карт хэрэгтэй."
+      />
+    );
+  }
 
   if (done) {
     const pct = qs.length > 0 ? Math.round((score / qs.length) * 100) : 0;
