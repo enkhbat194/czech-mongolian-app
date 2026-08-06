@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Check, ChevronLeft, Volume2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { a0FinalMissionQuestionCount, a0FinalMissionSections, type A0FinalMissionQuestion } from '../data/a0FinalMission';
@@ -6,6 +6,12 @@ import { speakCzech } from '../components/audio/czechSpeech';
 import { useAppStore } from '../stores/useAppStore';
 import { personalizeLearnerText } from '../utils/learnerName';
 import { usePhraseMemoryStore } from '../stores/usePhraseMemoryStore';
+import {
+  getFinalMissionTargetIds,
+  getMissingFinalMissionLessonIds,
+  getShuffledFinalMissionChoices,
+  isFinalMissionUnlocked,
+} from '../utils/a0BaselineIntegrity';
 
 type Feedback = 'correct' | 'wrong' | null;
 
@@ -38,7 +44,9 @@ function getChoicePrimaryText(question: A0FinalMissionQuestion, choice: { text: 
 
 const A0FinalMissionPage: React.FC = () => {
   const userName = useAppStore((state) => state.userName);
-  const personalize = (text: string) => personalizeLearnerText(text, userName);
+  const lessons = useAppStore((state) => state.lessons);
+  const completedLessons = useAppStore((state) => state.progress.completedLessons);
+  const personalize = useCallback((text: string) => personalizeLearnerText(text, userName), [userName]);
   const setPage = useAppStore((state) => state.setPage);
   const addXP = useAppStore((state) => state.addXP);
   const addMinutes = useAppStore((state) => state.addMinutes);
@@ -55,14 +63,22 @@ const A0FinalMissionPage: React.FC = () => {
 
   const section = a0FinalMissionSections[sectionIndex];
   const question = section?.questions[questionIndex];
+  const missionUnlocked = isFinalMissionUnlocked(lessons, completedLessons);
+  const missingLessonCount = getMissingFinalMissionLessonIds(lessons, completedLessons).length;
+  const choices = useMemo(
+    () => question ? getShuffledFinalMissionChoices(question, userName) : [],
+    [question, userName],
+  );
   const answeredCount = useMemo(
     () => a0FinalMissionSections.slice(0, sectionIndex).reduce((sum, item) => sum + item.questions.length, 0) + questionIndex + 1,
     [sectionIndex, questionIndex],
   );
 
   useEffect(() => {
-    if (question?.type === 'listening' && question.czech && feedback === null) speakCzech(personalize(question.czech), { rate: 0.86 });
-  }, [question, feedback]);
+    if (question?.type === 'listening' && question.czech && feedback === null) {
+      speakCzech(personalize(question.czech), { rate: 0.86 });
+    }
+  }, [question, feedback, personalize]);
 
   const finish = (finalScore: number) => {
     addXP(120 + finalScore * 8);
@@ -72,15 +88,18 @@ const A0FinalMissionPage: React.FC = () => {
   };
 
   const saveAttempt = (item: A0FinalMissionQuestion, correct: boolean, chosenId?: string) => {
-    if (!item.targetId) return;
+    const targetIds = getFinalMissionTargetIds(item);
+    if (targetIds.length === 0) return;
     const mistakeType = item.type === 'typing' ? 'typing' : item.type === 'listening' ? 'listening' : 'confusion';
-    recordAttempt(item.targetId, correct, correct ? undefined : { mistakeType, confusedWith: chosenId });
+    targetIds.forEach((targetId) => {
+      recordAttempt(targetId, correct, correct ? undefined : { mistakeType, confusedWith: chosenId });
+    });
   };
 
   const answerChoice = (choiceId: string) => {
-    if (!question || feedback !== null) return;
+    if (!question || feedback !== null || !missionUnlocked) return;
     const correct = choiceId === question.correctId;
-    const chosen = question.choices?.find((choice) => choice.id === choiceId);
+    const chosen = choices.find((choice) => choice.id === choiceId);
     if (chosen && question.type !== 'choice') speakCzech(personalize(chosen.text));
     saveAttempt(question, correct, choiceId);
     setPickedId(choiceId);
@@ -89,7 +108,7 @@ const A0FinalMissionPage: React.FC = () => {
   };
 
   const submitTyping = () => {
-    if (!question || feedback !== null) return;
+    if (!question || feedback !== null || !missionUnlocked) return;
     const correct = isTypingCorrect(question, typingValue);
     if (question.expectedText) speakCzech(personalize(question.expectedText));
     saveAttempt(question, correct);
@@ -98,14 +117,14 @@ const A0FinalMissionPage: React.FC = () => {
   };
 
   const revealTypingAnswer = () => {
-    if (!question || feedback !== null) return;
+    if (!question || feedback !== null || !missionUnlocked) return;
     if (question.expectedText) speakCzech(personalize(question.expectedText));
     saveAttempt(question, false);
     setFeedback('wrong');
   };
 
   const continueMission = () => {
-    if (!section || !question) return;
+    if (!section || !question || !missionUnlocked) return;
     const currentScore = score;
     const lastQuestionInSection = questionIndex >= section.questions.length - 1;
     const lastSection = sectionIndex >= a0FinalMissionSections.length - 1;
@@ -123,6 +142,23 @@ const A0FinalMissionPage: React.FC = () => {
     setTypingValue('');
     setFeedback(null);
   };
+
+  if (!missionUnlocked) {
+    return (
+      <div style={{ background: '#0C0C0E', minHeight: '100dvh', color: '#FFF', fontFamily: 'Inter,sans-serif', display: 'flex', alignItems: 'center', padding: 20 }}>
+        <div style={{ ...panel, width: '100%', maxWidth: 430, margin: '0 auto', textAlign: 'center' }}>
+          <div style={{ fontSize: 52, marginBottom: 10 }}>🔒</div>
+          <p style={{ margin: 0, color: '#C8952A', fontSize: 12, fontWeight: 900, letterSpacing: 1 }}>A0 ХААЛТЫН ШАЛГАЛТ</p>
+          <h1 style={{ margin: '8px 0', fontSize: 24 }}>Одоохондоо нээгдээгүй</h1>
+          <p style={{ margin: '0 0 18px', color: '#D1D1D6', lineHeight: 1.55 }}>
+            Үлдсэн {missingLessonCount} хичээлийг дуусгасны дараа шалгалт нээгдэнэ. Ингэснээр үзээгүй карт SRS-д урьдчилж орохгүй.
+          </p>
+          <button onClick={() => setPage('path')} className="btn-gold" style={{ width: '100%', padding: 14, fontSize: 15, marginBottom: 10 }}>Хичээл рүү очих</button>
+          <button onClick={() => setPage('practice')} style={{ width: '100%', padding: 13, borderRadius: 14, border: '1px solid #34343A', background: '#242428', color: '#FFF', cursor: 'pointer' }}>Дасгал руу буцах</button>
+        </div>
+      </div>
+    );
+  }
 
   if (finished) {
     const passed = score >= Math.ceil(a0FinalMissionQuestionCount * 0.75);
@@ -152,7 +188,6 @@ const A0FinalMissionPage: React.FC = () => {
   }
 
   const progressPct = Math.round((answeredCount / a0FinalMissionQuestionCount) * 100);
-  const choices = question.choices || [];
 
   return (
     <div style={{ background: '#0C0C0E', minHeight: '100dvh', color: '#FFF', fontFamily: 'Inter,sans-serif' }}>
