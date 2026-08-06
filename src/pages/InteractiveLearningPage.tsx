@@ -5,12 +5,15 @@ import { speakCzech } from '../components/audio/czechSpeech';
 import { ProgressBar, XPToast } from '../components/UI/SharedComponents';
 import { useAppStore } from '../stores/useAppStore';
 import { isSrsEligiblePracticeTarget } from '../stores/usePhraseMemoryStore';
+import PracticeEmptyState from '../components/practice/PracticeEmptyState';
+import { getIntroducedPracticeWords } from '../utils/a0BaselineIntegrity';
 
 type Feedback = 'good' | 'again' | null;
 
 const InteractiveLearningPage: React.FC = () => {
-  const { words, addXP, setPage, updateSRSCard } = useAppStore();
-  const [cards] = useState(() => [...words].sort(() => Math.random() - 0.5).slice(0, 10));
+  const { words, progress, addXP, setPage, updateSRSCard } = useAppStore();
+  const [eligibleWords] = useState(() => getIntroducedPracticeWords(words, progress.introducedWords));
+  const [cards] = useState(() => [...eligibleWords].sort(() => Math.random() - 0.5).slice(0, 10));
   const [index, setIndex] = useState(0);
   const [hasListened, setHasListened] = useState(false);
   const [reviewMode, setReviewMode] = useState(false);
@@ -24,6 +27,15 @@ const InteractiveLearningPage: React.FC = () => {
     setReviewMode(false);
     setFeedback(null);
   }, [index]);
+
+  if (eligibleWords.length === 0) {
+    return (
+      <PracticeEmptyState
+        onBack={() => setPage('practice')}
+        onGoToLessons={() => setPage('path')}
+      />
+    );
+  }
 
   if (!card) return null;
 
@@ -54,19 +66,18 @@ const InteractiveLearningPage: React.FC = () => {
   };
 
   const skip = () => {
-    if (isSrsEligiblePracticeTarget(card.id)) updateSRSCard(card.id, 4);
     next();
   };
 
   if (finished) {
-    return <div style={{ minHeight: '100vh', display: 'grid', placeItems: 'center', padding: 24, background: '#0C0C0E', color: '#FFF', fontFamily: 'Inter,sans-serif' }}><section style={{ width: '100%', maxWidth: 430, padding: 28, borderRadius: 24, textAlign: 'center', background: '#1C1C1F', border: '1px solid #2A2A2F' }}><div style={{ fontSize: 52 }}>🎉</div><h1 style={{ fontSize: 24 }}>Дасгал дууслаа</h1><p style={{ color: '#A0A0A8' }}>Та шинэ үгнүүдтэйгээ танилцлаа.</p><button className="btn-gold" onClick={() => setPage('practice')} style={{ width: '100%', padding: 15 }}>Буцах</button></section></div>;
+    return <div style={{ minHeight: '100vh', display: 'grid', placeItems: 'center', padding: 24, background: '#0C0C0E', color: '#FFF', fontFamily: 'Inter,sans-serif' }}><section style={{ width: '100%', maxWidth: 430, padding: 28, borderRadius: 24, textAlign: 'center', background: '#1C1C1F', border: '1px solid #2A2A2F' }}><div style={{ fontSize: 52 }}>🎉</div><h1 style={{ fontSize: 24 }}>Дасгал дууслаа</h1><p style={{ color: '#A0A0A8' }}>Та үзсэн үгнүүдээ дахин давтлаа.</p><button className="btn-gold" onClick={() => setPage('practice')} style={{ width: '100%', padding: 15 }}>Буцах</button></section></div>;
   }
 
   return (
     <div style={{ minHeight: '100vh', background: '#0C0C0E', color: '#FFF', fontFamily: 'Inter,sans-serif', overflow: 'hidden' }}>
       <header style={{ padding: '16px 20px', display: 'flex', alignItems: 'center', gap: 14 }}>
         <button onClick={() => setPage('practice')} style={{ border: 0, background: 'transparent', color: '#C8952A' }}><ChevronLeft size={24} /></button>
-        <div style={{ flex: 1 }}><p style={{ margin: 0, fontWeight: 800 }}>Шинэ үг үзэх</p><ProgressBar value={index} max={cards.length} height={5} /></div>
+        <div style={{ flex: 1 }}><p style={{ margin: 0, fontWeight: 800 }}>Үг давтах</p><ProgressBar value={index} max={cards.length} height={5} /></div>
         <span style={{ color: '#A0A0A8', fontSize: 13 }}>{index + 1}/{cards.length}</span>
       </header>
       <main style={{ maxWidth: 430, margin: '0 auto', padding: 20 }}>
